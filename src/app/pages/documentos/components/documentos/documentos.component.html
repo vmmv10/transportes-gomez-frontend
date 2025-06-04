@@ -1,0 +1,30 @@
+<p-toast />
+<div class="card flex flex-column gap-2 py-1">
+    <p-breadcrumb class="max-w-full" [model]="breadcrumb" />
+</div>
+<div class="card flex flex-column gap-4">
+    <p-table [value]="documentos && documentos.content ? documentos.content : []" id="documentos-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
+        <ng-template #header>
+            <tr>
+                <th class="text-center">Folio</th>
+                <th class="text-center">Tipo Documento</th>
+                <th class="text-center">Proveedor</th>
+                <th class="text-center">Proveedor Rut</th>
+                <th></th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-item>
+            <tr>
+                <td class="text-center">{{ item.id }}</td>
+                <td>{{ item.fecha }}</td>
+                <td class="text-center">{{ item.escuela.nombre }}</td>
+                <td class="text-center">{{ item.proveedor.nombre }}</td>
+                <td class="text-center">{{ item.proveedor.rut }}</td>
+                <td class="text-center">
+                    <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" [routerLink]="['/documentos/formulario/' + item.id]" routerLinkActive="router-link-active" />
+                    <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminar(item)" />
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

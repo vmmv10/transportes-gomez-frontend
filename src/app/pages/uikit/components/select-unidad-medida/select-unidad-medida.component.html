@@ -1,0 +1,6 @@
+<p-select *ngIf="!loading" [options]="unidades" [(ngModel)]="unidadMedida" optionLabel="nombre"
+    placeholder="Selecciona Unidad de Medida" [showClear]="showClear" [filter]="showFilter" filterBy="nombre"
+    class="w-12" [ngClass]="{ 'ng-dirty ng-invalid': validar && !unidadMedida }" appendTo="body"
+    (ngModelChange)="onUnidadMedidaSeleccionada($event)">
+</p-select>
+<p-skeleton *ngIf="loading" class="w-12" height="4rem" />

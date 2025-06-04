@@ -27,13 +27,13 @@ export class AppMenu {
                 label: 'Modulos',
                 items: [
                     { label: 'Escuelas', icon: 'pi pi-fw pi-graduation-cap', routerLink: ['/escuelas'] },
-                    { label: 'Ordenes de Servicios', icon: 'pi pi-fw pi-file', routerLink: ['/uikit/formlayout'] },
-                    { label: 'Documentos', icon: 'pi pi-fw pi-file-import', routerLink: ['/uikit/formlayout'] },
-                    { label: 'Entregas', icon: 'pi pi-fw pi-envelope', routerLink: ['/uikit/formlayout'] },
-                    { label: 'Rutas', icon: 'pi pi-fw pi-map', routerLink: ['/uikit/formlayout'] },
-                    { label: 'Items', icon: 'pi pi-fw pi-barcode', routerLink: ['/uikit/formlayout'] },
-                    { label: 'Inventarios', icon: 'pi pi-fw pi-warehouse', routerLink: ['/uikit/formlayout'] },
-                    { label: 'Transportes', icon: 'pi pi-fw pi-truck', routerLink: ['/uikit/formlayout'] },
+                    { label: 'Ordenes de Servicios', icon: 'pi pi-fw pi-file', routerLink: ['/ordenes-servicios'] },
+                    { label: 'Documentos', icon: 'pi pi-fw pi-file-import', routerLink: ['/documentos'] },
+                    { label: 'Entregas', icon: 'pi pi-fw pi-envelope', routerLink: ['/entregas'] },
+                    { label: 'Rutas', icon: 'pi pi-fw pi-map', routerLink: ['/rutas'] },
+                    { label: 'Items', icon: 'pi pi-fw pi-barcode', routerLink: ['/items'] },
+                    { label: 'Inventario', icon: 'pi pi-fw pi-warehouse', routerLink: ['/inventario'] },
+                    { label: 'Transportes', icon: 'pi pi-fw pi-truck', routerLink: ['/transportes'] },
                 ]
             },
         ];

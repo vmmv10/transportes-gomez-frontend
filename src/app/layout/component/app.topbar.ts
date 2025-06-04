@@ -3,7 +3,6 @@ import { MenuItem } from 'primeng/api';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { StyleClassModule } from 'primeng/styleclass';
-import { AppConfigurator } from './app.configurator';
 import { LayoutService } from '../service/layout.service';
 import { AuthService } from '@auth0/auth0-angular';
 import { TooltipModule } from 'primeng/tooltip';
@@ -11,7 +10,7 @@ import { TooltipModule } from 'primeng/tooltip';
 @Component({
     selector: 'app-topbar',
     standalone: true,
-    imports: [RouterModule, CommonModule, StyleClassModule, AppConfigurator, TooltipModule],
+    imports: [RouterModule, CommonModule, StyleClassModule, TooltipModule],
     template: ` <div class="layout-topbar">
         <div class="layout-topbar-logo-container">
             <button class="layout-menu-button layout-topbar-action" (click)="layoutService.onMenuToggle()">

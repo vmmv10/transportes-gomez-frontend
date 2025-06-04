@@ -11,24 +11,18 @@ export class OrdenServicio {
     insumos: Insumo[];
     cantidad: number;
     valorTotal: number;
+    estadoCodigo: string;
 
     constructor(
-        id: number,
-        fecha: Date,
-        escuela: Escuela,
-        proveedor: Proveedor,
-        observaciones: string,
-        insumos: Insumo[],
-        cantidad: number,
-        valorTotal: number
     ) {
-        this.id = id;
-        this.fecha = fecha;
-        this.escuela = escuela;
-        this.proveedor = proveedor;
-        this.observaciones = observaciones;
-        this.insumos = insumos;
-        this.cantidad = cantidad;
-        this.valorTotal = valorTotal;
+        this.id = 0;
+        this.fecha = new Date();
+        this.escuela = new Escuela();
+        this.proveedor = new Proveedor();
+        this.observaciones = '';
+        this.insumos = [];
+        this.cantidad = 0;
+        this.valorTotal = 0;
+        this.estadoCodigo = '';
     }
 }
