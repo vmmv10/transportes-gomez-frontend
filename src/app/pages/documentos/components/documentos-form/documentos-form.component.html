@@ -1,1 +1,104 @@
-<p>documentos-form works!</p>
+<p-toast />
+<div class="card flex flex-column gap-2 py-1">
+    <p-breadcrumb class="max-w-full" [model]="menus" />
+</div>
+<div class="flex flex-column gap-3 card">
+    <div class="flex flex-col md:flex-row gap-2 w-12">
+        <div class="flex flex-col gap-2 w-12">
+            <label for="numero">Folio</label>
+            <input pInputText id="numero" type="text" [(ngModel)]="documento.numero" class="w-12" />
+        </div>
+        <div class="flex flex-col gap-2 w-12">
+            <label for="tipo">Tipo Documento</label>
+            <app-documentos-tipo-select [(documentoTipo)]="documento.tipo" [showClear]="true" [showFilter]="true" class="w-12"></app-documentos-tipo-select>
+        </div>
+    </div>
+    <div class="flex flex-col md:flex-row gap-2 w-12">
+        <div class="flex flex-col gap-2 w-12">
+            <label for="proveedor">Proveedor</label>
+            <app-proveedor-select [(proveedor)]="documento.proveedor" [showClear]="true" [showFilter]="true" class="w-12"></app-proveedor-select>
+        </div>
+        <div class="flex flex-col gap-2 w-12">
+            <label for="escuela">Escuela</label>
+            <app-escuelas-select [(escuela)]="documento.escuela" [showClear]="true" [showFilter]="true" class="w-12"></app-escuelas-select>
+        </div>
+    </div>
+    <p-galleria *ngIf="imagenes && imagenes.length > 0" [value]="imagenes" (onItemChange)="onImagenChange($event)" [responsiveOptions]="responsiveOptions" [numVisible]="5">
+        <ng-template #item let-item>
+            <img [src]="item.itemImageSrc" style="width: 100%" />
+        </ng-template>
+        <ng-template #caption>
+            <div class="flex flex-row justify-content-between items-center w-12 p-fluid">
+                <p-button variant="text" label="Eliminar" severity="danger" icon="pi pi-trash" size="large" (click)="confirmarEliminar()" class="w-12 p-fluid" [fluid]="true" [disabled]="!imagenSeleccionada" />
+            </div>
+        </ng-template>
+        <ng-template #thumbnail let-item>
+            <img [src]="item.thumbnailImageSrc" style="width: 50px; height: 50px; object-fit: cover" />
+        </ng-template>
+    </p-galleria>
+    <p-fileupload name="myfile[]" url="https://www.primefaces.org/cdn/api/upload.php" [multiple]="true" accept="image/*" maxFileSize="1000000" (onUpload)="onTemplatedUpload()" (onSelect)="onSelectedFiles($event)">
+        <ng-template #header let-files let-chooseCallback="chooseCallback" let-clearCallback="clearCallback" let-uploadCallback="uploadCallback">
+            <div class="flex flex-wrap justify-between items-center flex-1 gap-4">
+                <div class="flex gap-2">
+                    <p-button (onClick)="choose($event, chooseCallback)" icon="pi pi-images" [rounded]="true" />
+                    <p-button (onClick)="clearCallback()" icon="pi pi-trash" [rounded]="true" [outlined]="true" severity="danger" [disabled]="!files || files.length === 0" />
+                </div>
+            </div>
+        </ng-template>
+        <ng-template #content let-files let-uploadedFiles="uploadedFiles" let-removeFileCallback="removeFileCallback" let-removeUploadedFileCallback="removeUploadedFileCallback">
+            <div class="flex flex-col gap-8 pt-4">
+                <div *ngIf="files?.length > 0">
+                    <h5>Pendiente</h5>
+                    <div class="flex flex-wrap gap-4">
+                        <div *ngFor="let file of files; let i = index" class="p-8 rounded-border flex flex-col border border-surface items-center gap-4">
+                            <div>
+                                <img role="presentation" [alt]="file.name" [src]="file.objectURL" width="100" height="50" />
+                            </div>
+                            <span class="font-semibold text-ellipsis max-w-60 whitespace-nowrap overflow-hidden">{{ file.name }}</span>
+                            <div>{{ formatSize(file.size) }}</div>
+                            <p-badge value="Pending" severity="warn" />
+                            <p-button icon="pi pi-times" (click)="onRemoveTemplatingFile($event, file, removeFileCallback, i)" [outlined]="true" [rounded]="true" severity="danger" />
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="uploadedFiles?.length > 0">
+                    <h5>Completed</h5>
+                    <div class="flex flex-wrap gap-4">
+                        <div *ngFor="let file of uploadedFiles; let i = index" class="card m-0 px-12 flex flex-col border border-surface items-center gap-4">
+                            <div>
+                                <img role="presentation" [alt]="file.name" [src]="file.objectURL" width="100" height="50" />
+                            </div>
+                            <span class="font-semibold text-ellipsis max-w-60 whitespace-nowrap overflow-hidden">{{ file.name }}</span>
+                            <div>{{ formatSize(file.size) }}</div>
+                            <p-badge value="Completed" class="mt-4" severity="success" />
+                            <p-button icon="pi pi-times" (onClick)="removeUploadedFileCallback(i)" [outlined]="true" [rounded]="true" severity="danger" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template #file></ng-template>
+        <ng-template #empty>
+            <div class="flex items-center justify-center flex-col">
+                <i class="pi pi-cloud-upload !border-2 !rounded-full !p-8 !text-4xl !text-muted-color"></i>
+                <p class="mt-6 mb-0">Arrastre la imagen aquí.</p>
+            </div>
+        </ng-template>
+    </p-fileupload>
+</div>
+<div class="flex flex-column md:flex-row gap-2 card w-12">
+    <p-button class="w-12" size="large" [fluid]="true" label="Volver" severity="secondary" icon="pi pi-times" [routerLink]="['/documentos/dashboard']" />
+    <p-button class="w-12" size="large" [fluid]="true" [label]="documento.id == 0 ? 'Guardar' : 'Editar'" severity="success" icon="pi pi-check" (click)="guardar()" />
+</div>
+<p-confirmdialog #eliminarImage>
+    <ng-template #message let-message>
+        <div class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700">
+            <i class="pi pi-trash !text-6xl text-red-500"></i>
+            <p>¿Está seguro de Eliminar la imagen?</p>
+        </div>
+    </ng-template>
+    <ng-template #footer>
+        <p-button label="Cancelar" variant="text" icon="pi pi-times" class="w-12" [fluid]="true" severity="secondary" (click)="eliminarImage.onReject()" />
+        <p-button label="Eliminar" icon="pi pi-check" class="w-12" [fluid]="true" severity="danger" (click)="eliminarImage.onAccept()" />
+    </ng-template>
+</p-confirmdialog>

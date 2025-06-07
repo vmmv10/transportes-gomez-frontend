@@ -10,6 +10,7 @@ import { EscuelasDashboardComponent } from './app/pages/escuelas/components/escu
 import { ItemsListaComponent } from './app/pages/items/components/items-lista/items-lista.component';
 import { OrdenesServiciosComponent } from './app/pages/ordenes-servicios/components/ordenes-servicios/ordenes-servicios.component';
 import { DocumentosComponent } from './app/pages/documentos/components/documentos/documentos.component';
+import { DocumentosFormComponent } from './app/pages/documentos/components/documentos-form/documentos-form.component';
 
 export const appRoutes: Routes = [
     {
@@ -25,6 +26,8 @@ export const appRoutes: Routes = [
             { path: 'escuelas/:id/dashboard', component: EscuelasDashboardComponent },
             { path: 'items', component: ItemsListaComponent },
             { path: 'documentos', component: DocumentosComponent },
+            { path: 'documentos/formulario', component: DocumentosFormComponent },
+            { path: 'documentos/formulario/:id', component: DocumentosFormComponent },
             { path: 'ordenes-servicios', component: OrdenesServiciosComponent },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }
         ]

@@ -39,8 +39,6 @@
     </div>
 </div>
 <div class="flex flex-column md:flex-row gap-2 card w-12">
-    <p-button class="w-12" size="large" [fluid]="true" label="Cancelar" severity="secondary" icon="pi pi-times"
-        [routerLink]="['/escuelas/dashboard']" />
-    <p-button class="w-12" size="large" [fluid]="true" [label]="escuela.id == 0 ? 'Guardar' : 'Editar'"
-        severity="success" icon="pi pi-check" (click)="guardar()" />
+    <p-button class="w-12" size="large" [fluid]="true" label="Volver" severity="secondary" icon="pi pi-times" [routerLink]="['/escuelas/dashboard/' + escuela.id]" />
+    <p-button class="w-12" size="large" [fluid]="true" [label]="escuela.id == 0 ? 'Guardar' : 'Editar'" severity="success" icon="pi pi-check" (click)="guardar()" />
 </div>

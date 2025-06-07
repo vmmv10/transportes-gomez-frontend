@@ -1,18 +1,25 @@
 import { Proveedor } from '../../proveedor/models/proveedor.model';
+import { Escuela } from '../../escuelas/models/escuela.models';
+import { DocumentoTipo } from './documento-tipo.model';
 export class Documento {
-    id: string;
+    id: number;
     tipoNombre: string;
     tipoCodigo: string;
-    imagen: any;
-    numero: number
-    Proveedor: Proveedor;
+    imagen: string;
+    numero: number;
+    proveedor: Proveedor;
+    escuela: Escuela;
+    files: any[] = [];
+    tipo: DocumentoTipo;
 
     constructor() {
-        this.id = '';
+        this.id = 0;
         this.tipoNombre = '';
         this.tipoCodigo = '';
-        this.imagen = null;
+        this.imagen = '';
         this.numero = 0;
-        this.Proveedor = new Proveedor();
+        this.proveedor = new Proveedor();
+        this.escuela = new Escuela();
+        this.tipo = new DocumentoTipo();
     }
 }
