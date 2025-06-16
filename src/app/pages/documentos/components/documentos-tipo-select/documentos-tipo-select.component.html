@@ -3,7 +3,7 @@
     [options]="documentosTipos"
     [(ngModel)]="documentoTipo"
     optionLabel="nombre"
-    placeholder="Selecciona Proveedor"
+    placeholder="Selecciona Tipo Documento"
     [showClear]="showClear"
     [filter]="showFilter"
     filterBy="nombre"
@@ -12,5 +12,10 @@
     appendTo="body"
     (ngModelChange)="onChangeSelect($event)"
 >
+    <ng-template let-tipo #item>
+        <div class="flex items-center gap-2">
+            <div>{{ tipo.nombre }} ({{ tipo.codigo }})</div>
+        </div>
+    </ng-template>
 </p-select>
 <p-skeleton *ngIf="loading" class="w-12" height="2rem" />

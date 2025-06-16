@@ -13,10 +13,11 @@ import { InputIconModule } from 'primeng/inputicon';
 import { MenuItem } from 'primeng/api';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { RouterModule } from '@angular/router';
+import { ModalLoadingComponent } from '../../../uikit/components/modal-loading/modal-loading.component';
 
 @Component({
     selector: 'app-escuelas-list',
-    imports: [CommonModule, TableModule, ButtonModule, RippleModule, FormsModule, InputTextModule, IconFieldModule, InputIconModule, BreadcrumbModule, RouterModule],
+    imports: [CommonModule, TableModule, ButtonModule, RippleModule, FormsModule, InputTextModule, IconFieldModule, InputIconModule, BreadcrumbModule, RouterModule, ModalLoadingComponent],
     templateUrl: './escuelas-list.component.html',
     styleUrl: './escuelas-list.component.scss'
 })
@@ -25,6 +26,7 @@ export class EscuelasListComponent {
     tok: string = '';
     textoBusqueda: string = '';
     items: MenuItem[] = [];
+    loading: boolean = true;
 
     constructor(
         private escuelasService: EscuelasService,
@@ -41,11 +43,14 @@ export class EscuelasListComponent {
     }
 
     getEscuelas() {
+        this.loading = true;
         this.escuelasService.getEscuelasList().subscribe({
             next: (escuelas: Escuela[]) => {
                 this.escuelas = escuelas;
+                this.loading = false;
             },
             error: (error) => {
+                this.loading = false;
                 console.error('Error fetching escuelas:', error);
             }
         });

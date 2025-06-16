@@ -22,6 +22,10 @@
             <label for="escuela">Escuela</label>
             <app-escuelas-select [(escuela)]="documento.escuela" [showClear]="true" [showFilter]="true" class="w-12"></app-escuelas-select>
         </div>
+        <div class="flex flex-col gap-2 w-12">
+            <label for="bodega">Bodega</label>
+            <app-bodegas-select [(bodega)]="documento.bodega" [showClear]="true" [showFilter]="true" class="w-12"></app-bodegas-select>
+        </div>
     </div>
     <p-galleria *ngIf="imagenes && imagenes.length > 0" [value]="imagenes" (onItemChange)="onImagenChange($event)" [responsiveOptions]="responsiveOptions" [numVisible]="5">
         <ng-template #item let-item>
@@ -88,7 +92,7 @@
 </div>
 <div class="flex flex-column md:flex-row gap-2 card w-12">
     <p-button class="w-12" size="large" [fluid]="true" label="Volver" severity="secondary" icon="pi pi-times" [routerLink]="['/documentos/dashboard']" />
-    <p-button class="w-12" size="large" [fluid]="true" [label]="documento.id == 0 ? 'Guardar' : 'Editar'" severity="success" icon="pi pi-check" (click)="guardar()" />
+    <p-button class="w-12" size="large" [fluid]="true" [label]="documento.id == 0 ? 'Guardar' : 'Actualizar'" severity="success" icon="pi pi-save" (click)="guardar()" />
 </div>
 <p-confirmdialog #eliminarImage>
     <ng-template #message let-message>
@@ -102,3 +106,4 @@
         <p-button label="Eliminar" icon="pi pi-check" class="w-12" [fluid]="true" severity="danger" (click)="eliminarImage.onAccept()" />
     </ng-template>
 </p-confirmdialog>
+<app-modal-loading [visible]="loading" />

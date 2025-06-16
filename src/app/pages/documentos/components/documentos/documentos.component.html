@@ -14,6 +14,7 @@
                 <th class="text-center">Tipo Documento</th>
                 <th class="text-center">Proveedor</th>
                 <th class="text-center">Proveedor Rut</th>
+                <th class="text-center">Bodega</th>
                 <th class="text-center">Destino</th>
                 <th class="text-center">Comuna</th>
                 <th class="text-center">Imagen</th>
@@ -26,6 +27,7 @@
                 <td class="text-center">{{ item.tipoCodigo == 52 ? 'Guia de Despecha' : 'Factura' }}</td>
                 <td class="text-center">{{ item.proveedor.nombre }}</td>
                 <td class="text-center">{{ item.proveedor.rut }}</td>
+                <td class="text-center">{{ item.bodega.nombre }}</td>
                 <td class="text-center">{{ item.escuela.nombre }}</td>
                 <td class="text-center">{{ item.escuela.comuna }}</td>
                 <td class="text-center">
@@ -52,3 +54,4 @@
         <button pButton type="button" label="Descargar imagen" class="w-12" [fluid]="true" icon="pi pi-download" (click)="descargarImagen()" [disabled]="!imagenSeleccionada"></button>
     </ng-template>
 </p-dialog>
+<app-modal-loading [visible]="loading" [texto]="'Cargando documentos...'" />

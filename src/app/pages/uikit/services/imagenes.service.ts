@@ -13,7 +13,7 @@ export class ImagenesService {
         this.url = 'api/imagenes';
     }
 
-    getImagenes(tipoEntidad: string, idEntidad: number): Observable<Imagen[]> {
+    getImagenes(tipoEntidad: number, idEntidad: number): Observable<Imagen[]> {
         return this.authHttp.get<Imagen[]>(`${this.url}/${tipoEntidad}/${idEntidad}`);
     }
 

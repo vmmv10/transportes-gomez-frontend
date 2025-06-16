@@ -34,7 +34,9 @@
                         "styles": [
                             "src/styles.scss",
                             "node_modules/primeflex/primeflex.css",
-                            "node_modules/leaflet/dist/leaflet.css"
+                            "node_modules/leaflet/dist/leaflet.css",
+                            "node_modules/leaflet-routing-machine/dist/leaflet-routing-machine.css",
+                            "src/styles.scss"
                         ],
                         "scripts": []
                     },

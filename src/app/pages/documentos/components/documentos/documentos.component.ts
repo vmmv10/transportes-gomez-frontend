@@ -20,11 +20,28 @@ import { GalleriaModule } from 'primeng/galleria';
 import { ImagenesService } from '../../../uikit/services/imagenes.service';
 import { Imagen } from '../../../uikit/models/imagen.model';
 import { DialogModule } from 'primeng/dialog';
+import { ModalLoadingComponent } from '../../../uikit/components/modal-loading/modal-loading.component';
 
 @Component({
     standalone: true,
     selector: 'app-documentos',
-    imports: [CommonModule, TableModule, DialogModule, ButtonModule, FormsModule, InputTextModule, IconFieldModule, InputIconModule, BreadcrumbModule, RouterModule, ToastModule, ConfirmDialogModule, TooltipModule, GalleriaModule],
+    imports: [
+        CommonModule,
+        TableModule,
+        DialogModule,
+        ButtonModule,
+        FormsModule,
+        InputTextModule,
+        IconFieldModule,
+        InputIconModule,
+        BreadcrumbModule,
+        RouterModule,
+        ToastModule,
+        ConfirmDialogModule,
+        TooltipModule,
+        GalleriaModule,
+        ModalLoadingComponent
+    ],
     templateUrl: './documentos.component.html',
     styleUrl: './documentos.component.scss',
     providers: [MessageService, ConfirmationService]
@@ -115,7 +132,7 @@ export class DocumentosComponent {
 
     async getImagenes(documento: Documento) {
         try {
-            const data = await this.imagenesService.getImagenes('Documento', documento.id).toPromise();
+            const data = await this.imagenesService.getImagenes(4, documento.id).toPromise();
             this.imagenes = data ?? [];
             if (this.imagenes.length > 0) {
                 this.imagenSeleccionada = this.imagenes[0]; // Selecciona la primera imagen por defecto

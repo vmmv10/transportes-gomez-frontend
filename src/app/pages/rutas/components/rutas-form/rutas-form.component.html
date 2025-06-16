@@ -1,0 +1,51 @@
+<p-toast />
+<div class="card flex flex-column gap-2 py-1">
+    <p-breadcrumb class="max-w-full" [model]="breadcrumb" />
+</div>
+<div class="card flex flex-column gap-3">
+    <app-ordenes-servicios-modal-select
+        [enRuta]="false"
+        (ordenesServiciosSeleccionadosChange)="ordenesServiciosSeleccionadosChange($event)"
+        [(ordenesServiciosSeleccionados)]="ordenesServiciosSeleccionados"
+        class="w-12"
+    ></app-ordenes-servicios-modal-select>
+</div>
+<div *ngIf="ordenesServiciosSeleccionados.length > 0" class="card flex flex-column gap-3">
+    <p-table [value]="ordenesServiciosSeleccionados" (onRowReorder)="onRowReorder()" [reorderableColumns]="true" [tableStyle]="{ 'min-width': '50rem' }">
+        <ng-template #header let-columns>
+            <tr>
+                <th style="width: 3rem"></th>
+                <th class="text-center">N° Orden de Servicio</th>
+                <th class="text-center">Escuela</th>
+                <th class="text-center">Comuna</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-rowData let-columns="columns" let-index="rowIndex">
+            <tr [pReorderableRow]="index">
+                <td>
+                    <span class="pi pi-bars" pReorderableRowHandle></span>
+                </td>
+                <td class="text-center">
+                    {{ rowData.id }}
+                </td>
+                <td class="text-center">
+                    {{ rowData.escuela.nombre }}
+                </td>
+                <td class="text-center">
+                    {{ rowData.escuela.comuna }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<div *ngIf="ordenesServiciosSeleccionados.length > 0" class="card flex flex-column gap-3">
+    <div id="mapa" style="height: 500px"></div>
+</div>
+<div *ngIf="ordenesServiciosSeleccionados.length > 0" class="card flex flex-column gap-3">
+    <h2 class="text-xl">Chofer</h2>
+</div>
+<div *ngIf="ordenesServiciosSeleccionados.length > 0" class="card flex flex-row gap-1">
+    <p-button label="Cancelar" icon="pi pi-times" severity="secondary" [text]="true" [routerLink]="['/rutas']" [fluid]="true" class="w-12" />
+    <p-button label="Guardar Ruta" icon="pi pi-save" severity="success" (click)="guardarRuta()" [fluid]="true" class="w-12" />
+</div>
+<app-modal-loading [visible]="loading" />

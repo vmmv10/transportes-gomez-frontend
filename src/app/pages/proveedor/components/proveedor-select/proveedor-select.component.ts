@@ -12,7 +12,8 @@ import { ProveedoresService } from '../../services/proveedores.service';
     selector: 'app-proveedor-select',
     imports: [SelectModule, FormsModule, CommonModule, SkeletonModule],
     templateUrl: './proveedor-select.component.html',
-    styleUrl: './proveedor-select.component.scss'
+    styleUrl: './proveedor-select.component.scss',
+    providers: [MessageService]
 })
 export class ProveedorSelectComponent {
     @Input() proveedor: Proveedor = new Proveedor();

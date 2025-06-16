@@ -2,7 +2,11 @@
 <div class="card flex flex-column gap-2 py-1">
     <p-breadcrumb class="max-w-full" [model]="breadcrumb" />
 </div>
-<div class="card flex flex-column gap-4">
+<div class="card flex flex-column gap-3">
+    <div class="flex flex-row w-12 justify-content-between">
+        <h2>Ordenes de Servicios</h2>
+        <p-button label="Nueva Orden" icon="pi pi-plus" severity="info" [routerLink]="['/ordenes-servicios/formulario']" routerLinkActive="router-link-active" />
+    </div>
     <p-table [value]="ordenes && ordenes.content ? ordenes.content : []" id="ordenes-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
         <ng-template #header>
             <tr>
@@ -16,14 +20,32 @@
         <ng-template #body let-producto>
             <tr>
                 <td class="text-center">{{ producto.id }}</td>
-                <td>{{ producto.fecha }}</td>
+                <td class="text-center">{{ producto.fecha | fechaHora }}</td>
                 <td class="text-center">{{ producto.escuela.nombre }}</td>
-                <td class="text-center">{{ producto.estadoCodigo }}</td>
+                <td class="text-center" *ngIf="producto.entregado">
+                    <p-tag severity="success" value="Entregado" />
+                </td>
+                <td class="text-center" *ngIf="!producto.entregado">
+                    <p-tag severity="warn" value="No entregado" />
+                </td>
                 <td class="text-center">
-                    <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" (click)="editar(producto)" />
+                    <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" [routerLink]="['/ordenes-servicios/formulario/' + producto.id]" />
                     <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminar(producto)" />
                 </td>
             </tr>
         </ng-template>
     </p-table>
 </div>
+<app-modal-loading [visible]="loading" />
+<p-confirmdialog #eliminarOs key="eliminarOs">
+    <ng-template #message let-message>
+        <div class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700">
+            <i class="pi pi-trash !text-6xl text-red-500"></i>
+            <p>¿Está seguro de Eliminar la Orden de Servicio?</p>
+        </div>
+    </ng-template>
+    <ng-template #footer>
+        <p-button label="Cancelar" variant="text" icon="pi pi-times" class="w-12" [fluid]="true" severity="secondary" (click)="eliminarOs.onReject()" />
+        <p-button label="Eliminar" icon="pi pi-check" class="w-12" [fluid]="true" severity="danger" (click)="eliminarOs.onAccept()" />
+    </ng-template>
+</p-confirmdialog>

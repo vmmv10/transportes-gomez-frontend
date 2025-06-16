@@ -1,0 +1,68 @@
+<button
+    pButton
+    icon="{{ ordenServicio && ordenServicio.id > 0 ? 'pi pi-check' : 'pi pi-plus' }}"
+    label="{{ ordenServicio && ordenServicio.id > 0 ? ordenesServiciosSeleccionados.length : 'Agregar Ordenes de Servicio a la Ruta' }}"
+    [fluid]="true"
+    class="w-12"
+    (click)="showDialog()"
+    [ngClass]="ordenServicio && ordenServicio.id > 0 ? 'p-button-success p-button-outlined' : 'p-button-success'"
+></button>
+<p-dialog header="Seleccionar Documento" [modal]="true" [(visible)]="visible">
+    <div class="flex flex-column w-12 gap-2">
+        <p-table
+            [value]="ordenesServicios && ordenesServicios.content ? ordenesServicios.content : []"
+            id="ordenesServicios-table"
+            dataKey="id"
+            [loading]="loading"
+            [tableStyle]="{ 'min-width': '50rem' }"
+            selectionMode="multiple"
+            [(selection)]="ordenesServiciosSeleccionados"
+        >
+            <ng-template #header>
+                <tr>
+                    <th></th>
+                    <th class="text-center"><p-inputnumber class="w-12" inputId="id" (keydown.enter)="getData()" [(ngModel)]="filtro.id" /></th>
+                    <th class="text-center"><p-inputnumber class="w-12" [disabled]="true" /></th>
+                    <th class="text-center"><p-inputnumber class="w-12" inputId="id" (keydown.enter)="getData()" [(ngModel)]="filtro.documentoNumero" /></th>
+                    <th><app-documentos-tipo-select (documentoTipo)="documentoTipoChange($event)" [(documentoTipo)]="filtro.documentoTipo" [showClear]="true" [showFilter]="true" class="w-12"></app-documentos-tipo-select></th>
+                    <th><app-escuelas-select (escuelaChange)="escuelaChange($event)" [(escuela)]="filtro.escuela" [showClear]="true" [showFilter]="true" class="w-12"></app-escuelas-select></th>
+                    <th class="text-center"><p-inputnumber class="w-12" [disabled]="true" /></th>
+                </tr>
+                <tr>
+                    <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
+                    <th class="text-center">id</th>
+                    <th class="text-center">Fecha</th>
+                    <th class="text-center">Documento</th>
+                    <th class="text-center">Tipo Documento</th>
+                    <th class="text-center">Escuela</th>
+                    <th class="text-center">Estado</th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-item>
+                <tr [pSelectableRow]="item">
+                    <td>
+                        <p-tableCheckbox [value]="item" />
+                    </td>
+                    <td class="text-center">{{ item.id }}</td>
+                    <td class="text-center">{{ item.fecha | fechaHora }}</td>
+                    <td class="text-center">{{ item.documento.numero }}</td>
+                    <td class="text-center">{{ item.documento.tipo.nombre }}</td>
+                    <td class="text-center">{{ item.escuela.nombre }}</td>
+                    <td class="text-center" *ngIf="item.entregado">
+                        <p-tag severity="success" value="Entregado" />
+                    </td>
+                    <td class="text-center" *ngIf="!item.entregado">
+                        <p-tag severity="warn" value="No entregado" />
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    <ng-template #footer>
+        <div class="flex flex-row gap-2 w-12">
+            <button pButton label="Cancelar" [fluid]="true" class="w-12 p-button-secondary" [text]="true" (click)="hideDialog()"></button>
+            <button pButton label="Enviar Ordenes de Servicio" [fluid]="true" class="w-12" (click)="sendSelectedOrdenesServicios()"></button>
+        </div>
+    </ng-template>
+</p-dialog>
+<p-toast />

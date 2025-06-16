@@ -22,6 +22,8 @@ import { ImagenesService } from '../../../uikit/services/imagenes.service';
 import { Imagen } from '../../../uikit/models/imagen.model';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DocumentosTipoSelectComponent } from '../documentos-tipo-select/documentos-tipo-select.component';
+import { BodegasSelectComponent } from '../../../bodegas/components/bodegas-select/bodegas-select.component';
+import { ModalLoadingComponent } from '../../../uikit/components/modal-loading/modal-loading.component';
 
 @Component({
     selector: 'app-documentos-form',
@@ -42,7 +44,9 @@ import { DocumentosTipoSelectComponent } from '../documentos-tipo-select/documen
         ProveedorSelectComponent,
         SelectModule,
         ConfirmDialogModule,
-        DocumentosTipoSelectComponent
+        DocumentosTipoSelectComponent,
+        BodegasSelectComponent,
+        ModalLoadingComponent
     ],
     templateUrl: './documentos-form.component.html',
     styleUrl: './documentos-form.component.scss',
@@ -113,25 +117,30 @@ export class DocumentosFormComponent {
             this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Debe seleccionar un tipo de documento' });
             return;
         }
+        this.loading = true;
         if (this.documento.id) {
             this.documentosService.update(this.documento, this.files).subscribe({
                 next: (data) => {
-                    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Documento actualizado' });
+                    this.messageService.add({ severity: 'success', summary: 'Exito', detail: 'Documento actualizado' });
+                    this.loading = false;
                     this.ngOnInit();
                 },
                 error: (error) => {
                     this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al actualizar Documento' });
                     console.error('Error updating documento:', error);
+                    this.loading = false;
                 }
             });
         } else {
             this.documentosService.create(this.documento, this.files).subscribe({
                 next: (data) => {
-                    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Documento creado' });
+                    this.messageService.add({ severity: 'success', summary: 'Exito', detail: 'Documento creado' });
+                    this.loading = false;
                 },
                 error: (error) => {
                     this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al crear Documento' });
                     console.error('Error creating documento:', error);
+                    this.loading = false;
                 }
             });
         }
@@ -190,7 +199,7 @@ export class DocumentosFormComponent {
 
     async getImagenes(id: string) {
         try {
-            const data = await this.imagenesService.getImagenes('Documento', Number(id)).toPromise();
+            const data = await this.imagenesService.getImagenes(4, Number(id)).toPromise();
             this.imagenes = data ?? [];
             if (this.imagenes.length > 0) {
                 this.imagenSeleccionada = this.imagenes[0]; // Selecciona la primera imagen por defecto

@@ -6,45 +6,50 @@ import { Page } from '../../uikit/models/page.model';
 import { OrdenServicioFiltro } from '../models/orden-servicio-filtro.model';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class OrdenesServiciosService {
+    url: string;
 
-  url: string
-
-  constructor(
-    private authHttp: AuthHttpService
-  ) {
-    this.url = 'api/ordenes-servicios';
-  }
-
-  getAll(filtro: OrdenServicioFiltro): Observable<Page<OrdenServicio>> {
-    let link = this.url + '?';
-    if (filtro.id) {
-      link += `id=${filtro.id}&`;
+    constructor(private authHttp: AuthHttpService) {
+        this.url = 'api/ordenes-servicios';
     }
-    if (filtro.escuela) {
-      link += `escuela=${filtro.escuela.id}&`;
+
+    getAll(filtro: OrdenServicioFiltro): Observable<Page<OrdenServicio>> {
+        let link = this.url + '?';
+        if (filtro.enRuta) {
+            link += `enRuta=${filtro.enRuta}&`;
+        }
+        if (filtro.id) {
+            link += `id=${filtro.id}&`;
+        }
+        if (filtro.escuela) {
+            link += `escuela=${filtro.escuela.id}&`;
+        }
+        if (filtro.fecha) {
+            link += `fecha=${filtro.fecha.toISOString()}&`;
+        }
+        return this.authHttp.get<Page<OrdenServicio>>(link);
     }
-    if (filtro.fecha) {
-      link += `fecha=${filtro.fecha.toISOString()}&`;
+
+    get(id: string): Observable<OrdenServicio> {
+        return this.authHttp.get<OrdenServicio>(`${this.url}/${id}`);
     }
-    return this.authHttp.get<Page<OrdenServicio>>(link);
-  }
 
-  get(id: string): Observable<OrdenServicio> {
-    return this.authHttp.get<OrdenServicio>(`${this.url}/${id}`);
-  }
+    create(orden: OrdenServicio): Observable<OrdenServicio> {
+        return this.authHttp.post<OrdenServicio>(this.url, orden);
+    }
 
-  create(orden: OrdenServicio): Observable<OrdenServicio> {
-    return this.authHttp.post<OrdenServicio>(this.url, orden);
-  }
+    update(orden: OrdenServicio, files: any[]): Observable<OrdenServicio> {
+        const formData = new FormData();
+        formData.append('orden', new Blob([JSON.stringify(orden)], { type: 'application/json' }));
+        files.forEach((file, index) => {
+            formData.append('files', file);
+        });
+        return this.authHttp.put<OrdenServicio>(`${this.url}/${orden.id}`, formData);
+    }
 
-  update(orden: OrdenServicio): Observable<OrdenServicio> {
-    return this.authHttp.put<OrdenServicio>(`${this.url}/${orden.id}`, orden);
-  }
-
-  delete(id: string): Observable<void> {
-    return this.authHttp.delete<void>(`${this.url}/${id}`);
-  }
+    delete(id: string): Observable<void> {
+        return this.authHttp.delete<void>(`${this.url}/${id}`);
+    }
 }

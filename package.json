@@ -23,6 +23,7 @@
         "@primeng/themes": "^19.0.5",
         "chart.js": "4.4.2",
         "leaflet": "^1.9.4",
+        "leaflet-routing-machine": "^3.2.12",
         "primeclt": "^0.1.5",
         "primeflex": "^4.0.0",
         "primeicons": "^7.0.0",

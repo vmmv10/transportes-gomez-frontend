@@ -11,6 +11,9 @@ import { ItemsListaComponent } from './app/pages/items/components/items-lista/it
 import { OrdenesServiciosComponent } from './app/pages/ordenes-servicios/components/ordenes-servicios/ordenes-servicios.component';
 import { DocumentosComponent } from './app/pages/documentos/components/documentos/documentos.component';
 import { DocumentosFormComponent } from './app/pages/documentos/components/documentos-form/documentos-form.component';
+import { OrdenesServiciosFormComponent } from './app/pages/ordenes-servicios/components/ordenes-servicios-form/ordenes-servicios-form.component';
+import { RutasComponent } from './app/pages/rutas/components/rutas/rutas.component';
+import { RutasFormComponent } from './app/pages/rutas/components/rutas-form/rutas-form.component';
 
 export const appRoutes: Routes = [
     {
@@ -29,6 +32,11 @@ export const appRoutes: Routes = [
             { path: 'documentos/formulario', component: DocumentosFormComponent },
             { path: 'documentos/formulario/:id', component: DocumentosFormComponent },
             { path: 'ordenes-servicios', component: OrdenesServiciosComponent },
+            { path: 'ordenes-servicios/formulario', component: OrdenesServiciosFormComponent },
+            { path: 'ordenes-servicios/formulario/:id', component: OrdenesServiciosFormComponent },
+            { path: 'rutas', component: RutasComponent },
+            { path: 'rutas/formulario', component: RutasFormComponent },
+            { path: 'rutas/formulario/:id', component: RutasFormComponent },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }
         ]
     },

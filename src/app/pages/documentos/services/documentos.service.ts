@@ -16,11 +16,28 @@ export class DocumentosService {
     }
 
     getAll(filtro: DocumentoFiltro): Observable<Page<Documento>> {
-        return this.authHttp.get<Page<Documento>>(this.url);
+        let link = this.url + '?';
+        if (filtro.numero) {
+            link += `id=${filtro.numero}&`;
+        }
+        if (filtro.tipo) {
+            link += `tipo=${filtro.tipo.codigo}&`;
+        }
+        if (filtro.proveedor) {
+            link += `proveedor=${filtro.proveedor.id}&`;
+        }
+        if (filtro.escuela) {
+            link += `escuela=${filtro.escuela.id}&`;
+        }
+        return this.authHttp.get<Page<Documento>>(link);
     }
 
     get(id: string): Observable<Documento> {
         return this.authHttp.get<Documento>(`${this.url}/${id}`);
+    }
+
+    getByNumeroAndTipo(id: string, tipo: string): Observable<Documento> {
+        return this.authHttp.get<Documento>(`${this.url}/${id}/${tipo}`);
     }
 
     create(documento: Documento, files: any[]): Observable<Documento> {

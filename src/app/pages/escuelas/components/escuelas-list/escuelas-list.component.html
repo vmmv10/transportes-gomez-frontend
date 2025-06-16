@@ -1,15 +1,13 @@
 <div class="card flex flex-column gap-2">
     <p-breadcrumb class="max-w-full" [model]="items" />
-    <p-table [value]="escuelas" #dt1 key="id" [paginator]="true" [rows]="50" [tableStyle]="{ 'min-width': '50rem' }"
-        [globalFilterFields]="['nombre', 'comuna', 'rbd']" [rowsPerPageOptions]="[5, 10, 20, 50]">
+    <p-table [value]="escuelas" #dt1 key="id" [paginator]="true" [rows]="50" [tableStyle]="{ 'min-width': '50rem' }" [globalFilterFields]="['nombre', 'comuna', 'rbd']" [rowsPerPageOptions]="[5, 10, 20, 50]">
         <ng-template #caption>
             <div class="flex w-12 flex-row gap-2">
                 <p-iconfield iconPosition="left" class="p-fluid w-12">
                     <p-inputicon>
                         <i class="pi pi-search"></i>
                     </p-inputicon>
-                    <input pInputText type="text" (input)="dt1.filterGlobal(textoBusqueda, 'contains')"
-                        [(ngModel)]="textoBusqueda" placeholder="Buscar por nombre" class="p-fluid w-12" />
+                    <input pInputText type="text" (input)="dt1.filterGlobal(textoBusqueda, 'contains')" [(ngModel)]="textoBusqueda" placeholder="Buscar por nombre" class="p-fluid w-12" />
                 </p-iconfield>
                 <p-button label="Agregar" severity="info" icon="pi pi-plus" [routerLink]="['/escuelas/formulario']" />
             </div>
@@ -27,14 +25,13 @@
         <ng-template #body let-item>
             <tr>
                 <td>{{ item.nombre }}</td>
-                <td>{{ item.comuna}}</td>
+                <td>{{ item.comuna }}</td>
                 <td>{{ item.direccion }}</td>
                 <td>{{ item.rbd }}</td>
                 <td>{{ item.telefono }}</td>
-                <td><p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="help"
-                        [routerLink]="['/escuelas/' + item.id +'/dashboard']" />
-                </td>
+                <td><p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="help" [routerLink]="['/escuelas/' + item.id + '/dashboard']" /></td>
             </tr>
         </ng-template>
     </p-table>
 </div>
+<app-modal-loading [visible]="loading" />

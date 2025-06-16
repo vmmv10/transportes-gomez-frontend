@@ -3,34 +3,33 @@
 </div>
 <div class="card flex flex-column gap-2" *ngIf="escuela">
     <div class="flex flex-row gap-2 w-12 justify-content-between">
-        <h1 class="text-3xl">{{escuela.nombre}}</h1>
-        <p-button icon="pi pi-pencil" [rounded]="true" [text]="true"
-            [routerLink]="['/escuelas/formulario/' + escuela.id]" routerLinkActive="router-link-active" />
+        <h1 class="text-3xl">{{ escuela.nombre }}</h1>
+        <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" [routerLink]="['/escuelas/formulario/' + escuela.id]" routerLinkActive="router-link-active" />
     </div>
     <div class="flex flex-row gap-2 w-12">
         <i class="pi pi-user text-black" style="font-size: 1rem"></i>
-        <span class="text-black">{{escuela.director}}</span>
+        <span class="text-black">{{ escuela.director }}</span>
     </div>
     <div class="flex flex-row gap-2 w-12">
         <i class="pi pi-map-marker text-black" style="font-size: 1rem"></i>
-        <span class="text-black">{{escuela.direccion}}</span>
+        <span class="text-black">{{ escuela.direccion }}</span>
     </div>
     <div class="flex flex-row gap-2 w-12">
         <i class="pi pi-phone text-black" style="font-size: 1rem"></i>
-        <span class="text-black">{{escuela.telefono}}</span>
+        <span class="text-black">{{ escuela.telefono }}</span>
     </div>
     <div class="flex flex-row gap-2 w-12">
         <i class="pi pi-envelope text-black" style="font-size: 1rem"></i>
-        <span class="text-black">{{escuela.email}}</span>
+        <span class="text-black">{{ escuela.email }}</span>
     </div>
 </div>
 <div class="card flex flex-column gap-2">
     <h2 class="text-xl">Entregas</h2>
 </div>
 <div class="card flex flex-column gap-2">
-    <h2 class="text-xl">Inventario</h2>
+    <h2 class="text-xl">Documentos Pendientes</h2>
 </div>
 <div class="card flex flex-column gap-2">
     <h2 class="text-xl">Mapa</h2>
-    <div id="map" style="height: 400px; width: 100%; margin-top: 1rem;"></div>
+    <div id="map" style="height: 400px; width: 100%; margin-top: 1rem"></div>
 </div>
