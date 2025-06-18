@@ -319,5 +319,24 @@ export class OrdenesServiciosFormComponent {
         this.displayItem = true;
     }
 
-    descargarPdf() {}
+    obtenerPdf() {
+        this.loading = true;
+        this.ordenesServiciosService.generarPdf(this.orden.id.toString()).subscribe({
+            next: (data) => {
+                const blob = new Blob([data], { type: 'application/pdf' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `OrdenServicio_${this.orden.id}.pdf`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+                this.loading = false;
+            },
+            error: (error) => {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener el PDF' });
+                console.error('Error fetching PDF:', error);
+                this.loading = false;
+            }
+        });
+    }
 }

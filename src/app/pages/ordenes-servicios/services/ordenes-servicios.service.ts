@@ -17,13 +17,14 @@ export class OrdenesServiciosService {
 
     getAll(filtro: OrdenServicioFiltro): Observable<Page<OrdenServicio>> {
         let link = this.url + '?';
-        if (filtro.enRuta) {
+        if (filtro.enRuta !== undefined && filtro.enRuta !== null) {
+            console.log('Filtro enRuta:', filtro.enRuta);
             link += `enRuta=${filtro.enRuta}&`;
         }
         if (filtro.id) {
             link += `id=${filtro.id}&`;
         }
-        if (filtro.escuela) {
+        if (filtro.escuela.id > 0) {
             link += `escuela=${filtro.escuela.id}&`;
         }
         if (filtro.fecha) {
@@ -51,5 +52,11 @@ export class OrdenesServiciosService {
 
     delete(id: string): Observable<void> {
         return this.authHttp.delete<void>(`${this.url}/${id}`);
+    }
+
+    generarPdf(id: string): Observable<Blob> {
+        return this.authHttp.postBlob(`${this.url}/${id}/pdf`, null, {
+            responseType: 'blob' as 'json' // TypeScript requiere el cast aquí
+        });
     }
 }

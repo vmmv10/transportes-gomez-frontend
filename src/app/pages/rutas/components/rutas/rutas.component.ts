@@ -15,11 +15,11 @@ import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { ModalLoadingComponent } from '../../../uikit/components/modal-loading/modal-loading.component';
-import { FechaHoraPipe } from '../../../uikit/pipe/fecha-hora';
 import { TagModule } from 'primeng/tag';
 import { RutasService } from '../../services/rutas.service';
 import { RutaFiltro } from '../../models/ruta-filtro.model';
 import { PaginatorModule } from 'primeng/paginator';
+import { FechaPipe } from '../../../uikit/pipe/fecha';
 
 @Component({
     standalone: true,
@@ -38,10 +38,10 @@ import { PaginatorModule } from 'primeng/paginator';
         ConfirmDialogModule,
         TooltipModule,
         ModalLoadingComponent,
-        FechaHoraPipe,
         TagModule,
         ConfirmDialogModule,
-        PaginatorModule
+        PaginatorModule,
+        FechaPipe
     ],
     templateUrl: './rutas.component.html',
     styleUrl: './rutas.component.scss',

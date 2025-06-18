@@ -14,6 +14,7 @@ import { DocumentosFormComponent } from './app/pages/documentos/components/docum
 import { OrdenesServiciosFormComponent } from './app/pages/ordenes-servicios/components/ordenes-servicios-form/ordenes-servicios-form.component';
 import { RutasComponent } from './app/pages/rutas/components/rutas/rutas.component';
 import { RutasFormComponent } from './app/pages/rutas/components/rutas-form/rutas-form.component';
+import { EntregasComponent } from './app/pages/entregas/components/entregas/entregas.component';
 
 export const appRoutes: Routes = [
     {
@@ -37,6 +38,7 @@ export const appRoutes: Routes = [
             { path: 'rutas', component: RutasComponent },
             { path: 'rutas/formulario', component: RutasFormComponent },
             { path: 'rutas/formulario/:id', component: RutasFormComponent },
+            { path: 'entregas', component: EntregasComponent },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }
         ]
     },

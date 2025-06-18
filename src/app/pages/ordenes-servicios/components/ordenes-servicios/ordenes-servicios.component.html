@@ -30,7 +30,8 @@
                 </td>
                 <td class="text-center">
                     <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" [routerLink]="['/ordenes-servicios/formulario/' + producto.id]" />
-                    <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminar(producto)" />
+                    <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="warn" (click)="confirmarEliminar(producto)" />
+                    <p-button pTooltip="PDF" icon="pi pi-file-pdf" [rounded]="true" [text]="true" severity="danger" (click)="obtenerPdf(producto)" />
                 </td>
             </tr>
         </ng-template>

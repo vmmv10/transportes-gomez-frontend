@@ -10,8 +10,7 @@ import { ButtonModule } from 'primeng/button';
     selector: 'app-menu',
     standalone: true,
     imports: [CommonModule, AppMenuitem, RouterModule, ButtonModule],
-    templateUrl: './app.menu.html',
-
+    templateUrl: './app.menu.html'
 })
 export class AppMenu {
     public authService = inject(AuthService);
@@ -32,10 +31,10 @@ export class AppMenu {
                     { label: 'Entregas', icon: 'pi pi-fw pi-envelope', routerLink: ['/entregas'] },
                     { label: 'Rutas', icon: 'pi pi-fw pi-map', routerLink: ['/rutas'] },
                     { label: 'Items', icon: 'pi pi-fw pi-barcode', routerLink: ['/items'] },
-                    { label: 'Inventario', icon: 'pi pi-fw pi-warehouse', routerLink: ['/inventario'] },
-                    { label: 'Transportes', icon: 'pi pi-fw pi-truck', routerLink: ['/transportes'] },
+                    { label: 'Inventario Merma', icon: 'pi pi-fw pi-warehouse', routerLink: ['/inventario'] },
+                    { label: 'Transportes', icon: 'pi pi-fw pi-truck', routerLink: ['/transportes'] }
                 ]
-            },
+            }
         ];
     }
 

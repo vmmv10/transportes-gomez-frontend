@@ -1,0 +1,16 @@
+<p-select
+    *ngIf="!loading"
+    [options]="usuarios"
+    [(ngModel)]="usuario"
+    optionLabel="nombre"
+    placeholder="Selecciona Usuario"
+    [showClear]="showClear"
+    [filter]="showFilter"
+    filterBy="nombre"
+    class="w-12"
+    [ngClass]="{ 'ng-dirty ng-invalid': validar && !usuario }"
+    appendTo="body"
+    (ngModelChange)="onChangeSelect($event)"
+>
+</p-select>
+<p-skeleton *ngIf="loading" class="w-12" height="2rem" />

@@ -50,4 +50,8 @@ export class RutasService {
     delete(id: string): Observable<void> {
         return this.authHttp.delete<void>(`${this.url}/${id}`);
     }
+
+    deleteEntrega(id: string, orden: string): Observable<void> {
+        return this.authHttp.delete<void>(`${this.url}/${id}/ordenes-servicios/${orden}`);
+    }
 }

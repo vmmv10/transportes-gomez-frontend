@@ -7,7 +7,7 @@
     (click)="showDialog()"
     [ngClass]="ordenServicio && ordenServicio.id > 0 ? 'p-button-success p-button-outlined' : 'p-button-success'"
 ></button>
-<p-dialog header="Seleccionar Documento" [modal]="true" [(visible)]="visible">
+<p-dialog (onShow)="getData()" header="Seleccionar Documento" [modal]="true" [(visible)]="visible">
     <div class="flex flex-column w-12 gap-2">
         <p-table
             [value]="ordenesServicios && ordenesServicios.content ? ordenesServicios.content : []"

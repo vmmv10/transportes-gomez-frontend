@@ -20,8 +20,8 @@
         <ng-template #body let-item>
             <tr>
                 <td class="text-center">{{ item.id }}</td>
-                <td class="text-center">{{ item.fecha | fechaHora }}</td>
-                <td class="text-center">{{ item.chofer }}</td>
+                <td class="text-center">{{ item.fecha | fecha }}</td>
+                <td class="text-center">{{ item.chofer.nombre }}</td>
                 <td class="text-center" *ngIf="item.entregado">
                     <p-tag severity="success" value="Entregado" />
                 </td>

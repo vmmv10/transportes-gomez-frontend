@@ -44,7 +44,6 @@ export class OrdenesServiciosModalSelectComponent {
 
     ngOnInit() {
         this.filtro.enRuta = this.enRuta;
-        this.getData();
     }
 
     getData() {
@@ -86,8 +85,6 @@ export class OrdenesServiciosModalSelectComponent {
 
     hideDialog() {
         this.visible = false;
-        this.ordenesServiciosSeleccionados = [];
-        this.ordenesServiciosSeleccionadosChange.emit(this.ordenesServiciosSeleccionados);
     }
 
     sendSelectedOrdenesServicios() {
