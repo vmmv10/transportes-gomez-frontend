@@ -1,0 +1,68 @@
+<div class="md:hidden flex flex-column w-12 gap-2">
+    <div *ngFor="let item of data" class="flex flex-column w-12 card gap-3">
+        <table class="table-auto w-full border border-gray-300 border-round-xl">
+            <tbody class="border-round-xl">
+                <tr *ngFor="let campo of campos">
+                    <th class="text-left px-4 py-2 bg-gray-100 border-b border-gray-300 w-1/3">
+                        {{ campo.etiqueta }}
+                    </th>
+                    <td class="px-4 py-2 border-b border-gray-300 text-right">
+                        <!-- Tipos de visualización -->
+                        <ng-container [ngSwitch]="campo.tipo">
+                            <!-- Badge -->
+                            <p-badge *ngSwitchCase="'badge'" [value]="item[campo.propiedad]" [severity]="item[campo.propiedad] === 'Pendiente' ? 'warn' : 'success'"></p-badge>
+
+                            <!-- Moneda -->
+                            <span *ngSwitchCase="'moneda'">{{ item[campo.propiedad] }}</span>
+
+                            <!-- Fecha -->
+                            <span *ngSwitchCase="'fecha'">{{ item[campo.propiedad] | fecha }}</span>
+
+                            <span *ngSwitchCase="'texto'">{{ item[campo.propiedad] }}</span>
+
+                            <span *ngSwitchCase="'objeto'">{{ getValor(item, campo.propiedad) }}</span>
+
+                            <!-- Texto por defecto -->
+                            <span *ngSwitchDefault>{{ item[campo.propiedad] }}</span>
+                        </ng-container>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="acciones.length > 0" class="flex flex-row gap-1 w-12">
+            <ng-container *ngFor="let btn of acciones">
+                <button
+                    *ngIf="btn.tipo === 'link'"
+                    pButton
+                    [routerLink]="btn.rutaConId ? [btn.ruta + item.id] : [btn.ruta]"
+                    routerLinkActive="router-link-active"
+                    type="button"
+                    [icon]="btn.icono"
+                    [pTooltip]="btn.tooltip"
+                    [label]="btn.label"
+                    [ngClass]="'p-button-' + btn.color"
+                    [disabled]="btn.deshabilitarSi ? getValor(item, btn.deshabilitarSi) : false"
+                    (click)="accion.emit({ tipo: btn.accion, item })"
+                    [outlined]="btn.outlined"
+                    [fluid]="true"
+                ></button>
+                <button
+                    *ngIf="btn.tipo === 'accion'"
+                    pButton
+                    type="button"
+                    [icon]="btn.icono"
+                    [pTooltip]="btn.tooltip"
+                    [label]="btn.label"
+                    [ngClass]="'p-button-' + btn.color"
+                    [disabled]="btn.deshabilitarSi ? getValor(item, btn.deshabilitarSi) : false"
+                    (click)="accion.emit({ tipo: btn.accion, item })"
+                    [outlined]="btn.outlined"
+                    [fluid]="true"
+                ></button>
+            </ng-container>
+        </div>
+    </div>
+    <div class="flex flex-column w-12 card">
+        <p-paginator (onPageChange)="onPageChange($event)" [first]="page * size" [rows]="size" [totalRecords]="totalElements" [rowsPerPageOptions]="[10, 20, 30]" />
+    </div>
+</div>

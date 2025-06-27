@@ -8,15 +8,16 @@ import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
 import { AppFloatingConfigurator } from '../../layout/component/app.floatingconfigurator';
 import { AuthService } from '@auth0/auth0-angular';
+import { CommonModule } from '@angular/common';
+import { ImageModule } from 'primeng/image';
 
 @Component({
     selector: 'app-login',
     standalone: true,
-    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator],
-    templateUrl: './login.html',
+    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator, CommonModule, ImageModule],
+    templateUrl: './login.html'
 })
 export class Login {
-
     private authService = inject(AuthService);
     private router = inject(Router);
 

@@ -6,28 +6,28 @@
     <div class="flex flex-col md:flex-row gap-2 w-12">
         <div class="flex flex-col gap-2 w-12">
             <label for="numero">Folio</label>
-            <input pInputText id="numero" type="text" [(ngModel)]="documento.numero" class="w-12" />
+            <input pInputText id="numero" type="text" [(ngModel)]="documento.numero" class="w-12 {{ !documento.numero && validar ? 'ng-dirty ng-invalid' : '' }}" />
         </div>
         <div class="flex flex-col gap-2 w-12">
             <label for="tipo">Tipo Documento</label>
-            <app-documentos-tipo-select [(documentoTipo)]="documento.tipo" [showClear]="true" [showFilter]="true" class="w-12"></app-documentos-tipo-select>
+            <app-documentos-tipo-select [validar]="validar" [(documentoTipo)]="documento.tipo" [showClear]="true" [showFilter]="true" class="w-12"></app-documentos-tipo-select>
         </div>
     </div>
     <div class="flex flex-col md:flex-row gap-2 w-12">
         <div class="flex flex-col gap-2 w-12">
             <label for="proveedor">Proveedor</label>
-            <app-proveedor-select [(proveedor)]="documento.proveedor" [showClear]="true" [showFilter]="true" class="w-12"></app-proveedor-select>
+            <app-proveedor-select [validar]="validar" [(proveedor)]="documento.proveedor" [showClear]="true" [showFilter]="true" class="w-12"></app-proveedor-select>
         </div>
         <div class="flex flex-col gap-2 w-12">
             <label for="escuela">Escuela</label>
-            <app-escuelas-select [(escuela)]="documento.escuela" [showClear]="true" [showFilter]="true" class="w-12"></app-escuelas-select>
+            <app-escuelas-select [validar]="validar" [(escuela)]="documento.escuela" [showClear]="true" [showFilter]="true" class="w-12"></app-escuelas-select>
         </div>
         <div class="flex flex-col gap-2 w-12">
             <label for="bodega">Bodega</label>
-            <app-bodegas-select [(bodega)]="documento.bodega" [showClear]="true" [showFilter]="true" class="w-12"></app-bodegas-select>
+            <app-bodegas-select [validar]="validar" [(bodega)]="documento.bodega" [showClear]="true" [showFilter]="true" class="w-12"></app-bodegas-select>
         </div>
     </div>
-    <p-galleria *ngIf="imagenes && imagenes.length > 0" [value]="imagenes" (onItemChange)="onImagenChange($event)" [responsiveOptions]="responsiveOptions" [numVisible]="5">
+    <!-- <p-galleria *ngIf="imagenes && imagenes.length > 0" [value]="imagenes" (onItemChange)="onImagenChange($event)" [responsiveOptions]="responsiveOptions" [numVisible]="5">
         <ng-template #item let-item>
             <img [src]="item.itemImageSrc" style="width: 100%" />
         </ng-template>
@@ -39,12 +39,21 @@
         <ng-template #thumbnail let-item>
             <img [src]="item.thumbnailImageSrc" style="width: 50px; height: 50px; object-fit: cover" />
         </ng-template>
-    </p-galleria>
-    <p-fileupload name="myfile[]" url="https://www.primefaces.org/cdn/api/upload.php" [multiple]="true" accept="image/*" maxFileSize="1000000" (onUpload)="onTemplatedUpload()" (onSelect)="onSelectedFiles($event)">
+    </p-galleria> -->
+    <p-fileupload
+        *ngIf="imagenes && imagenes.length == 0"
+        name="myfile[]"
+        url="https://www.primefaces.org/cdn/api/upload.php"
+        [multiple]="true"
+        accept="application/pdf"
+        maxFileSize="1000000"
+        (onUpload)="onTemplatedUpload()"
+        (onSelect)="onSelectedFiles($event)"
+    >
         <ng-template #header let-files let-chooseCallback="chooseCallback" let-clearCallback="clearCallback" let-uploadCallback="uploadCallback">
             <div class="flex flex-wrap justify-between items-center flex-1 gap-4">
                 <div class="flex gap-2">
-                    <p-button (onClick)="choose($event, chooseCallback)" icon="pi pi-images" [rounded]="true" />
+                    <p-button (onClick)="choose($event, chooseCallback)" icon="pi pi-file-pdf" [rounded]="true" />
                     <p-button (onClick)="clearCallback()" icon="pi pi-trash" [rounded]="true" [outlined]="true" severity="danger" [disabled]="!files || files.length === 0" />
                 </div>
             </div>
@@ -56,7 +65,12 @@
                     <div class="flex flex-wrap gap-4">
                         <div *ngFor="let file of files; let i = index" class="p-8 rounded-border flex flex-col border border-surface items-center gap-4">
                             <div>
-                                <img role="presentation" [alt]="file.name" [src]="file.objectURL" width="100" height="50" />
+                                <ng-container *ngIf="file.type.startsWith('image/'); else pdfPreview">
+                                    <img role="presentation" [alt]="file.name" [src]="file.objectURL" width="100" height="50" />
+                                </ng-container>
+                                <ng-template #pdfPreview>
+                                    <i class="pi pi-file-pdf text-4xl text-red-600"></i>
+                                </ng-template>
                             </div>
                             <span class="font-semibold text-ellipsis max-w-60 whitespace-nowrap overflow-hidden">{{ file.name }}</span>
                             <div>{{ formatSize(file.size) }}</div>
@@ -85,10 +99,19 @@
         <ng-template #empty>
             <div class="flex items-center justify-center flex-col">
                 <i class="pi pi-cloud-upload !border-2 !rounded-full !p-8 !text-4xl !text-muted-color"></i>
-                <p class="mt-6 mb-0">Arrastre la imagen aquí.</p>
+                <p class="mt-6 mb-0">Arrastre la PDF aquí.</p>
             </div>
         </ng-template>
     </p-fileupload>
+</div>
+<div class="flex flex-column gap-2 card w-12" *ngIf="imagenes && imagenes.length > 0">
+    <span class="text-lg font-semibold">PDF</span>
+    <div class="flex flex-row gap-1">
+        <div class="flex w-12 md:flex-row flex-col gap-1">
+            <button pButton type="button" icon="pi pi-plus" label="Descargar PDF" class="w-12" severity="danger" (click)="descargarPdf(imagenes[0].itemImageSrc)"></button>
+            <button pButton type="button" icon="pi pi-trash" label="Eliminar" class="w-12" severity="danger" (click)="confirmarEliminar(imagenes[0].id)" [outlined]="true"></button>
+        </div>
+    </div>
 </div>
 <div class="flex flex-column md:flex-row gap-2 card w-12">
     <p-button class="w-12" size="large" [fluid]="true" label="Volver" severity="secondary" icon="pi pi-times" [routerLink]="['/documentos/dashboard']" />

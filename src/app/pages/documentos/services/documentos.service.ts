@@ -29,6 +29,9 @@ export class DocumentosService {
         if (filtro.escuela) {
             link += `escuela=${filtro.escuela.id}&`;
         }
+        if (filtro.asignado !== undefined) {
+            link += `asignado=${filtro.asignado}&`;
+        }
         return this.authHttp.get<Page<Documento>>(link);
     }
 

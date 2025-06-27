@@ -3,11 +3,11 @@
     <p-breadcrumb class="max-w-full" [model]="breadcrumb" />
 </div>
 <div class="card flex flex-column gap-4">
-    <div class="flex flex-row w-12 justify-content-between">
-        <h2>Documentos</h2>
-        <p-button label="Nuevo Documento" icon="pi pi-plus" severity="info" [routerLink]="['/documentos/formulario']" routerLinkActive="router-link-active" />
+    <div class="flex flex-column md:flex-row gap-2 w-12 justify-content-between">
+        <h2 class="mb-0 md:text-left text-center text-3xl">Documentos</h2>
+        <p-button class="md:w-3 w-12" [fluid]="true" label="Nuevo Documento" icon="pi pi-plus" severity="info" [routerLink]="['/documentos/formulario']" routerLinkActive="router-link-active" />
     </div>
-    <p-table [value]="documentos && documentos.content ? documentos.content : []" id="documentos-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
+    <p-table class="hidden md:block w-12" [value]="documentos && documentos.content ? documentos.content : []" id="documentos-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
         <ng-template #header>
             <tr>
                 <th class="text-center">Folio</th>
@@ -17,30 +17,32 @@
                 <th class="text-center">Bodega</th>
                 <th class="text-center">Destino</th>
                 <th class="text-center">Comuna</th>
-                <th class="text-center">Imagen</th>
                 <th></th>
             </tr>
         </ng-template>
         <ng-template #body let-item>
             <tr>
                 <td class="text-center">{{ item.numero }}</td>
-                <td class="text-center">{{ item.tipoCodigo == 52 ? 'Guia de Despecha' : 'Factura' }}</td>
+                <td class="text-center">{{ item.tipo.nombre }}</td>
                 <td class="text-center">{{ item.proveedor.nombre }}</td>
                 <td class="text-center">{{ item.proveedor.rut }}</td>
                 <td class="text-center">{{ item.bodega.nombre }}</td>
                 <td class="text-center">{{ item.escuela.nombre }}</td>
                 <td class="text-center">{{ item.escuela.comuna }}</td>
                 <td class="text-center">
-                    <p-button pTooltip="Ver Imagen" icon="pi pi-image" [rounded]="true" [text]="true" severity="success" (click)="displayImagen(item)" />
-                </td>
-                <td class="text-center">
-                    <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" [routerLink]="['/documentos/formulario/' + item.id]" routerLinkActive="router-link-active" />
-                    <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminar(item)" />
+                    <div class="flex flex-row gap-1 w-12">
+                        <p-button pTooltip="Descargar PDF" icon="pi pi-file-pdf" [rounded]="true" [text]="true" severity="danger" (click)="getImagenes(item)" />
+                        <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" [routerLink]="['/documentos/formulario/' + item.id]" routerLinkActive="router-link-active" />
+                        <p-button [disabled]="item.asignado" pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminar(item)" />
+                    </div>
                 </td>
             </tr>
         </ng-template>
     </p-table>
 </div>
+<ng-container *ngIf="documentos && documentos.content">
+    <app-table-mobile [acciones]="accionesDocumentos" (accion)="resolverAccion($event)" [data]="documentos.content" [campos]="campos"></app-table-mobile>
+</ng-container>
 <p-dialog *ngIf="imagenes && imagenes.length > 0" [header]="'Imagenes'" [modal]="true" [(visible)]="visible" [breakpoints]="{ '780px': '50vw', '575px': '90vw' }" [style]="{ width: '50vw' }">
     <div class="flex flex-column w-12 gap-2">
         <p-galleria [value]="imagenes" (onItemChange)="onImagenChange($event)" [responsiveOptions]="responsiveOptions" [numVisible]="5">
@@ -55,3 +57,15 @@
     </ng-template>
 </p-dialog>
 <app-modal-loading [visible]="loading" [texto]="'Cargando documentos...'" />
+<p-confirmdialog #eliminarDoc key="eliminarDoc">
+    <ng-template #message let-message>
+        <div class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700">
+            <i class="pi pi-trash !text-6xl text-red-500"></i>
+            <p>¿Está seguro de Eliminar la Orden de Servicio?</p>
+        </div>
+    </ng-template>
+    <ng-template #footer>
+        <p-button label="Cancelar" variant="text" icon="pi pi-times" class="w-12" [fluid]="true" severity="secondary" (click)="eliminarDoc.onReject()" />
+        <p-button label="Eliminar" icon="pi pi-check" class="w-12" [fluid]="true" severity="danger" (click)="eliminarDoc.onAccept()" />
+    </ng-template>
+</p-confirmdialog>

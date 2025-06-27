@@ -26,11 +26,10 @@
                         "tsConfig": "tsconfig.app.json",
                         "inlineStyleLanguage": "scss",
                         "assets": [
-                            {
-                                "glob": "**/*",
-                                "input": "public"
-                            }
+                            "src/assets",
+                            "src/favicon.ico"
                         ],
+
                         "styles": [
                             "src/styles.scss",
                             "node_modules/primeflex/primeflex.css",
@@ -38,7 +37,11 @@
                             "node_modules/leaflet-routing-machine/dist/leaflet-routing-machine.css",
                             "src/styles.scss"
                         ],
-                        "scripts": []
+                        "scripts": [],
+                        "allowedCommonJsDependencies": [
+                            "leaflet",
+                            "leaflet-routing-machine"
+                        ]
                     },
                     "configurations": {
                         "production": {
@@ -52,6 +55,11 @@
                                     "type": "anyComponentStyle",
                                     "maximumWarning": "2kb",
                                     "maximumError": "4kb"
+                                },
+                                {
+                                "type": "initial",
+                                "maximumWarning": "1.37mb",
+                                "maximumError": "2mb"
                                 }
                             ],
                             "outputHashing": "all"

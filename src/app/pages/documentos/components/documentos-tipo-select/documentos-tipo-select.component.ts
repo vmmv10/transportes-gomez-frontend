@@ -16,7 +16,7 @@ import { DocumentosTiposService } from '../../services/documentos-tipos.service'
     providers: [MessageService]
 })
 export class DocumentosTipoSelectComponent {
-    @Input() documentoTipo: DocumentoTipo = new DocumentoTipo();
+    @Input() documentoTipo: DocumentoTipo | undefined = undefined;
     @Output() documentoTipoChange = new EventEmitter<DocumentoTipo>();
     @Input() showClear: boolean = false;
     @Input() validar: boolean = false;

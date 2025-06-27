@@ -14,7 +14,7 @@ import { MessageService } from 'primeng/api';
     styleUrl: './escuelas-select.component.scss'
 })
 export class EscuelasSelectComponent {
-    @Input() escuela: Escuela = new Escuela();
+    @Input() escuela: Escuela | undefined;
     @Output() escuelaChange = new EventEmitter<Escuela>();
     @Input() showClear: boolean = false;
     @Input() validar: boolean = false;

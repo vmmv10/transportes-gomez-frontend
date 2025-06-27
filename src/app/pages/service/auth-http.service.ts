@@ -9,7 +9,7 @@ import { environment } from '../../../environments';
     providedIn: 'root'
 })
 export class AuthHttpService {
-    private readonly apiUrl = environment.apiBaseUrl; // Cambia según tu backend
+    private readonly apiUrl = environment.production ? environment.apiBaseUrl : environment.apiBaseUrlQa; // Cambia según tu backend
 
     constructor(
         private http: HttpClient,

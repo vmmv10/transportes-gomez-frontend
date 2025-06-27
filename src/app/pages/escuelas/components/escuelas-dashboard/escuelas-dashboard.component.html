@@ -23,8 +23,9 @@
         <span class="text-black">{{ escuela.email }}</span>
     </div>
 </div>
-<div class="card flex flex-column gap-2">
+<div class="card flex flex-column gap-2" *ngIf="escuela && escuela.id > 0">
     <h2 class="text-xl">Entregas</h2>
+    <app-entregas-table [filtro]="filtroEntegas" [filtros]="false"></app-entregas-table>
 </div>
 <div class="card flex flex-column gap-2">
     <h2 class="text-xl">Documentos Pendientes</h2>

@@ -27,6 +27,7 @@ import { Proveedor } from '../../../proveedor/models/proveedor.model';
 })
 export class DocumentosModalSelectComponent {
     @Input() documento: Documento | undefined;
+    @Input() asignado: boolean | undefined;
     @Output() documentoChange = new EventEmitter<Documento>();
     visible: boolean = false;
     documentos!: Page<Documento>;
@@ -43,6 +44,9 @@ export class DocumentosModalSelectComponent {
     }
 
     getData() {
+        if (this.asignado !== undefined) {
+            this.filtro.asignado = this.asignado;
+        }
         this.loading = true;
         this.documentosService.getAll(this.filtro).subscribe({
             next: (data) => {

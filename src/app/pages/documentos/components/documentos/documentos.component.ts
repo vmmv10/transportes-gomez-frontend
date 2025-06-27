@@ -21,6 +21,7 @@ import { ImagenesService } from '../../../uikit/services/imagenes.service';
 import { Imagen } from '../../../uikit/models/imagen.model';
 import { DialogModule } from 'primeng/dialog';
 import { ModalLoadingComponent } from '../../../uikit/components/modal-loading/modal-loading.component';
+import { TableMobileComponent } from '../../../uikit/components/table-mobile/table-mobile.component';
 
 @Component({
     standalone: true,
@@ -40,7 +41,8 @@ import { ModalLoadingComponent } from '../../../uikit/components/modal-loading/m
         ConfirmDialogModule,
         TooltipModule,
         GalleriaModule,
-        ModalLoadingComponent
+        ModalLoadingComponent,
+        TableMobileComponent
     ],
     templateUrl: './documentos.component.html',
     styleUrl: './documentos.component.scss',
@@ -56,6 +58,52 @@ export class DocumentosComponent {
     visible: boolean = false;
     imagenes: Imagen[] = [];
     imagenSeleccionada: Imagen | undefined;
+
+    campos: any[] = [
+        { etiqueta: 'Folio', propiedad: 'numero', tipo: 'texto' },
+        {
+            etiqueta: 'Tipo Documento',
+            propiedad: 'tipo.nombre',
+            tipo: 'objeto'
+        },
+        { etiqueta: 'Proveedor', propiedad: 'proveedor.nombre', tipo: 'objeto' },
+        { etiqueta: 'Proveedor Rut', propiedad: 'proveedor.rut', tipo: 'objeto' },
+        { etiqueta: 'Bodega', propiedad: 'bodega.nombre', tipo: 'objeto' },
+        { etiqueta: 'Destino', propiedad: 'escuela.nombre', tipo: 'objeto' },
+        { etiqueta: 'Comuna', propiedad: 'escuela.comuna', tipo: 'objeto' }
+    ];
+
+    accionesDocumentos = [
+        {
+            tooltip: 'Editar',
+            icono: 'pi pi-pencil',
+            color: 'info',
+            tipo: 'link',
+            ruta: '/documentos/formulario/',
+            rutaConId: true,
+            label: 'Editar',
+            outlined: true
+        },
+        {
+            tooltip: 'Eliminar',
+            icono: 'pi pi-trash',
+            color: 'warn',
+            tipo: 'accion',
+            accion: 'eliminar',
+            deshabilitarSi: 'asignado',
+            label: 'Eliminar',
+            outlined: true
+        },
+        {
+            tooltip: 'Ver PDF',
+            icono: 'pi pi-file-pdf',
+            color: 'danger',
+            tipo: 'accion',
+            accion: 'verPdf',
+            label: ' PDF',
+            outlined: true
+        }
+    ];
 
     responsiveOptions: any[] = [
         {
@@ -120,6 +168,7 @@ export class DocumentosComponent {
             message: '¿Desea eliminar el documento ' + documento.id + '?',
             header: 'Confirmar',
             icon: 'pi pi-exclamation-triangle',
+            key: 'eliminarDoc',
             accept: () => this.eliminar(documento)
         });
     }
@@ -130,16 +179,20 @@ export class DocumentosComponent {
         this.visible = true;
     }
 
-    async getImagenes(documento: Documento) {
+    async getImagenes(documento: any) {
+        this.loading = true;
         try {
             const data = await this.imagenesService.getImagenes(4, documento.id).toPromise();
             this.imagenes = data ?? [];
             if (this.imagenes.length > 0) {
                 this.imagenSeleccionada = this.imagenes[0]; // Selecciona la primera imagen por defecto
+                this.descargarPdf(this.imagenSeleccionada.itemImageSrc);
             } else {
                 this.MessageService.add({ severity: 'info', summary: 'Información', detail: 'No se encontraron imágenes para este documento' });
             }
+            this.loading = false;
         } catch (error) {
+            this.loading = false;
             console.error('Error fetching images:', error);
             this.MessageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener las imágenes del documento' });
         }
@@ -170,5 +223,26 @@ export class DocumentosComponent {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    }
+
+    resolverAccion(event: { tipo: string; item: any }) {
+        console.log('Acción recibida:', event);
+        switch (event.tipo) {
+            case 'eliminar':
+                this.confirmarEliminar(event.item);
+                break;
+            case 'verPdf':
+                this.getImagenes(event.item);
+                break;
+        }
+    }
+
+    descargarPdf(ruta: string) {
+        const url = ruta;
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = '';
+        a.target = '_blank';
+        a.click();
     }
 }

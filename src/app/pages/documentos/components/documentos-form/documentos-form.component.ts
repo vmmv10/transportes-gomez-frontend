@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -24,6 +24,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DocumentosTipoSelectComponent } from '../documentos-tipo-select/documentos-tipo-select.component';
 import { BodegasSelectComponent } from '../../../bodegas/components/bodegas-select/bodegas-select.component';
 import { ModalLoadingComponent } from '../../../uikit/components/modal-loading/modal-loading.component';
+import { PanelModule } from 'primeng/panel';
 
 @Component({
     selector: 'app-documentos-form',
@@ -46,7 +47,8 @@ import { ModalLoadingComponent } from '../../../uikit/components/modal-loading/m
         ConfirmDialogModule,
         DocumentosTipoSelectComponent,
         BodegasSelectComponent,
-        ModalLoadingComponent
+        ModalLoadingComponent,
+        PanelModule
     ],
     templateUrl: './documentos-form.component.html',
     styleUrl: './documentos-form.component.scss',
@@ -61,6 +63,7 @@ export class DocumentosFormComponent {
     totalSizePercent: number = 0;
     imagenSeleccionada: Imagen | undefined;
     loading: boolean = false;
+    validar: boolean = false;
 
     responsiveOptions: any[] = [
         {
@@ -79,7 +82,8 @@ export class DocumentosFormComponent {
         private documentosService: DocumentosService,
         private config: PrimeNG,
         private imagenesService: ImagenesService,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private router: Router
     ) {
         this.menus = [
             { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
@@ -113,8 +117,9 @@ export class DocumentosFormComponent {
     }
 
     guardar() {
-        if (!this.documento.tipo) {
-            this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Debe seleccionar un tipo de documento' });
+        if (!this.documento.tipo || !this.documento || !this.documento.bodega || !this.documento.proveedor || !this.documento.escuela) {
+            this.validar = true;
+            this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Debe completar todos los campos obligatorios' });
             return;
         }
         this.loading = true;
@@ -136,6 +141,7 @@ export class DocumentosFormComponent {
                 next: (data) => {
                     this.messageService.add({ severity: 'success', summary: 'Exito', detail: 'Documento creado' });
                     this.loading = false;
+                    window.location.reload();
                 },
                 error: (error) => {
                     this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al crear Documento' });
@@ -212,18 +218,19 @@ export class DocumentosFormComponent {
         }
     }
 
-    confirmarEliminar() {
+    confirmarEliminar(id: string) {
         this.confirmationService.confirm({
             message: '¿Desea desactivar el item ?',
             header: 'Confirmar',
             icon: 'pi pi-exclamation-triangle',
-            accept: () => this.eliminarImagen()
+            accept: () => this.eliminarImagen(id)
         });
     }
 
-    eliminarImagen() {
+    eliminarImagen(id: string) {
         if (this.imagenSeleccionada) {
-            this.imagenesService.delete(this.imagenSeleccionada.id).subscribe({
+            this.loading = true;
+            this.imagenesService.delete(id).subscribe({
                 next: () => {
                     this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Imagen eliminada correctamente' });
                     this.imagenes = this.imagenes.filter((img) => img.id !== this.imagenSeleccionada?.id);
@@ -232,14 +239,25 @@ export class DocumentosFormComponent {
                     } else {
                         this.imagenSeleccionada = undefined;
                     }
+                    this.loading = false;
                 },
                 error: (error) => {
                     console.error('Error deleting image:', error);
+                    this.loading = false;
                     this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al eliminar la imagen' });
                 }
             });
         } else {
             this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'No hay imagen seleccionada para eliminar' });
         }
+    }
+
+    descargarPdf(ruta: string) {
+        const url = ruta;
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = ''; // El nombre lo pone el navegador o el servidor
+        a.target = '_blank';
+        a.click();
     }
 }

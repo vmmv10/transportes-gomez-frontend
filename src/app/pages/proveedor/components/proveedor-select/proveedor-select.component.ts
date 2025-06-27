@@ -16,7 +16,7 @@ import { ProveedoresService } from '../../services/proveedores.service';
     providers: [MessageService]
 })
 export class ProveedorSelectComponent {
-    @Input() proveedor: Proveedor = new Proveedor();
+    @Input() proveedor: Proveedor | undefined;
     @Output() proveedorChange = new EventEmitter<Proveedor>();
     @Input() showClear: boolean = false;
     @Input() validar: boolean = false;

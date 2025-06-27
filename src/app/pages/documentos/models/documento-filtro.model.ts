@@ -8,4 +8,5 @@ export class DocumentoFiltro {
     numero: number | undefined;
     proveedor!: Proveedor;
     escuela!: Escuela;
+    asignado!: boolean;
 }

@@ -1,25 +1,26 @@
 import { Component } from '@angular/core';
-import { NotificationsWidget } from './components/notificationswidget';
-import { StatsWidget } from './components/statswidget';
-import { BestSellingWidget } from './components/bestsellingwidget';
-import { RevenueStreamWidget } from './components/revenuestreamwidget';
 import { EntregasComponent } from './components/entregas/entregas.component';
+import { EntregasMesChartComponent } from '../entregas/components/entregas-mes-chart/entregas-mes-chart.component';
+import { EntregasCountComponent } from '../entregas/components/entregas-count/entregas-count.component';
 
 @Component({
     selector: 'app-dashboard',
-    imports: [StatsWidget, BestSellingWidget, RevenueStreamWidget, NotificationsWidget, EntregasComponent],
+    imports: [EntregasComponent, EntregasMesChartComponent, EntregasCountComponent],
     template: `
-        <div class="grid grid-cols-12 gap-8">
-            <app-stats-widget class="contents" />
-            <div class="col-span-12 xl:col-span-6">
-                <app-entregas />
-                <app-best-selling-widget />
+        <div class="flex flex-column gap-2">
+            <div class="flex flex-column md:flex-row gap-5 md:gap-2 w-12 mb-5">
+                <app-entregas-count tipo="Activas" class="w-12" />
+                <app-entregas-count tipo="Realizadas" class="w-12" />
             </div>
-            <div class="col-span-12 xl:col-span-6">
-                <app-revenue-stream-widget />
-                <app-notifications-widget />
+            <div class="flex flex-column md:flex-row gap-2">
+                <app-entregas class="w-12" />
+            </div>
+            <div class="flex flex-column w-12">
+                <div class="card">
+                    <app-entregas-mes-chart></app-entregas-mes-chart>
+                </div>
             </div>
         </div>
     `
 })
-export class Dashboard { }
+export class Dashboard {}

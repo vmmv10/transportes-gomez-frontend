@@ -15,7 +15,7 @@ import { BodegasService } from '../../services/bodegas.service';
     providers: [MessageService]
 })
 export class BodegasSelectComponent {
-    @Input() bodega: Bodega = new Bodega();
+    @Input() bodega: Bodega | undefined;
     @Output() bodegaChange = new EventEmitter<Bodega>();
     @Input() showClear: boolean = false;
     @Input() validar: boolean = false;

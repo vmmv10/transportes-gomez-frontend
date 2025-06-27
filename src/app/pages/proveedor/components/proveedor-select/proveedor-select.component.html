@@ -7,8 +7,7 @@
     [showClear]="showClear"
     [filter]="showFilter"
     filterBy="nombre"
-    class="w-12"
-    [ngClass]="{ 'ng-dirty ng-invalid': validar && !proveedor }"
+    class="w-12 {{ !proveedor && validar ? 'ng-dirty ng-invalid' : '' }}"
     appendTo="body"
     (ngModelChange)="onChangeSelect($event)"
 >

@@ -138,20 +138,24 @@ export class OrdenesServiciosFormComponent {
     }
 
     getDocumento() {
-        this.documentosService.getByNumeroAndTipo(this.documento.numero.toString(), this.documento.tipo.codigo).subscribe({
-            next: (data) => {
-                if (data) {
-                    this.orden.documento = data;
-                    this.orden.escuela = data.escuela;
-                } else {
-                    this.messageService.add({ severity: 'info', summary: 'Información', detail: 'Documento no encontrado' });
+        if (this.documento.tipo && this.documento.numero) {
+            this.documentosService.getByNumeroAndTipo(this.documento.numero.toString(), this.documento.tipo.codigo).subscribe({
+                next: (data) => {
+                    if (data) {
+                        this.orden.documento = data;
+                        if (data.escuela) {
+                            this.orden.documento.escuela = data.escuela;
+                        }
+                    } else {
+                        this.messageService.add({ severity: 'info', summary: 'Información', detail: 'Documento no encontrado' });
+                    }
+                },
+                error: (error) => {
+                    console.error('Error fetching documento:', error);
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener el documento' });
                 }
-            },
-            error: (error) => {
-                console.error('Error fetching documento:', error);
-                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener el documento' });
-            }
-        });
+            });
+        }
     }
 
     guardar() {
@@ -257,18 +261,18 @@ export class OrdenesServiciosFormComponent {
         }
     }
 
-    confirmarEliminar() {
+    confirmarEliminar(id: string) {
         this.confirmationService.confirm({
             message: '¿Desea desactivar el item ?',
             header: 'Confirmar',
             icon: 'pi pi-exclamation-triangle',
-            accept: () => this.eliminarImagen()
+            accept: () => this.eliminarImagen(id)
         });
     }
 
-    eliminarImagen() {
+    eliminarImagen(id: string) {
         if (this.imagenSeleccionada) {
-            this.imagenesService.delete(this.imagenSeleccionada.id).subscribe({
+            this.imagenesService.delete(id).subscribe({
                 next: () => {
                     this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Imagen eliminada correctamente' });
                     this.imagenes = this.imagenes.filter((img) => img.id !== this.imagenSeleccionada?.id);
@@ -338,5 +342,14 @@ export class OrdenesServiciosFormComponent {
                 this.loading = false;
             }
         });
+    }
+
+    descargarPdfVerificacion(ruta: string) {
+        const url = ruta;
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = ''; // El nombre lo pone el navegador o el servidor
+        a.target = '_blank';
+        a.click();
     }
 }
