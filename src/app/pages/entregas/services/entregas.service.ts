@@ -17,18 +17,18 @@ export class EntregasService {
     }
 
     getAll(filtro: EntregaFiltro): Observable<Page<Entrega>> {
-        let link = this.url + '?';
+        let link = this.url + '?size=' + filtro.size + '&page=' + filtro.page;
         if (filtro.id) {
-            link += `id=${filtro.id}&`;
+            link += `&id=${filtro.id}`;
         }
         if (filtro.ordenServicioId) {
-            link += `ordenServicio=${filtro.ordenServicioId}&`;
+            link += `&ordenServicio=${filtro.ordenServicioId}`;
         }
         if (filtro.escuela != undefined) {
-            link += `escuela=${filtro.escuela}&`;
+            link += `&escuela=${filtro.escuela}`;
         }
         if (filtro.entregado != undefined) {
-            link += `entregado=${filtro.entregado}&`;
+            link += `&entregado=${filtro.entregado}`;
         }
         return this.authHttp.get<Page<Entrega>>(link);
     }
@@ -37,7 +37,11 @@ export class EntregasService {
         return this.authHttp.delete<void>(`${this.url}/${id}`);
     }
 
-    getEntregasMes(): Observable<ReporteMes[]> {
-        return this.authHttp.get<ReporteMes[]>(`${this.url}/reporte/mes`);
+    getEntregasMes(filtro: EntregaFiltro): Observable<ReporteMes[]> {
+        let link = `${this.url}/reporte/mes`;
+        if (filtro.escuela) {
+            link += `?escuela=${filtro.escuela}`;
+        }
+        return this.authHttp.get<ReporteMes[]>(link);
     }
 }

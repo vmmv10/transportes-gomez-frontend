@@ -13,6 +13,7 @@ export class OrdenServicioFiltro {
     documentoTipo: DocumentoTipo = new DocumentoTipo();
     documentoNumero: string | undefined;
     enRuta: boolean | undefined;
+    entregado: boolean | undefined;
 
     constructor() {}
 }

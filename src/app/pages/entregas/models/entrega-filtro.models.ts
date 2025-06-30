@@ -1,3 +1,5 @@
+import { Proveedor } from "../../proveedor/models/proveedor.model";
+
 export class EntregaFiltro {
     id: string;
     fechaInicio: Date;
@@ -6,6 +8,10 @@ export class EntregaFiltro {
     entregado: boolean | undefined;
     ordenServicioId: string;
     escuela: string | undefined;
+    documento: number | undefined;
+    proveedor: Proveedor | undefined;
+    size: number = 10;
+    page: number = 0;
 
     constructor() {
         this.id = '';

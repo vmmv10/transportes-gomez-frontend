@@ -1,16 +1,22 @@
-<p-table [value]="entregas && entregas.content ? entregas.content : []" id="entregas-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
+<div class="card flex flex-column md:flex-row gap-1">
+    <div class="flex flex-column md:flex-row gap-1 w-12">
+        <input pInputText id="ordenServicioId" (keydown.enter)="getData()" [(ngModel)]="filtro.ordenServicioId" placeholder="Buscar por Orden" class="w-12" />
+        <input pInputText id="documento" (keydown.enter)="getData()" [(ngModel)]="filtro.documento" placeholder="Buscar por Documento" class="w-12" />
+    </div>
+    <div class="flex flex-column md:flex-row gap-1 w-12">
+        <app-proveedor-select class="w-12" [(proveedor)]="filtro.proveedor" [showClear]="true" [showFilter]="true" [validar]="false" (ngModelChange)="getData()" ></app-proveedor-select>
+        <select-boolean class="w-12" [(variable)]="filtro.entregado" [showClear]="true" [showFilter]="true" [validar]="false" (ngModelChange)="getData()" ></select-boolean>
+    </div>
+    <button pButton icon="pi pi-search" label="Buscar" class="md:w-4 w-12" [loading]="loading" (click)="getData()" ></button>
+</div>
+<p-table class="hidden md:block card" [value]="entregas && entregas.content ? entregas.content : []" id="entregas-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
     <ng-template #header>
-        <tr *ngIf="filtros">
-            <th class="text-center">
-                <input pInputText id="ordenServicioId" (keydown.enter)="getData()" [(ngModel)]="filtro.ordenServicioId" placeholder="Buscar por Orden" class="w-12" />
-            </th>
-            <th class="text-center">
-                <input pInputText id="entregado" [disabled]="true" class="w-12" />
-            </th>
-            <th class="text-center"></th>
-        </tr>
         <tr>
             <th class="text-center">Orden Servicio</th>
+            <th *ngIf="documento" class="text-center">Documento</th>
+            <th *ngIf="proveedor" class="text-center">Proveedor</th>
+            <th *ngIf="escuela" class="text-center">Escuela</th>
+            <th *ngIf="escuela" class="text-center">Comuna</th>
             <th class="text-center">Estado</th>
             <th *ngIf="ruta" class="text-center">Ruta</th>
         </tr>
@@ -18,7 +24,11 @@
     <ng-template #body let-item>
         <tr>
             <td class="text-center">{{ item.ordenServicio.id }}</td>
-            <td class="text-center">
+            <td class="text-center" *ngIf="documento">{{ item.ordenServicio.documento.numero }}</td>
+            <td class="text-center" *ngIf="proveedor">{{ item.ordenServicio.documento.proveedor.nombre }}</td>
+            <td class="text-center" *ngIf="escuela">{{ item.ordenServicio.escuela.nombre }}</td>
+            <td class="text-center" *ngIf="escuela">{{ item.ordenServicio.escuela.comuna }}</td>
+             <td class="text-center">
                 <p-tag *ngIf="item.entregado" severity="success" value="Entregado" />
                 <p-tag *ngIf="!item.entregado" severity="warn" value="En Ruta" />
             </td>
@@ -27,6 +37,15 @@
             </td>
         </tr>
     </ng-template>
+    <ng-template #summary >
+        <p-paginator (onPageChange)="pageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="entregas ? entregas.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
+    </ng-template>
+    <ng-template #emptymessage>
+        <tr>
+            <td colspan="5" class="text-center">No se encontraron entregas</td>
+        </tr>
+    </ng-template>
 </p-table>
+<app-table-mobile [mostrarAcciones]="true" [acciones]="acciones" [data]="entregas ? entregas.content : []" [campos]="campos"></app-table-mobile>
 <app-modal-loading [visible]="loading" />
 <p-toast />

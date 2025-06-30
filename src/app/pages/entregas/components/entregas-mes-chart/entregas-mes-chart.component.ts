@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { EntregasService } from '../../services/entregas.service';
 import { MessageService } from 'primeng/api';
 import { ChartModule } from 'primeng/chart';
 import { ReporteMes } from '../../../uikit/models/reporte-mes.model';
+import { EntregaFiltro } from '../../models/entrega-filtro.models';
 
 @Component({
     standalone: true,
@@ -13,6 +14,8 @@ import { ReporteMes } from '../../../uikit/models/reporte-mes.model';
     providers: [MessageService]
 })
 export class EntregasMesChartComponent {
+    @Input() escuela: string | undefined;
+    filtro: EntregaFiltro = new EntregaFiltro();
     basicData: any;
     basicOptions: any;
     constructor(
@@ -25,7 +28,10 @@ export class EntregasMesChartComponent {
     }
 
     getEntregasMes() {
-        this.entregasService.getEntregasMes().subscribe({
+        if (this.escuela) {
+            this.filtro.escuela = this.escuela;
+        }
+        this.entregasService.getEntregasMes(this.filtro).subscribe({
             next: (data) => {
                 const labels = data.map((d) => d.mes);
                 const values = data.map((d) => d.total);
@@ -49,7 +55,7 @@ export class EntregasMesChartComponent {
                         },
                         title: {
                             display: true,
-                            text: 'Entregas entregadas por mes'
+                            text: 'Entregas por mes'
                         }
                     }
                 };

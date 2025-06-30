@@ -22,7 +22,7 @@ export default [
     { path: 'escuelas', component: EscuelasListComponent },
     { path: 'escuelas/formulario', component: EscuelasFormComponent },
     { path: 'escuelas/formulario/:id', component: EscuelasFormComponent },
-    { path: 'escuelas/:id/dashboard', component: EscuelasDashboardComponent },
+    { path: 'escuelas/dashboard/:id', component: EscuelasDashboardComponent },
     { path: '', component: Dashboard },
     { path: 'items', component: ItemsListaComponent },
     { path: 'documentos', component: DocumentosComponent },

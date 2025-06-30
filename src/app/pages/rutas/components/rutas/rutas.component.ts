@@ -20,6 +20,9 @@ import { RutasService } from '../../services/rutas.service';
 import { RutaFiltro } from '../../models/ruta-filtro.model';
 import { PaginatorModule } from 'primeng/paginator';
 import { FechaPipe } from '../../../uikit/pipe/fecha';
+import { TableMobileComponent } from '../../../uikit/components/table-mobile/table-mobile.component';
+import { InputTextModule } from 'primeng/inputtext';
+import { UsuariosSelectComponent } from '../../../usuarios/components/usuarios-select/usuarios-select.component';
 
 @Component({
     standalone: true,
@@ -41,7 +44,11 @@ import { FechaPipe } from '../../../uikit/pipe/fecha';
         TagModule,
         ConfirmDialogModule,
         PaginatorModule,
-        FechaPipe
+        FechaPipe,
+        TableMobileComponent,
+        InputTextModule,
+        UsuariosSelectComponent
+        
     ],
     templateUrl: './rutas.component.html',
     styleUrl: './rutas.component.scss',
@@ -52,6 +59,36 @@ export class RutasComponent {
     loading: boolean = false;
     data!: Page<Ruta>;
     filtro: RutaFiltro = new RutaFiltro();
+
+    campos: any[] = [
+      { etiqueta: 'Número', propiedad: 'id', tipo: 'texto' },
+      { etiqueta: 'Fecha', propiedad: 'fecha', tipo: 'fecha' },
+      { etiqueta: 'Chofer', propiedad: 'chofer.nombre', tipo: 'objeto' },
+      { etiqueta: 'Estado', propiedad: 'estado', tipo: 'text' },
+  ];
+
+    acciones = [
+        {
+            tooltip: 'Editar',
+            icono: 'pi pi-pencil',
+            color: 'info',
+            tipo: 'link',
+            ruta: '/ordenes-servicios/formulario/',
+            rutaConId: true,
+            label: 'Editar',
+            outlined: true
+        },
+        {
+            tooltip: 'Eliminar',
+            icono: 'pi pi-trash',
+            color: 'warn',
+            tipo: 'accion',
+            accion: 'eliminar',
+            deshabilitarSi: 'entregado',
+            label: 'Eliminar',
+            outlined: true
+        },
+    ];
 
     constructor(
         private confirmationService: ConfirmationService,
@@ -115,4 +152,12 @@ export class RutasComponent {
         this.filtro.size = event.rows;
         this.getData();
     }
+
+    resolverAccion(event: { tipo: string; item: any }) {
+    switch (event.tipo) {
+        case 'eliminar':
+            this.confirmarEliminar(event.item);
+            break;
+    }
+  }
 }

@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 })
 export class EntregasCountComponent {
     @Input() tipo: string = 'Totales';
-    filtro: EntregaFiltro = new EntregaFiltro();
+    @Input() filtro: EntregaFiltro = new EntregaFiltro();
     cantidad: number = 0;
     loading: boolean = false;
 
@@ -35,7 +35,6 @@ export class EntregasCountComponent {
 
     getCount() {
         this.loading = true;
-        console.log(this.filtro);
         this.entregaService.getAll(this.filtro).subscribe({
             next: (data) => {
                 this.cantidad = data.totalElements;

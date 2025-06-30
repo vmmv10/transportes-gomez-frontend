@@ -4,9 +4,11 @@ import { Escuela } from '../../escuelas/models/escuela.models';
 
 export class DocumentoFiltro {
     id: number | undefined;
-    tipo!: DocumentoTipo;
+    tipo!: DocumentoTipo  | undefined;
     numero: number | undefined;
     proveedor!: Proveedor;
     escuela!: Escuela;
     asignado!: boolean;
+    page: number = 0;
+    size: number = 10;
 }

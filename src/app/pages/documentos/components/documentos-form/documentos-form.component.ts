@@ -41,7 +41,6 @@ import { PanelModule } from 'primeng/panel';
         BadgeModule,
         ProgressBarModule,
         TooltipModule,
-        EscuelasSelectComponent,
         ProveedorSelectComponent,
         SelectModule,
         ConfirmDialogModule,

@@ -1,0 +1,13 @@
+<p-select
+    [options]="opciones"
+    [(ngModel)]="variable"
+    optionLabel="label"
+    optionValue="value"
+    placeholder="Selecciona Estado"
+    [showClear]="showClear"
+    [filter]="showFilter"
+    class="w-12 {{ !variable && validar ? 'ng-dirty ng-invalid' : '' }}"
+    appendTo="body"
+    (ngModelChange)="onChangeSelect($event)"
+>
+</p-select>

@@ -31,6 +31,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { DialogModule } from 'primeng/dialog';
 import { OrdenServicioDetalle } from '../../models/orden-servicio-detalle.model';
 import { DocumentosModalSelectComponent } from '../../../documentos/components/documentos-modal-select/documentos-modal-select.component';
+import { EscuelasSelectComponent } from '../../../escuelas/components/escuelas-select/escuelas-select.component';
 
 @Component({
     standalone: true,
@@ -51,6 +52,7 @@ import { DocumentosModalSelectComponent } from '../../../documentos/components/d
         ConfirmDialogModule,
         ModalLoadingComponent,
         ConfirmDialogModule,
+        EscuelasSelectComponent,
         InputGroupModule,
         InputGroupAddonModule,
         InputNumberModule,
@@ -73,6 +75,7 @@ export class OrdenesServiciosFormComponent {
     totalSizePercent: number = 0;
     imagenSeleccionada: Imagen | undefined;
     loading: boolean = false;
+    validar: boolean = false;
     documento: Documento = new Documento();
     displayItem: boolean = false;
     detalle: OrdenServicioDetalle = new OrdenServicioDetalle();

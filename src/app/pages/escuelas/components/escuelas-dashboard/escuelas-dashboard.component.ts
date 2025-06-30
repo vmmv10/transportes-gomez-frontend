@@ -10,11 +10,13 @@ import { FormsModule } from '@angular/forms';
 import * as L from 'leaflet';
 import { EntregasTableComponent } from '../../../entregas/components/entregas-table/entregas-table.component';
 import { EntregaFiltro } from '../../../entregas/models/entrega-filtro.models';
+import { EntregasMesChartComponent } from '../../../entregas/components/entregas-mes-chart/entregas-mes-chart.component';
+import { EntregasCountComponent } from '../../../entregas/components/entregas-count/entregas-count.component';
 
 @Component({
     standalone: true,
     selector: 'app-escuelas-dashboard',
-    imports: [BreadcrumbModule, CommonModule, ButtonModule, FormsModule, RouterModule, EntregasTableComponent],
+    imports: [BreadcrumbModule, EntregasCountComponent, CommonModule, ButtonModule, FormsModule, RouterModule, EntregasTableComponent, EntregasMesChartComponent],
     templateUrl: './escuelas-dashboard.component.html',
     styleUrl: './escuelas-dashboard.component.scss'
 })
@@ -40,7 +42,6 @@ export class EscuelasDashboardComponent {
         if (id) {
             await this.getEscuela(id);
             this.filtroEntegas.escuela = id;
-            this.filtroEntegas.estado = true;
         }
     }
 

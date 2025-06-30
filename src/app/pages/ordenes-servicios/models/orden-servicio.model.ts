@@ -7,7 +7,7 @@ import { OrdenServicioDetalle } from './orden-servicio-detalle.model';
 export class OrdenServicio {
     id: number;
     fecha: Date;
-    escuela: Escuela;
+    escuela: Escuela | undefined;
     observaciones: string;
     detalles: OrdenServicioDetalle[];
     cantidad: number;
@@ -18,7 +18,6 @@ export class OrdenServicio {
     constructor() {
         this.id = 0;
         this.fecha = new Date();
-        this.escuela = new Escuela();
         this.observaciones = '';
         this.detalles = [];
         this.cantidad = 0;

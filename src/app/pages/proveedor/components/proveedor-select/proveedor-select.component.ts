@@ -34,8 +34,6 @@ export class ProveedorSelectComponent {
         this.loading = true;
         await this.getData();
         this.loading = false;
-        console.log('Proveedores:', this.proveedores);
-        console.log('Proveedor:', this.proveedor);
     }
 
     async getData() {

@@ -25,10 +25,16 @@
 </div>
 <div class="card flex flex-column gap-2" *ngIf="escuela && escuela.id > 0">
     <h2 class="text-xl">Entregas</h2>
-    <app-entregas-table [filtro]="filtroEntegas" [filtros]="false"></app-entregas-table>
+    <div class="flex flex-column md:flex-row gap-5 md:gap-2 w-12 mb-5">
+        <app-entregas-count [filtro]="filtroEntegas" tipo="Activas" class="w-12" />
+        <app-entregas-count [filtro]="filtroEntegas" tipo="Realizadas" class="w-12" />
+    </div>
+    <app-entregas-mes-chart [escuela]="filtroEntegas.escuela" class="w-12" />
+    <h2 class="text-xl">Detalles</h2>
+    <app-entregas-table [proveedor]="true" [documento]="true" [filtro]="filtroEntegas" [filtros]="false"></app-entregas-table>
 </div>
 <div class="card flex flex-column gap-2">
-    <h2 class="text-xl">Documentos Pendientes</h2>
+    <h2 class="text-xl">Devoluciones</h2>
 </div>
 <div class="card flex flex-column gap-2">
     <h2 class="text-xl">Mapa</h2>

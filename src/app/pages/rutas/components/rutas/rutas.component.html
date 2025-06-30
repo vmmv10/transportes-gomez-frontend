@@ -2,12 +2,17 @@
 <div class="card flex flex-column gap-2 py-1">
     <p-breadcrumb class="max-w-full" [model]="breadcrumb" />
 </div>
-<div class="card flex flex-column gap-3">
-    <div class="flex flex-row w-12 justify-content-between">
-        <h2>Rutas</h2>
-        <p-button label="Nueva Ruta" icon="pi pi-plus" severity="info" [routerLink]="['/rutas/formulario']" routerLinkActive="router-link-active" />
+<div class="flex flex-column">
+    <div class="flex flex-column md:flex-row gap-2 w-12 justify-content-between card">
+        <h2 class="w-12 md:text-2xl text-xl md:text-left text-center mb-0">Rutas</h2>
+        <p-button class="md:w-4 w-12" [fluid]="true" label="Nueva Ruta" icon="pi pi-plus" severity="info" [routerLink]="['/rutas/formulario']" routerLinkActive="router-link-active" />
     </div>
-    <p-table [value]="data && data.content ? data.content : []" id="ordenes-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
+    <div class="flex flex-column md:flex-row gap-2 w-12 card">
+        <input pInputText id="filtro" (keydown.enter)="getData()" [(ngModel)]="filtro.id" placeholder="Buscar por id" class="w-12" />
+        <app-usuarios-select [rol]="'repartidor'" [(usuario)]="filtro.chofer" [showClear]="true" [showFilter]="true" class="w-12"></app-usuarios-select>
+        <button pButton icon="pi pi-search" label="Buscar" class="md:w-4 w-12" [loading]="loading" (click)="getData()" ></button>
+    </div>
+    <p-table class="hidden md:block" [value]="data && data.content ? data.content : []" id="ordenes-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
         <ng-template #header>
             <tr>
                 <th class="text-center">id</th>
@@ -38,6 +43,7 @@
             <p-paginator (onPageChange)="onPageChange($event)" [first]="filtro.page * filtro.size" [rows]="data && data.size ? data.size : 0" [totalRecords]="data && data.totalElements ? data.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
         </ng-template>
     </p-table>
+    <app-table-mobile [mostrarAcciones]="true" (accion)="resolverAccion($event)" [acciones]="acciones" [data]="data ? data.content : []" [campos]="campos"></app-table-mobile>
 </div>
 <app-modal-loading [visible]="loading" />
 <p-confirmdialog #eliminarRuta key="eliminarRuta">

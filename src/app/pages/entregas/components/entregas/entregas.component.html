@@ -1,9 +1,9 @@
 <div class="card flex flex-column gap-2 py-1">
     <p-breadcrumb class="max-w-full" [model]="breadcrumb" />
 </div>
-<div class="card flex flex-column gap-4">
-    <div class="flex flex-row w-12 justify-content-between">
-        <h2>Entregas</h2>
+<div class="flex flex-column">
+    <div class="card flex flex-row w-12 justify-content-between">
+        <h2 class="align-items-center mb-0 md:text-left text-center w-12 text-xl md:text-2xl">Entregas</h2>
     </div>
-    <app-entregas-table [filtro]="filtro" [filtros]="true"></app-entregas-table>
+    <app-entregas-table [escuela]="true" [proveedor]="true" [ruta]="true" [filtro]="filtro" [filtros]="true"></app-entregas-table>
 </div>

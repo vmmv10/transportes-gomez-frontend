@@ -26,8 +26,8 @@ export class RutasService {
         if (filtro.fechaHasta) {
             link += `fechaHasta=${filtro.fechaHasta.toISOString()}&`;
         }
-        if (filtro.choferId) {
-            link += `choferId=${filtro.choferId}&`;
+        if (filtro.chofer) {
+            link += `choferId=${filtro.chofer.id}&`;
         }
         if (filtro.estado) {
             link += `estado=${filtro.estado}&`;

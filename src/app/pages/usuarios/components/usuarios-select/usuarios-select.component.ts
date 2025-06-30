@@ -15,7 +15,7 @@ import { UsuariosService } from '../../services/usuarios.service';
     providers: [MessageService]
 })
 export class UsuariosSelectComponent {
-    @Input() usuario: Usuario = new Usuario();
+    @Input() usuario: Usuario | undefined;
     @Input() rol: string = '';
     @Output() usuarioChange = new EventEmitter<Usuario>();
     @Input() showClear: boolean = false;

@@ -14,19 +14,45 @@ import { MenuItem } from 'primeng/api';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { RouterModule } from '@angular/router';
 import { ModalLoadingComponent } from '../../../uikit/components/modal-loading/modal-loading.component';
+import { TableMobileComponent } from '../../../uikit/components/table-mobile/table-mobile.component';
+import { Page } from '../../../uikit/models/page.model';
+import { EscuelaFiltro } from '../../models/escuela-filtro.model';
+import { PaginatorModule } from 'primeng/paginator';
 
 @Component({
     selector: 'app-escuelas-list',
-    imports: [CommonModule, TableModule, ButtonModule, RippleModule, FormsModule, InputTextModule, IconFieldModule, InputIconModule, BreadcrumbModule, RouterModule, ModalLoadingComponent],
+    imports: [CommonModule, PaginatorModule, TableModule, ButtonModule, RippleModule, FormsModule, InputTextModule, IconFieldModule, InputIconModule, BreadcrumbModule, RouterModule, ModalLoadingComponent, TableMobileComponent],
     templateUrl: './escuelas-list.component.html',
     styleUrl: './escuelas-list.component.scss'
 })
 export class EscuelasListComponent {
-    escuelas: Escuela[] = [];
+    escuelas!: Page<Escuela>;
     tok: string = '';
     textoBusqueda: string = '';
     items: MenuItem[] = [];
     loading: boolean = true;
+    filtro: EscuelaFiltro = new EscuelaFiltro();
+
+    campos: any[] = [
+        { etiqueta: 'Nombre', propiedad: 'nombre', tipo: 'texto' },
+        { etiqueta: 'Comuna', propiedad: 'comuna', tipo: 'texto' },
+        { etiqueta: 'Dirección', propiedad: 'direccion', tipo: 'texto' },
+        { etiqueta: 'RBD', propiedad: 'rbd', tipo: 'texto' },
+        { etiqueta: 'Telefono', propiedad: 'telefono', tipo: 'texto' },
+    ];
+
+    acciones = [
+        {
+            tooltip: 'Ver',
+            icono: 'pi pi-eye',
+            color: 'info',
+            tipo: 'link',
+            ruta: '/escuelas/dashboard/',
+            rutaConId: true,
+            label: 'Ver',
+            outlined: true
+        },
+    ];
 
     constructor(
         private escuelasService: EscuelasService,
@@ -44,9 +70,10 @@ export class EscuelasListComponent {
 
     getEscuelas() {
         this.loading = true;
-        this.escuelasService.getEscuelasList().subscribe({
-            next: (escuelas: Escuela[]) => {
-                this.escuelas = escuelas;
+        this.filtro.activo = true;
+        this.escuelasService.getEscuelas(this.filtro).subscribe({
+            next: (data) => {
+                this.escuelas = data;
                 this.loading = false;
             },
             error: (error) => {
@@ -54,5 +81,11 @@ export class EscuelasListComponent {
                 console.error('Error fetching escuelas:', error);
             }
         });
+    }
+
+    pageChange(event: any) {
+        this.filtro.page = event.page;
+        this.filtro.size = event.rows;
+        this.getEscuelas();
     }
 }
