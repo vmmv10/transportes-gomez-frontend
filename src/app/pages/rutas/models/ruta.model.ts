@@ -1,18 +1,18 @@
-import { Entrega } from '../../dashboard/models/entrega.model';
+import { Entrega } from '../../entregas/models/entrega.models';
 import { OrdenServicio } from '../../ordenes-servicios/models/orden-servicio.model';
 import { Usuario } from '../../usuarios/models/usuario.model';
 
 export class Ruta {
     id!: number;
-    fecha: Date;
-    chofer: Usuario;
+    fecha!: string;
+    fechaJS: Date;
+    chofer: Usuario | undefined;
     estado: string;
     ordenes: OrdenServicio[];
     entregas: Entrega[];
 
     constructor() {
-        this.fecha = new Date();
-        this.chofer = new Usuario();
+        this.fechaJS = new Date();
         this.estado = 'Pendiente'; // Default state
         this.ordenes = [];
         this.entregas = [];

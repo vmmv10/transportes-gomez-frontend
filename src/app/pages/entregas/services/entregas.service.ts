@@ -44,4 +44,8 @@ export class EntregasService {
         }
         return this.authHttp.get<ReporteMes[]>(link);
     }
+
+    entregaRecepcionada(id: string): Observable<void> {
+        return this.authHttp.put<void>(`${this.url}/${id}`, {});
+    }
 }

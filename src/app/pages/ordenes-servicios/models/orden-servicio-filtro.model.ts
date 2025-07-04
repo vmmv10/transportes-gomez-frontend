@@ -3,7 +3,7 @@ import { Escuela } from '../../escuelas/models/escuela.models';
 
 export class OrdenServicioFiltro {
     id: number | undefined;
-    escuela: Escuela = new Escuela();
+    escuela: Escuela | undefined;
     fecha: Date | undefined;
     estado: string | undefined;
     page: number = 0;

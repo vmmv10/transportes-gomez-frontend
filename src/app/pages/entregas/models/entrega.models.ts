@@ -6,6 +6,7 @@ export class Entrega {
     fecha: Date;
     estado: string;
     ruta: string;
+    entregado: boolean;
 
     constructor() {
         this.id = '';
@@ -13,5 +14,6 @@ export class Entrega {
         this.fecha = new Date();
         this.estado = 'Pendiente';
         this.ruta = '';
+        this.entregado = false;
     }
 }

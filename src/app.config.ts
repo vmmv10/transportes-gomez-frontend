@@ -8,6 +8,12 @@ import { appRoutes } from './app.routes';
 import { AuthModule } from '@auth0/auth0-angular';
 import { environment } from './environments';
 
+import { LOCALE_ID } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import localeEs from '@angular/common/locales/es';
+
+registerLocaleData(localeEs);
+
 export const appConfig: ApplicationConfig = {
     providers: [
         provideRouter(appRoutes, withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }), withEnabledBlockingInitialNavigation()),
@@ -35,6 +41,7 @@ export const appConfig: ApplicationConfig = {
                     ]
                 }
             })
-        )
+        ),
+        { provide: LOCALE_ID, useValue: 'es' } 
     ]
 };

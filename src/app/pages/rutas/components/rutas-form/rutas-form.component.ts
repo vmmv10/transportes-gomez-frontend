@@ -15,15 +15,20 @@ import { DialogModule } from 'primeng/dialog';
 import { OrdenServicio } from '../../../ordenes-servicios/models/orden-servicio.model';
 import { OrdenesServiciosModalSelectComponent } from '../../../ordenes-servicios/components/ordenes-servicios-modal-select/ordenes-servicios-modal-select.component';
 import * as L from 'leaflet';
-import 'leaflet-routing-machine';
 import { UsuariosSelectComponent } from '../../../usuarios/components/usuarios-select/usuarios-select.component';
 import { Ruta } from '../../models/ruta.model';
 import { RutasService } from '../../services/rutas.service';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { environment } from '../../../../../environments';
+import 'leaflet-routing-machine';
+import { DatePickerModule } from 'primeng/datepicker';
 
 declare module 'leaflet' {
     namespace Routing {
         function control(options: any): L.Control;
+        class OSRMv1 {
+            constructor(options?: any);
+        }
     }
 }
 
@@ -45,7 +50,8 @@ declare module 'leaflet' {
         PanelModule,
         TableModule,
         DialogModule,
-        ConfirmDialogModule
+        ConfirmDialogModule,
+        DatePickerModule
     ],
     templateUrl: './rutas-form.component.html',
     styleUrl: './rutas-form.component.scss',
@@ -54,11 +60,12 @@ declare module 'leaflet' {
 export class RutasFormComponent {
     breadcrumb: MenuItem[] = [];
     loading: boolean = false;
+    validar: boolean = false;
     private mapa!: L.Map;
-    private polyline!: L.Polyline;
     private puntos: L.LatLng[] = [];
     private controlRouting: any;
     ruta: Ruta = new Ruta();
+    minFecha: Date = new Date(new Date().setHours(0, 0, 0, 0));
 
     constructor(
         private messageService: MessageService,
@@ -94,8 +101,11 @@ export class RutasFormComponent {
                 return;
             }
             this.ruta = data;
+            const [anio, mes, dia] = data.fecha.split('-').map(Number);
+            this.ruta.fechaJS = new Date(anio, mes - 1, dia);
+            console.log('Ruta cargada:', this.ruta.fechaJS);
             await this.cargarMapa();
-            this.actualizarPuntos();
+            await this.actualizarPuntos();
         } catch (error) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener la ruta.' });
             console.error('Error fetching ruta:', error);
@@ -103,7 +113,14 @@ export class RutasFormComponent {
     }
 
     guardarRuta() {
+        this.validar = true;
+        if (!this.ruta.chofer){
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Debe seleccionar un chofer.' });
+            return;
+        }
+        this.validar = false;
         this.loading = true;
+        this.ruta.fecha = this.ruta.fechaJS.toISOString().split('T')[0];
         if (this.ruta.id > 0) {
             this.rutasService.update(this.ruta).subscribe({
                 next: (data) => {
@@ -133,9 +150,8 @@ export class RutasFormComponent {
         }
     }
 
-    onRowReorder() {
-        console.log('Row reorder event:', this.ruta.ordenes);
-        this.actualizarPuntos();
+    async onRowReorder() {
+        await this.actualizarPuntos();
         this.messageService.add({ severity: 'success', summary: 'Ordenes Actualizadas', detail: 'Las ordenes de servicio han sido actualizadas correctamente.' });
     }
 
@@ -143,7 +159,7 @@ export class RutasFormComponent {
         await this.cargarMapa();
         this.ruta.ordenes = ordenes;
         console.log('Ordenes seleccionadas:', this.ruta.ordenes);
-        this.actualizarPuntos();
+        await this.actualizarPuntos();
     }
 
     async cargarMapa() {
@@ -157,8 +173,7 @@ export class RutasFormComponent {
         }).addTo(this.mapa);
     }
 
-    actualizarPuntos() {
-        // Limpia puntos y marcadores previos
+    async actualizarPuntos() {
         this.puntos = [];
         if (this.controlRouting) {
             this.mapa.removeControl(this.controlRouting);
@@ -198,7 +213,9 @@ export class RutasFormComponent {
             }
             return;
         }
-
+        console.log('L:', L);
+        console.log('L.Routing:', L.Routing);
+        console.log('typeof L.Routing.control:', typeof L.Routing?.control);
         // Crear control de ruta
         this.controlRouting = L.Routing.control({
             waypoints: this.puntos,
@@ -209,6 +226,9 @@ export class RutasFormComponent {
             addWaypoints: false,
             draggableWaypoints: false,
             fitSelectedRoutes: true,
+            router: new L.Routing.OSRMv1({
+                serviceUrl: environment.osrm
+            }),
             createMarker: (i: any, waypoint: any) => {
                 return L.marker(waypoint.latLng, {
                     icon: L.divIcon({
@@ -228,16 +248,16 @@ export class RutasFormComponent {
             header: 'Confirmar',
             icon: 'pi pi-exclamation-triangle',
             key: 'eliminarEntrega',
-            accept: () => this.eliminarOrden(orden)
+            accept: async () => await this.eliminarOrden(orden)
         });
     }
 
-    eliminarOrden(orden: OrdenServicio) {
+    async eliminarOrden(orden: OrdenServicio) {
         this.rutasService.deleteEntrega(this.ruta.id.toString(), orden.id.toString()).subscribe({
-            next: () => {
+            next: async () => {
                 this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Orden de servicio eliminada correctamente.' });
                 this.ruta.ordenes = this.ruta.ordenes.filter((o) => o.id !== orden.id);
-                this.actualizarPuntos();
+                await this.actualizarPuntos();
             },
             error: (error) => {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al eliminar la orden de servicio.' });

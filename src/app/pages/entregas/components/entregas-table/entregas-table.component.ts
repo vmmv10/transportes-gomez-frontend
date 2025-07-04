@@ -30,11 +30,12 @@ import e from 'cors';
 })
 export class EntregasTableComponent {
     @Input() filtro: EntregaFiltro = new EntregaFiltro();
-    @Input() filtros: boolean = false;
+    @Input() filtros: boolean = true;
     @Input() ruta: boolean = false;
     @Input() proveedor: boolean = false;
     @Input() documento: boolean = false;
     @Input() escuela: boolean = false;
+    @Input() card: boolean = true;
     entregas!: Page<Entrega>;
     entrega: Entrega | undefined;
     tok: string = '';

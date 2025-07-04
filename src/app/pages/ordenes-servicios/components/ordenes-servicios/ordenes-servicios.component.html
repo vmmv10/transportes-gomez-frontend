@@ -2,8 +2,8 @@
     <p-breadcrumb class="max-w-full" [model]="breadcrumb" />
 </div>
 <div class="card flex flex-col md:flex-row w-12 gap-2 justify-content-between">
-        <h2 class="w-12 md:text-2xl text-xl md:text-left text-center mb-0">Ordenes de Servicios</h2>
-    <p-button class="w-12" [fluid]="true" label="Nueva Orden" icon="pi pi-plus" severity="info" [routerLink]="['/ordenes-servicios/formulario']" routerLinkActive="router-link-active" />
+    <h2 class="w-12 md:text-2xl text-xl md:text-left text-center mb-0">Ordenes de Servicios</h2>
+    <p-button class="w-12 md:w-4" [fluid]="true" label="Nueva Orden" icon="pi pi-plus" severity="info" [routerLink]="['/ordenes-servicios/formulario']" routerLinkActive="router-link-active" />
 </div>
 <app-ordenes-servicios-table [filtro]="filtro"></app-ordenes-servicios-table>
 

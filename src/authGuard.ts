@@ -1,21 +1,35 @@
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
-import { AuthGuard, AuthService } from '@auth0/auth0-angular';
+import { AuthService } from '@auth0/auth0-angular';
 import { inject } from '@angular/core';
-import { map, tap } from 'rxjs';
+import { combineLatest, map, of, tap } from 'rxjs';
 
 export const authGuard = (
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
 ) => {
-    const auth = inject(AuthService);
-    const router = inject(Router);
+  const auth = inject(AuthService);
+  const router = inject(Router);
 
-    return auth.isAuthenticated$.pipe(
-        tap((isAuthenticated) => {
-            if (!isAuthenticated) {
-                router.navigate(['/auth/login']);
-            }
-        }),
-        map(isAuthenticated => isAuthenticated)
-    );
-}
+  const expectedRoles: string[] = route.data['roles'] || [];
+  const namespace = 'https://transportes-gomez.cl/roles'; // 👈 tu namespace exacto
+
+  return combineLatest([auth.isAuthenticated$, auth.idTokenClaims$]).pipe(
+    tap(([isAuthenticated, claims]) => {
+      if (!isAuthenticated) {
+        router.navigate(['/auth/login']);
+      }
+
+      const userRoles = claims?.[namespace] || [];
+
+      const hasAccess = expectedRoles.length === 0 || expectedRoles.some(role => userRoles.includes(role));
+
+      if (!hasAccess) {
+        router.navigate(['/notfound']); // 👈 página de acceso denegado (puedes personalizar)
+      }
+    }),
+    map(([isAuthenticated, claims]) => {
+      const userRoles = claims?.[namespace] || [];
+      return isAuthenticated && (expectedRoles.length === 0 || expectedRoles.some(role => userRoles.includes(role)));
+    })
+  );
+};

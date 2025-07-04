@@ -24,7 +24,7 @@ export class OrdenesServiciosService {
         if (filtro.id) {
             link += `id=${filtro.id}&`;
         }
-        if (filtro.escuela.id > 0) {
+        if (filtro.escuela) {
             link += `escuela=${filtro.escuela.id}&`;
         }
         if (filtro.fecha) {

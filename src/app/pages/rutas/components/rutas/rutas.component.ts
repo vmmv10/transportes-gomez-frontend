@@ -73,7 +73,7 @@ export class RutasComponent {
             icono: 'pi pi-pencil',
             color: 'info',
             tipo: 'link',
-            ruta: '/ordenes-servicios/formulario/',
+            ruta: '/rutas/formulario/',
             rutaConId: true,
             label: 'Editar',
             outlined: true

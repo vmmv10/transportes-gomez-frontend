@@ -54,4 +54,8 @@ export class RutasService {
     deleteEntrega(id: string, orden: string): Observable<void> {
         return this.authHttp.delete<void>(`${this.url}/${id}/ordenes-servicios/${orden}`);
     }
+
+    getRutaHoy(): Observable<Ruta> {
+        return this.authHttp.get<Ruta>(`${this.url}/fecha-hoy`);
+    }
 }

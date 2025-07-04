@@ -6,9 +6,9 @@
     <div *ngIf="orden.id == 0" class="flex flex-column gap-3 card">
         <app-documentos-modal-select class="flex w-12" [asignado]="false" [documento]="documento" (documentoChange)="documentoChange($event)"></app-documentos-modal-select>
     </div>
-    <div class="flex flex-col gap-2 w-12 card">
+    <div class="flex flex-col gap-2 w-12 card" *ngIf="orden.documento && orden.documento.id > 0">
         <div class="flex flex-col gap-2 w-12">
-            <label for="escuela">Escuela</label>
+            <label for="escuela">Escuela Destino</label>
             <app-escuelas-select [validar]="validar" [(escuela)]="orden.escuela" [showClear]="true" [showFilter]="true" class="w-12"></app-escuelas-select>
         </div>
         <p-panel *ngIf="orden.escuela" header="Cliente" class="w-12">
@@ -52,36 +52,36 @@
             </table>
         </p-panel> -->
     </div>
-    <div *ngIf="orden.documento.id > 0" class="flex flex-column gap-3 card">
-        <p-panel header="Insumos" class="w-12">
-            <p-table *ngIf="orden.documento.id > 0" [value]="orden.detalles" id="ordenes-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
-                <ng-template #header>
-                    <tr>
-                        <th class="text-center">Insumo</th>
-                        <th class="text-center">Cantidad</th>
-                        <th class="text-center"><p-button pTooltip="Agregar Item" icon="pi pi-plus" [rounded]="true" [text]="true" severity="success" (click)="agregarFila()" /></th>
-                    </tr>
-                </ng-template>
-                <ng-template #body let-producto>
-                    <tr>
-                        <td class="text-center">{{ producto.nombre }}</td>
-                        <td class="text-center">{{ producto.cantidad }}</td>
-                        <td class="text-center">
-                            <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" />
-                            <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" (click)="editarDetalle(producto)" />
-                        </td>
-                    </tr>
-                </ng-template>
-                <ng-template #empty>
-                    <div class="flex items-center w-12 p-2 text-center justify-between">Sin Items</div>
-                </ng-template>
-            </p-table>
-        </p-panel>
+    <div *ngIf="orden.documento.id > 0" class="flex flex-column gap-2 card">
+        <div class="flex flex-row gap-2 w-12 justify-content-between">
+            <h3 class="text-lg font-semibold mb-0 {{validar && orden.detalles.length == 0 ? 'text-red-600' : ''}}">Detalles de la Orden</h3>
+            <i *ngIf="validar && orden.detalles.length == 0" class="text-xl pi pi-exclamation-triangle text-red-600 align-items-center flex"></i>
+        </div>
+        <p-table *ngIf="orden.documento.id > 0" [value]="orden.detalles" id="ordenes-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
+            <ng-template #header>
+                <tr>
+                    <th class="text-center">Insumo</th>
+                    <th class="text-center">Cantidad</th>
+                    <th class="text-center"><p-button pTooltip="Agregar Item" icon="pi pi-plus" [rounded]="true" [text]="true" severity="success" (click)="agregarFila()" /></th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-producto>
+                <tr>
+                    <td class="text-center">{{ producto.nombre }}</td>
+                    <td class="text-center">{{ producto.cantidad }}</td>
+                    <td class="text-center">
+                        <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" />
+                        <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" (click)="editarDetalle(producto)" />
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template #emptymesage>
+                <div class="flex items-center w-12 p-2 text-center justify-between">Sin Items</div>
+            </ng-template>
+        </p-table>
     </div>
-    <div class="flex flex-column gap-3 card">
-        <p-panel header="Observaciones" *ngIf="orden.documento.id > 0" class="w-12">
-            <textarea [(ngModel)]="orden.documento.observaciones" class="w-12 p-inputtext p-component" rows="5" placeholder="Ingrese observaciones"></textarea>
-        </p-panel>
+    <div class="flex flex-column gap-3 card" *ngIf="orden.documento.id > 0">
+        <textarea [(ngModel)]="orden.documento.observaciones" class="w-12 p-inputtext p-component" rows="5" placeholder="Ingrese observaciones"></textarea>
     </div>
     <div class="flex flex-column gap-2 card w-12" *ngIf="orden.id > 0 && imagenes && imagenes.length > 0">
         <span class="text-lg font-semibold">PDF</span>
@@ -171,7 +171,7 @@
         </p-fileupload>
     </div>
 </div>
-<div class="flex flex-column md:flex-row gap-2 card w-12">
+<div class="flex flex-column md:flex-row gap-2 card w-12" *ngIf="orden.documento && orden.documento.id > 0">
     <p-button class="w-12" size="large" [fluid]="true" label="Volver" severity="secondary" icon="pi pi-times" [routerLink]="['/documentos/dashboard']" />
     <p-button class="w-12" size="large" [fluid]="true" [label]="orden.id == 0 ? 'Guardar' : 'Actualizar'" severity="success" icon="pi pi-save" (click)="guardar()" />
     <p-button *ngIf="orden.id > 0" class="w-12" size="large" [fluid]="true" label="Descargar PDF" severity="danger" icon="pi pi-file-pdf" (click)="obtenerPdf()" />

@@ -134,7 +134,6 @@ export class OrdenesServiciosFormComponent {
 
     documentoChange(Documento: Documento) {
         if (this.documento) {
-            console.log('Documento seleccionado:', Documento);
             this.documento = Documento;
             this.getDocumento();
         }
@@ -142,6 +141,7 @@ export class OrdenesServiciosFormComponent {
 
     getDocumento() {
         if (this.documento.tipo && this.documento.numero) {
+            this.loading = true;
             this.documentosService.getByNumeroAndTipo(this.documento.numero.toString(), this.documento.tipo.codigo).subscribe({
                 next: (data) => {
                     if (data) {
@@ -152,9 +152,11 @@ export class OrdenesServiciosFormComponent {
                     } else {
                         this.messageService.add({ severity: 'info', summary: 'Información', detail: 'Documento no encontrado' });
                     }
+                    this.loading = false;
                 },
                 error: (error) => {
                     console.error('Error fetching documento:', error);
+                    this.loading = false;
                     this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener el documento' });
                 }
             });
@@ -162,14 +164,16 @@ export class OrdenesServiciosFormComponent {
     }
 
     guardar() {
+        this.validar = true;
         if (!this.orden.documento) {
             this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Debe seleccionar un documento' });
             return;
         }
-        if (this.orden.detalles.length === 0) {
-            this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Debe agregar al menos un detalle a la orden' });
+        if (this.orden.detalles.length === 0 || !this.orden.escuela) {
+            this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Debe completar los campos obligatorios' });
             return;
         }
+        this.validar = false;
         this.loading = true;
         if (this.orden.id) {
             this.ordenesServiciosService.update(this.orden, this.files).subscribe({

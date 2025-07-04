@@ -2,12 +2,16 @@ import { Component } from '@angular/core';
 import { EntregasComponent } from './components/entregas/entregas.component';
 import { EntregasMesChartComponent } from '../entregas/components/entregas-mes-chart/entregas-mes-chart.component';
 import { EntregasCountComponent } from '../entregas/components/entregas-count/entregas-count.component';
+import { CommonModule } from '@angular/common';
+import { RolService } from '../uikit/services/rol.service';
+import { Observable } from 'rxjs';
+import { RutasActualComponent } from '../rutas/components/rutas-actual/rutas-actual.component';
 
 @Component({
     selector: 'app-dashboard',
-    imports: [EntregasComponent, EntregasMesChartComponent, EntregasCountComponent],
+    imports: [EntregasComponent, EntregasMesChartComponent, EntregasCountComponent, CommonModule, RutasActualComponent],
     template: `
-        <div class="flex flex-column gap-2">
+        <div class="flex flex-column gap-2" *ngIf="esAdmin$ | async">
             <div class="flex flex-column md:flex-row gap-5 md:gap-2 w-12 mb-5">
                 <app-entregas-count tipo="Activas" class="w-12" />
                 <app-entregas-count tipo="Realizadas" class="w-12" />
@@ -21,6 +25,20 @@ import { EntregasCountComponent } from '../entregas/components/entregas-count/en
                 </div>
             </div>
         </div>
+        <div class="flex flex-column gap-2" *ngIf="esConductor$ | async">
+            <app-rutas-actual class="w-12" />
+        </div>
     `
 })
-export class Dashboard {}
+export class Dashboard {
+    esAdmin$!: Observable<boolean>;
+    esConductor$!: Observable<boolean>;
+
+    constructor(private rolService: RolService) {}
+
+    ngOnInit() {
+        this.esAdmin$ = this.rolService.tieneRol('Administrador');
+        this.esConductor$ = this.rolService.tieneRol('Conductor');
+    }
+
+}

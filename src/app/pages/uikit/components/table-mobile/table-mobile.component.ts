@@ -29,6 +29,7 @@ export class TableMobileComponent {
     @Output() pageChange = new EventEmitter<any>();
     @Output() accion = new EventEmitter<{ tipo: string; item: any }>();
     @Input() mostrarAcciones: boolean = true;
+    @Input() card: boolean = true;
 
     onPageChange(event: any) {
         this.pageChange.emit(event);

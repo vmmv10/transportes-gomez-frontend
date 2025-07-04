@@ -40,9 +40,19 @@
 <div *ngIf="ruta.ordenes.length > 0" class="card flex flex-column gap-3">
     <div id="mapa" style="height: 500px"></div>
 </div>
-<div *ngIf="ruta.ordenes.length > 0" class="card flex flex-column gap-3">
-    <h2 class="text-xl">Chofer</h2>
-    <app-usuarios-select [rol]="'repartidor'" [(usuario)]="ruta.chofer" [showClear]="true" [showFilter]="true" class="w-12"></app-usuarios-select>
+<div *ngIf="ruta.ordenes.length > 0" class="card flex flex-column md:flex-row gap-3 w-12">
+    <div class="flex flex-column gap-1 w-12">
+        <label for="chofer">Chofer</label>
+        <app-usuarios-select [rol]="'repartidor'" [validar]="validar" [(usuario)]="ruta.chofer" [showClear]="true" [showFilter]="true" class="w-12"></app-usuarios-select>
+    </div>
+    <div class="flex flex-column gap-1 w-12">
+        <label for="chofer">Fecha</label>
+        <p-datepicker dateFormat="dd/mm/yy"  [minDate]="minFecha" [fluid]="true"
+            [showIcon]="true"
+            [ngClass]="{ 'ng-invalid ng-dirty': validar && !ruta.fechaJS }"
+            class="w-12"
+            [(ngModel)]="ruta.fechaJS" />
+    </div>
 </div>
 <div *ngIf="ruta.ordenes.length > 0" class="card flex flex-row gap-1">
     <p-button label="Cancelar" severity="secondary" [text]="true" [routerLink]="['/rutas']" [fluid]="true" class="w-12" />
