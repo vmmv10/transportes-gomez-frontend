@@ -1,16 +1,17 @@
 <div class="card">
     <div *ngIf="!loading" class="flex flex-column">
-            <ng-container *ngIf="entrega">
-                <p class="text-center text-2xl">Destino Actual</p>
-                <i class="pi pi-truck text-center" style="font-size: 2rem"></i>
-                <p class="text-center text-2xl text-green-500">{{ entrega.ordenServicio.escuela?.nombre }}</p>
-                <p class="text-center">Comuna: {{ entrega.ordenServicio.escuela?.comuna }}</p>
-                <p class="text-center">Dirección: {{ entrega.ordenServicio.escuela?.direccion }}</p>
-                <app-entregas-button-recepcion *ngIf="!entrega.entregado" [entregaId]="entrega.id" (onRecepcionada)="recepcionado()"></app-entregas-button-recepcion>
-            </ng-container>
-            <ng-container *ngIf="!entrega">
-                <p class="text-center">No hay una Ruta asignada para hoy.</p>
-            </ng-container>
+        <ng-container *ngIf="entrega">
+            <p class="text-center text-2xl">{{ ruta?.enTransito ? 'Destino Actual' : 'Primer Destino' }}</p>
+            <i class="pi pi-truck text-center" style="font-size: 2rem"></i>
+            <p class="text-center text-2xl text-green-500">{{ entrega.ordenServicio.escuela?.nombre }}</p>
+            <p class="text-center">Comuna: {{ entrega.ordenServicio.escuela?.comuna }}</p>
+            <p class="text-center">Dirección: {{ entrega.ordenServicio.escuela?.direccion }}</p>
+            <app-entregas-button-recepcion *ngIf="ruta && ruta?.enTransito && !entrega.entregado" [entregaId]="entrega.id" (onRecepcionada)="recepcionado()"></app-entregas-button-recepcion>
+            <button *ngIf="ruta && !ruta.enTransito" [fluid]="true" pButton label="Conenzar Ruta" icon="pi pi-check" severity="success" (click)="comenzarRuta()" class="w-12" size="large"></button>
+        </ng-container>
+        <ng-container *ngIf="!entrega">
+            <p class="text-center">No hay una Ruta asignada para hoy.</p>
+        </ng-container>
     </div>
     <i *ngIf="loading" class="pi pi-spin pi-cog text-center w-12" style="font-size: 4rem"></i>
 </div>
@@ -31,8 +32,9 @@
                     <span *ngIf="!rowData.entregado" class="pi pi-times text-red-500"></span>
                 </td>
                 <td class="text-center">{{ rowData.ordenServicio.escuela.nombre }}</td>
-                <td class="text-center">{{ rowData. ordenServicio.escuela.comuna }}</td>
+                <td class="text-center">{{ rowData.ordenServicio.escuela.comuna }}</td>
             </tr>
         </ng-template>
     </p-table>
 </div>
+<app-modal-loading [visible]="true"></app-modal-loading>

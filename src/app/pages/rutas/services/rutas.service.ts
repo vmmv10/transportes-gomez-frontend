@@ -58,4 +58,8 @@ export class RutasService {
     getRutaHoy(): Observable<Ruta> {
         return this.authHttp.get<Ruta>(`${this.url}/fecha-hoy`);
     }
+
+    comenzarRuta(ruta: number): Observable<Ruta> {
+        return this.authHttp.put<Ruta>(`${this.url}/${ruta}/comenzar`, {});
+    }
 }

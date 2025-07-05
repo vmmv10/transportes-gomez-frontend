@@ -7,50 +7,64 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { EntregasButtonRecepcionComponent } from '../../../entregas/components/entregas-button-recepcion/entregas-button-recepcion.component';
 import { Ruta } from '../../models/ruta.model';
 import { TableModule } from 'primeng/table';
+import { ModalLoadingComponent } from '../../../uikit/components/modal-loading/modal-loading.component';
 
 @Component({
-  standalone: true,
-  selector: 'app-rutas-actual',
-  imports: [CommonModule, ButtonModule, EntregasButtonRecepcionComponent, TableModule],
-  templateUrl: './rutas-actual.component.html',
-  styleUrl: './rutas-actual.component.scss',
-  providers: [ConfirmationService, MessageService]
+    standalone: true,
+    selector: 'app-rutas-actual',
+    imports: [CommonModule, ButtonModule, EntregasButtonRecepcionComponent, TableModule, ModalLoadingComponent],
+    templateUrl: './rutas-actual.component.html',
+    styleUrl: './rutas-actual.component.scss',
+    providers: [ConfirmationService, MessageService]
 })
 export class RutasActualComponent {
-  ruta: Ruta | undefined;
-  entrega: Entrega | undefined;
-  loading: boolean = false;
+    ruta: Ruta | undefined;
+    entrega: Entrega | undefined;
+    loading: boolean = false;
 
-  constructor(
-    private rutasService: RutasService,
-  ) {}
-  
-  ngOnInit() {
-    this.cargarRuta();
-  }
+    constructor(private rutasService: RutasService) {}
 
-  cargarRuta() {
-    this.loading = true;
-    this.rutasService.getRutaHoy().subscribe({
-      next: (data) => {
-        this.ruta = data;
-        for (const entrega of data.entregas) {
-          if (!entrega.entregado) {
-            this.entrega = entrega;
-            break; // Solo necesitamos la primera entrega pendiente
-          }
+    ngOnInit() {
+        this.cargarRuta();
+    }
+
+    cargarRuta() {
+        this.loading = true;
+        this.rutasService.getRutaHoy().subscribe({
+            next: (data) => {
+                this.ruta = data;
+                for (const entrega of data.entregas) {
+                    if (!entrega.entregado) {
+                        this.entrega = entrega;
+                        break; // Solo necesitamos la primera entrega pendiente
+                    }
+                }
+                this.loading = false;
+            },
+            error: (error) => {
+                this.loading = false;
+                console.error('Error al obtener la ruta del día:', error);
+            }
+        });
+    }
+
+    recepcionado() {
+        this.cargarRuta();
+    }
+
+    comenzarRuta() {
+        if (this.ruta) {
+            this.loading = true;
+            this.rutasService.comenzarRuta(this.ruta.id).subscribe({
+                next: (data) => {
+                    this.ruta = data;
+                    this.loading = false;
+                },
+                error: (error) => {
+                    console.error('Error al comenzar la ruta:', error);
+                    this.loading = false;
+                }
+            });
         }
-        this.loading = false;
-      },
-      error: (error) => {
-        this.loading = false;
-        console.error('Error al obtener la ruta del día:', error);
-      }
-    });
-  }
-
-  recepcionado() {
-    this.cargarRuta();
-  }
-
+    }
 }

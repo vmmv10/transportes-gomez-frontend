@@ -10,6 +10,7 @@ export class Ruta {
     estado: string;
     ordenes: OrdenServicio[];
     entregas: Entrega[];
+    enTransito: boolean = false;
 
     constructor() {
         this.fechaJS = new Date();
