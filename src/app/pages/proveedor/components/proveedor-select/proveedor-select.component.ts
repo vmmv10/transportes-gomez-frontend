@@ -39,7 +39,7 @@ export class ProveedorSelectComponent {
     async getData() {
         try {
             this.loading = true;
-            const proveedores = await this.proveedorServices.getProveedores().toPromise();
+            const proveedores = await this.proveedorServices.getProveedoresList().toPromise();
             this.proveedores = proveedores || [];
         } catch (error) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener proveedores' });

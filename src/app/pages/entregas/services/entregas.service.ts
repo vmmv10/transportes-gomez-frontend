@@ -46,6 +46,6 @@ export class EntregasService {
     }
 
     entregaRecepcionada(id: string): Observable<void> {
-        return this.authHttp.put<void>(`${this.url}/${id}`, {});
+        return this.authHttp.put<void>(`${this.url}/${id}/recepcionado`, {});
     }
 }

@@ -1,0 +1,41 @@
+<div class="card flex flex-column gap-2 py-1">
+    <p-breadcrumb class="max-w-full" [model]="breadcrumb" />
+</div>
+<div class="card flex flex-column gap-3">
+    <div class="flex flex-column md:flex-row w-12 gap-2">
+        <div class="flex flex-column w-12 gap-1">
+            <label for="razonSocial">Razón Social</label>
+            <input pInputText id="razonSocial" [(ngModel)]="proveedor.nombre" placeholder="Ingrese la razón social" class="w-12" />
+        </div>
+        <div class="flex flex-column w-12 gap-1">
+            <label for="rut">Rut</label>
+            <input pInputText id="rut" [(ngModel)]="proveedor.rut" placeholder="Ingrese el Rut" class="w-12" />
+        </div>
+    </div>
+    <div class="flex flex-column md:flex-row w-12 gap-1">
+        <div class="flex flex-column w-12 gap-1">
+            <label for="direccion">Dirección</label>
+            <input pInputText id="direccion" [(ngModel)]="proveedor.direccion" placeholder="Ingrese la dirección" class="w-12" />
+        </div>
+        <div class="flex flex-column w-12 gap-1">
+            <label for="rut">Email</label>
+            <input pInputText id="email" [(ngModel)]="proveedor.email" placeholder="Ingrese el Email" class="w-12" />
+        </div>
+    </div>
+    <div class="flex flex-column md:flex-row w-12 gap-1">
+        <div class="flex flex-column w-12 gap-1">
+            <label for="telefono">Teléfono</label>
+            <input pInputText id="telefono" [(ngModel)]="proveedor.telefono" placeholder="Ingrese el Teléfono" class="w-12" />
+        </div>
+        <div class="flex flex-column w-12 gap-1">
+            <label for="representante">Representante</label>
+            <input pInputText id="representante" [(ngModel)]="proveedor.representante" placeholder="Ingrese el Representante" class="w-12" />
+        </div>
+    </div>
+</div>
+<div class="card flex flex-column md:flex-row w-12 gap-1">
+    <button pButton label="Cancelar" class="w-12" [text]="true" [routerLink]="['/proveedores']"></button>
+    <button pButton label="Guardar" class="w-12" [severity]="'success'" (click)="guardarProveedor()" [loading]="loading"></button>
+</div>
+<app-modal-loading [visible]="loading" />
+<p-toast />

@@ -1,6 +1,6 @@
 export class Proveedor {
     id: number;
-    razonSocial: string;
+    nombre: string;
     direccion: string;
     telefono: string;
     email: string;
@@ -11,7 +11,7 @@ export class Proveedor {
     constructor(
     ) {
         this.id = 0;
-        this.razonSocial = '';
+        this.nombre = '';
         this.direccion = '';
         this.telefono = '';
         this.email = '';

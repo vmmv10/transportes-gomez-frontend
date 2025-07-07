@@ -1,0 +1,26 @@
+<div class="flex flex-column card gap-2">
+    <div class="flex md:flex-row flex-column gap-2">
+        <div class="flex flex-column gap-1 w-12">
+            <label for="nombre">Nombre</label>
+            <input type="text" pInputText [(ngModel)]="usuario.nombre"/>
+        </div>
+        <div class="flex flex-column gap-1 w-12">
+            <label for="nombre">Apellidos</label>
+            <input class="w-12" type="text" pInputText [(ngModel)]="usuario.apellidos"/>
+        </div>
+    </div>
+    <div class="flex md:flex-row flex-column gap-2 w-12">
+        <div class="flex flex-column gap-1 w-12">
+            <label for="nombre">Email</label>
+            <input type="email" pInputText [(ngModel)]="usuario.email"/>
+        </div>
+        <div class="flex flex-column gap-1 w-12">
+            <label for="nombre">Telefono</label>
+            <input type="text" pInputText [(ngModel)]="usuario.telefono"/>
+        </div>
+    </div>
+    <button pButton label="Guardar" icon="pi pi-save" severity="success" class="w-12" size="large"
+            (click)="actualizar()"></button>
+</div>
+<app-modal-loading [visible]="loading"></app-modal-loading>
+<p-toast />

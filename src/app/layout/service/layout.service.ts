@@ -79,6 +79,15 @@ export class LayoutService {
     private initialized = false;
 
     constructor() {
+        const savedDark = localStorage.getItem('darkTheme');
+        if (savedDark !== null) {
+            const parsedDark = JSON.parse(savedDark);
+            this._config.darkTheme = parsedDark;
+        }
+
+        // Inicializa signal con config actualizada
+        this.layoutConfig = signal<layoutConfig>(this._config);
+
         effect(() => {
             const config = this.layoutConfig();
             if (config) {

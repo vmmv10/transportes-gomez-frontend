@@ -20,9 +20,8 @@ export class AppMenu {
 
      ngOnInit(): void {
         this.authService.idTokenClaims$.subscribe(claims => {
-        this.roles = claims?.[this.namespace] || [];
-        console.log('Roles:', this.roles);
-        this.buildMenu();
+            this.roles = claims?.[this.namespace] || [];
+            this.buildMenu();
         });
     }
 
@@ -42,6 +41,7 @@ export class AppMenu {
             { label: 'Rutas', icon: 'pi pi-fw pi-map', routerLink: ['/rutas'] },
             { label: 'Items', icon: 'pi pi-fw pi-barcode', routerLink: ['/items'] },
             { label: 'Inventario Merma', icon: 'pi pi-fw pi-warehouse', routerLink: ['/inventario'] },
+            { label: 'Proveedores', icon: 'pi pi-fw pi-user', routerLink: ['/proveedores'] },
             { label: 'Transportes', icon: 'pi pi-fw pi-truck', routerLink: ['/transportes'] }
             ].filter(item => this.canAccess(item.label))
         }

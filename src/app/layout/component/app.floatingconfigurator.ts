@@ -18,6 +18,13 @@ export class AppFloatingConfigurator {
     isDarkTheme = computed(() => this.LayoutService.layoutConfig().darkTheme);
 
     toggleDarkMode() {
-        this.LayoutService.layoutConfig.update((state) => ({ ...state, darkTheme: !state.darkTheme }));
+        const newTheme = !this.LayoutService.layoutConfig().darkTheme;
+
+        this.LayoutService.layoutConfig.update(state => ({
+            ...state,
+            darkTheme: newTheme
+        }));
+
+        localStorage.setItem('darkTheme', JSON.stringify(newTheme));
     }
 }

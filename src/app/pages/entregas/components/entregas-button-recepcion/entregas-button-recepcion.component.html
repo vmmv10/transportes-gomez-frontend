@@ -1,4 +1,4 @@
-<button [fluid]="true" pButton label="Recepcionar" icon="pi pi-check" severity="success"
+<button [fluid]="true" pButton label="Recepcionado" icon="pi pi-check" severity="success"
         (click)="confirmarRecepcion()" class="w-12" size="large"></button>
 <p-confirmdialog #cRecepcion key="cRecepcion">
     <ng-template #message let-message>
@@ -11,3 +11,4 @@
         <p-button label="Confirmar" class="w-12" [fluid]="true" severity="success" (click)="cRecepcion.onAccept()" />
     </ng-template>
 </p-confirmdialog>
+<app-modal-loading [visible]="loading"></app-modal-loading>

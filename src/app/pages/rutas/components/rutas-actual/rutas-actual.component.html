@@ -28,8 +28,8 @@
         <ng-template pTemplate="body" let-rowData>
             <tr>
                 <td class="text-center">
-                    <span *ngIf="rowData.entregado" class="pi pi-check text-green-500"></span>
-                    <span *ngIf="!rowData.entregado" class="pi pi-times text-red-500"></span>
+                    <span *ngIf="rowData.entregado" class="pi pi-truck text-green-500"></span>
+                    <span *ngIf="!rowData.entregado" class="pi pi-truck text-red-500"></span>
                 </td>
                 <td class="text-center">{{ rowData.ordenServicio.escuela.nombre }}</td>
                 <td class="text-center">{{ rowData.ordenServicio.escuela.comuna }}</td>
@@ -37,4 +37,15 @@
         </ng-template>
     </p-table>
 </div>
-<app-modal-loading [visible]="true"></app-modal-loading>
+<app-modal-loading [visible]="loading"></app-modal-loading>
+<p-confirmdialog #cInicioRuta key="cInicioRuta">
+    <ng-template #message let-message>
+        <div class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700">
+            <i class="pi pi-check-circle !text-6xl text-green-500"></i>
+        </div>
+    </ng-template>
+    <ng-template #footer>
+        <p-button label="Cancelar" variant="text" [text]="true" class="w-12" [fluid]="true" severity="secondary" (click)="cInicioRuta.onReject()" />
+        <p-button label="Confirmar" class="w-12" [fluid]="true" severity="success" (click)="cInicioRuta.onAccept()" />
+    </ng-template>
+</p-confirmdialog>

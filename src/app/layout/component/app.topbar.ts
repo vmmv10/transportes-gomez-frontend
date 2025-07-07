@@ -41,7 +41,7 @@ import { ImageModule } from 'primeng/image';
                         <i class="pi pi-inbox"></i>
                         <span>Notificaciones</span>
                     </button>
-                    <button type="button" class="layout-topbar-action">
+                    <button type="button" class="layout-topbar-action" [routerLink]="['/usuarios/perfil']" pTooltip="Perfil" tooltipPosition="bottom">
                         <i class="pi pi-user"></i>
                         <span>Perfil</span>
                     </button>

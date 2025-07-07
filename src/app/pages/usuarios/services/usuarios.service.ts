@@ -33,4 +33,12 @@ export class UsuariosService {
     get(id: string): Observable<Usuario> {
         return this.authHttp.get<Usuario>(`${this.url}/${id}`);
     }
+
+    getUsuario(): Observable<Usuario> {
+        return this.authHttp.get<Usuario>(`${this.url}/autenticado`);
+    }
+
+    update(usuario: Usuario): Observable<Usuario> {
+        return this.authHttp.put<Usuario>(`${this.url}/${usuario.id}`, usuario);
+    }
 }
