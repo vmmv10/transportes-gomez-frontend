@@ -1,12 +1,9 @@
-<div class="card flex flex-column gap-2 py-1">
-    <p-breadcrumb class="max-w-full" [model]="breadcrumb" />
-</div>
-<div class="card flex flex-column gap-2 md:gap-4">
-    <div class="flex flex-column md:flex-row w-12 justify-content-between md:gap-0 gap-2">
-        <h2 class="align-items-center mb-0 md:text-left text-center w-12 text-xl md:text-2xl">Proveedores</h2>
-        <button pButton icon="pi pi-plus" label="Agregar" class="md:w-4 w-12" [routerLink]="['/proveedores/formulario']"></button>
+<div class="{{ card ? 'card' : '' }} flex flex-column gap-2 md:gap-4">
+    <div class="flex flex-column md:flex-row w-12 justify-content-between md:gap-0 gap-2" *ngIf="agregar || titulo">
+        <h2 *ngIf="titulo" class="align-items-center mb-0 md:text-left text-center w-12 text-xl md:text-2xl">Devoluciones</h2>
+        <button *ngIf="agregar" pButton icon="pi pi-plus" label="Agregar" class="md:w-4 w-12" [routerLink]="['/devoluciones/formulario']"></button>
     </div>
-    <div class="flex flex-column md:flex-row gap-1">
+    <div *ngIf="filtros" class="flex flex-column md:flex-row gap-1">
         <input pInputText id="ordenServicioId" (keydown.enter)="getData()" [(ngModel)]="filtro.rut" placeholder="Buscar por Rut" class="w-12" />
         <input pInputText id="documento" (keydown.enter)="getData()" [(ngModel)]="filtro.nombre" placeholder="Buscar por Nombre" class="w-12" />
         <button pButton icon="pi pi-search" [severity]="'info'" label="Buscar" class="md:w-4 w-12" [loading]="loading" (click)="getData()"></button>

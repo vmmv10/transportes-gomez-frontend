@@ -20,12 +20,12 @@ import { Proveedor } from '../../models/proveedor.model';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
-  standalone: true,
-  selector: 'app-proveedor-list',
-  imports: [BreadcrumbModule, CommonModule, TableMobileComponent, PaginatorModule, TableModule, TagModule, ButtonModule, FormsModule, InputTextModule, RouterModule, ToastModule, TooltipModule, ModalLoadingComponent, ConfirmDialogModule],
-  templateUrl: './proveedor-list.component.html',
-  styleUrl: './proveedor-list.component.scss',
-  providers: [MessageService, ConfirmationService]
+    standalone: true,
+    selector: 'app-proveedor-list',
+    imports: [BreadcrumbModule, CommonModule, TableMobileComponent, PaginatorModule, TableModule, TagModule, ButtonModule, FormsModule, InputTextModule, RouterModule, ToastModule, TooltipModule, ModalLoadingComponent, ConfirmDialogModule],
+    templateUrl: './proveedor-list.component.html',
+    styleUrl: './proveedor-list.component.scss',
+    providers: [MessageService, ConfirmationService]
 })
 export class ProveedorListComponent {
     loading: boolean = false;
@@ -37,7 +37,7 @@ export class ProveedorListComponent {
         { etiqueta: 'Nombre', propiedad: 'nombre', tipo: 'text' },
         { etiqueta: 'Rut', propiedad: 'rut', tipo: 'text' },
         { etiqueta: 'Dirección', propiedad: 'direccion', tipo: 'text' },
-        { etiqueta: 'Email', propiedad: 'email', tipo: 'text' },
+        { etiqueta: 'Email', propiedad: 'email', tipo: 'text' }
     ];
 
     acciones = [
@@ -60,7 +60,7 @@ export class ProveedorListComponent {
             rutaConId: true,
             label: 'Elimimar',
             outlined: true
-        },
+        }
     ];
 
     constructor(
@@ -78,12 +78,12 @@ export class ProveedorListComponent {
         this.getData();
     }
 
-    getData(){
-      this.filtro.activo = true;
-      this.loading = true;
+    getData() {
+        this.filtro.activo = true;
+        this.loading = true;
         this.proveedorServices.getAll(this.filtro).subscribe({
             next: (data) => {
-             this.data = data;
+                this.data = data;
                 this.loading = false;
             },
             error: (error) => {
@@ -92,7 +92,6 @@ export class ProveedorListComponent {
                 this.loading = false;
             }
         });
-
     }
 
     pageChange(event: any) {
@@ -123,11 +122,10 @@ export class ProveedorListComponent {
     }
 
     resolverAccion(event: { tipo: string; item: any }) {
-    switch (event.tipo) {
-        case 'eliminar':
-            this.confirmarDesactivacion(event.item);
-            break;
+        switch (event.tipo) {
+            case 'eliminar':
+                this.confirmarDesactivacion(event.item);
+                break;
+        }
     }
-  }
-    
 }

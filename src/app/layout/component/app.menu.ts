@@ -16,10 +16,10 @@ export class AppMenu {
     public authService = inject(AuthService);
     model: MenuItem[] = [];
     roles: string[] = [];
-    private namespace = 'https://transportes-gomez.cl/roles'; 
+    private namespace = 'https://transportes-gomez.cl/roles';
 
-     ngOnInit(): void {
-        this.authService.idTokenClaims$.subscribe(claims => {
+    ngOnInit(): void {
+        this.authService.idTokenClaims$.subscribe((claims) => {
             this.roles = claims?.[this.namespace] || [];
             this.buildMenu();
         });
@@ -27,24 +27,25 @@ export class AppMenu {
 
     private buildMenu() {
         this.model = [
-        {
-            label: 'Home',
-            items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] }]
-        },
-        {
-            label: 'Modulos',
-            items: [
-            { label: 'Escuelas', icon: 'pi pi-fw pi-graduation-cap', routerLink: ['/escuelas'] },
-            { label: 'Ordenes de Servicios', icon: 'pi pi-fw pi-file', routerLink: ['/ordenes-servicios'] },
-            { label: 'Documentos', icon: 'pi pi-fw pi-file-import', routerLink: ['/documentos'] },
-            { label: 'Entregas', icon: 'pi pi-fw pi-envelope', routerLink: ['/entregas'] },
-            { label: 'Rutas', icon: 'pi pi-fw pi-map', routerLink: ['/rutas'] },
-            { label: 'Items', icon: 'pi pi-fw pi-barcode', routerLink: ['/items'] },
-            { label: 'Inventario Merma', icon: 'pi pi-fw pi-warehouse', routerLink: ['/inventario'] },
-            { label: 'Proveedores', icon: 'pi pi-fw pi-user', routerLink: ['/proveedores'] },
-            { label: 'Transportes', icon: 'pi pi-fw pi-truck', routerLink: ['/transportes'] }
-            ].filter(item => this.canAccess(item.label))
-        }
+            {
+                label: 'Home',
+                items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] }]
+            },
+            {
+                label: 'Modulos',
+                items: [
+                    { label: 'Escuelas', icon: 'pi pi-fw pi-graduation-cap', routerLink: ['/escuelas'] },
+                    { label: 'Ordenes de Servicios', icon: 'pi pi-fw pi-file', routerLink: ['/ordenes-servicios'] },
+                    { label: 'Documentos', icon: 'pi pi-fw pi-file-import', routerLink: ['/documentos'] },
+                    { label: 'Entregas', icon: 'pi pi-fw pi-envelope', routerLink: ['/entregas'] },
+                    { label: 'Rutas', icon: 'pi pi-fw pi-map', routerLink: ['/rutas'] },
+                    { label: 'Items', icon: 'pi pi-fw pi-barcode', routerLink: ['/items'] },
+                    { label: 'Inventario', icon: 'pi pi-fw pi-warehouse', routerLink: ['/inventario'] },
+                    { label: 'Devolución', icon: 'pi pi-fw pi-warehouse', routerLink: ['/devoluciones'] },
+                    { label: 'Proveedores', icon: 'pi pi-fw pi-user', routerLink: ['/proveedores'] },
+                    { label: 'Transportes', icon: 'pi pi-fw pi-truck', routerLink: ['/transportes'] }
+                ].filter((item) => this.canAccess(item.label))
+            }
         ];
     }
 
@@ -54,7 +55,7 @@ export class AppMenu {
         if (this.roles.includes('Administrador')) return true;
 
         if (this.roles.includes('Conductor')) {
-        return ['Entregas', 'Rutas'].includes(menuLabel);
+            return ['Entregas', 'Rutas'].includes(menuLabel);
         }
 
         return false;
