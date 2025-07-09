@@ -27,7 +27,7 @@
                 <td class="text-center" *ngIf="acciones">
                     <div class="flex flex-row gap-1 w-12">
                         <p-button pTooltip="Descargar PDF" icon="pi pi-file-pdf" [rounded]="true" [text]="true" severity="danger" (click)="getImagenes(item)" />
-                        <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" [routerLink]="['/documentos/formulario/' + item.id]" routerLinkActive="router-link-active" />
+                        <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" [routerLink]="['/documents/formulario/' + item.id]" routerLinkActive="router-link-active" />
                         <p-button [disabled]="item.asignado" pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminar(item)" />
                     </div>
                 </td>

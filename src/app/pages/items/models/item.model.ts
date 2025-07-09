@@ -6,6 +6,7 @@ export class Item {
     descripcion: string;
     unidadMedida: UnidadMedida;
     cantidad: number;
+    codigo: string | undefined;
 
     constructor(
     ) {

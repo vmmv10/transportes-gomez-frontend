@@ -1,1 +1,11 @@
-<p>devoluciones works!</p>
+<div class="card flex flex-column gap-2 py-1">
+    <p-breadcrumb class="max-w-full" [model]="breadcrumb" />
+</div>
+<app-devoluciones-table 
+    [filtros]="true"
+    [filtro]="filtro"
+    [titulo]="true"
+    [agregar]="true"
+    [acciones]="true"
+    [card]="true"
+ ></app-devoluciones-table>

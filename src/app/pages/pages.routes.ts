@@ -18,6 +18,8 @@ import { authGuard } from '../../authGuard';
 import { UsuariosFormComponent } from './usuarios/components/usuarios-form/usuarios-form.component';
 import { ProveedorListComponent } from './proveedor/components/proveedor-list/proveedor-list.component';
 import { ProveedorFormComponent } from './proveedor/components/proveedor-form/proveedor-form.component';
+import { DevolucionesComponent } from './devoluciones/components/devoluciones/devoluciones.component';
+import { DevolucionesFormularioComponent } from './devoluciones/components/devoluciones-formulario/devoluciones-formulario.component';
 
 export default [
     { path: 'documentation', component: Documentation },
@@ -32,9 +34,12 @@ export default [
     { path: 'rutas/formulario', component: RutasFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'rutas/formulario/:id', component: RutasFormComponent, canActivate: [authGuard], data: { roles: ['Conductor', 'Administrador'] } },
     { path: 'entregas', component: EntregasComponent, canActivate: [authGuard], data: { roles: ['Conductor', 'Administrador'] } },
-    { path: 'documentos', component: DocumentosComponent, canActivate: [authGuard], data: { roles: ['Cliente', 'Administrador'] } },
-    { path: 'documentos/formulario', component: DocumentosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
-    { path: 'documentos/formulario/:id', component: DocumentosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
+    { path: 'devoluciones', component: DevolucionesComponent, canActivate: [authGuard], data: { roles: ['Cliente', 'Administrador'] } },
+    { path: 'devoluciones/formulario', component: DevolucionesFormularioComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
+    { path: 'devoluciones/formulario/:id', component: DevolucionesFormularioComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
+    { path: 'documents', component: DocumentosComponent, canActivate: [authGuard], data: { roles: ['Cliente', 'Administrador'] } },
+    { path: 'documents/formulario', component: DocumentosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
+    { path: 'documents/formulario/:id', component: DocumentosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'proveedores', component: ProveedorListComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'proveedores/formulario', component: ProveedorFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'proveedores/formulario/:id', component: ProveedorFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },

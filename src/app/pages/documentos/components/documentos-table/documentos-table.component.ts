@@ -62,7 +62,7 @@ export class DocumentosTableComponent {
           icono: 'pi pi-pencil',
           color: 'info',
           tipo: 'link',
-          ruta: '/documentos/formulario/',
+          ruta: '/documents/formulario/',
           rutaConId: true,
           label: 'Editar',
           outlined: true

@@ -19,6 +19,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TooltipModule } from 'primeng/tooltip';
+import { ModalLoadingComponent } from '../../../uikit/components/modal-loading/modal-loading.component';
 
 @Component({
   standalone: true,
@@ -38,7 +39,8 @@ import { TooltipModule } from 'primeng/tooltip';
     TextareaModule,
     ToastModule,
     ConfirmDialogModule,
-    TooltipModule
+    TooltipModule,
+    ModalLoadingComponent
   ],
   templateUrl: './items-lista.component.html',
   styleUrl: './items-lista.component.scss',
@@ -61,7 +63,7 @@ export class ItemsListaComponent {
   ) {
     this.breadcrumb = [
       { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
-      { label: 'Escuelas', routerLink: '/escuelas' },
+      { label: 'Items', routerLink: '/items' },
     ];
   }
 

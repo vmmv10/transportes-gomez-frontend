@@ -22,7 +22,6 @@ import { ModalLoadingComponent } from '../../../uikit/components/modal-loading/m
 import { DocumentosService } from '../../../documentos/services/documentos.service';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
-import { DocumentosTipoSelectComponent } from '../../../documentos/components/documentos-tipo-select/documentos-tipo-select.component';
 import { Documento } from '../../../documentos/models/documento.model';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { PanelModule } from 'primeng/panel';

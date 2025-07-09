@@ -12,7 +12,7 @@
         </p-iconfield>
         <p-button label="Agregar" severity="info" icon="pi pi-plus" (click)="displayFormulario()" />
     </div>
-    <p-table [value]="items && items.content ? items.content : []" id="items-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
+    <p-table [value]="items && items.content ? items.content : []" id="items-table" [loading]="loading">
         <ng-template #header>
             <tr>
                 <th class="text-center">id</th>
@@ -24,7 +24,7 @@
         <ng-template #body let-producto>
             <tr>
                 <td class="text-center">{{ producto.id }}</td>
-                <td>{{ producto.nombre }}</td>
+                <td class="text-center">{{ producto.nombre }}</td>
                 <td class="text-center">{{ producto.unidadMedida.nombre }}</td>
                 <td class="text-center">
                     <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" (click)="editar(producto)" />
@@ -45,6 +45,10 @@
             <app-select-unidad-medida [(unidadMedida)]="item.unidadMedida" [showClear]="true" [showFilter]="true" [validar]="false" />
         </div>
         <div class="flex flex-column w-12 gap-2">
+            <label for="descripcion" class="font-semibold">Código Barra</label>
+            <input pInputText id="nombre" class="flex-auto" autocomplete="off" [(ngModel)]="item.codigo" />
+        </div>
+        <div class="flex flex-column w-12 gap-2">
             <label for="descripcion" class="font-semibold">Descripción</label>
             <textarea pInputTextarea id="descripcion" class="flex-auto" autocomplete="off" [(ngModel)]="item.descripcion" rows="5"></textarea>
         </div>
@@ -55,3 +59,4 @@
     </ng-template>
 </p-dialog>
 <p-confirmdialog />
+<app-modal-loading [visible]="loading" ></app-modal-loading>

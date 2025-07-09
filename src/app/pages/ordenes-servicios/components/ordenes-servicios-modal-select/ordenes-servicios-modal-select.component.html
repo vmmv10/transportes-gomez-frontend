@@ -15,7 +15,7 @@
             dataKey="id"
             [loading]="loading"
             [tableStyle]="{ 'min-width': '50rem' }"
-            selectionMode="multiple"
+            [selectionMode]="single ? 'single':'multiple'"
             [(selection)]="ordenesServiciosSeleccionados"
         >
             <ng-template #header>

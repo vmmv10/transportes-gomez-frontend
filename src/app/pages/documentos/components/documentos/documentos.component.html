@@ -5,7 +5,7 @@
 <div class="flex flex-column">
     <div class="flex flex-column md:flex-row gap-2 w-12 justify-content-between card">
         <h2 class="mb-0 md:text-left text-center text-3xl">Documentos</h2>
-        <p-button class="md:w-3 w-12" [fluid]="true" label="Nuevo Documento" icon="pi pi-plus" severity="info" [routerLink]="['/documentos/formulario']" routerLinkActive="router-link-active" />
+        <p-button class="md:w-3 w-12" [fluid]="true" label="Nuevo Documento" icon="pi pi-plus" severity="info" [routerLink]="['/documents/formulario']" routerLinkActive="router-link-active" />
     </div>
     <app-documentos-table [acciones]="true" [proveedor]="true" [bodega]="true" [tipo]="true" [filtro]="filtro" [filtros]="true"></app-documentos-table>
 </div>

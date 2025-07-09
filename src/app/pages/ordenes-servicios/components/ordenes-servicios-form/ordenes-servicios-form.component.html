@@ -172,7 +172,7 @@
     </div>
 </div>
 <div class="flex flex-column md:flex-row gap-2 card w-12" *ngIf="orden.documento && orden.documento.id > 0">
-    <p-button class="w-12" size="large" [fluid]="true" label="Volver" severity="secondary" icon="pi pi-times" [routerLink]="['/documentos/dashboard']" />
+    <p-button class="w-12" size="large" [fluid]="true" label="Volver" severity="secondary" icon="pi pi-times" [routerLink]="['/documents/dashboard']" />
     <p-button class="w-12" size="large" [fluid]="true" [label]="orden.id == 0 ? 'Guardar' : 'Actualizar'" severity="success" icon="pi pi-save" (click)="guardar()" />
     <p-button *ngIf="orden.id > 0" class="w-12" size="large" [fluid]="true" label="Descargar PDF" severity="danger" icon="pi pi-file-pdf" (click)="obtenerPdf()" />
 </div>

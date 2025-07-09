@@ -86,8 +86,8 @@ export class DocumentosFormComponent {
     ) {
         this.menus = [
             { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
-            { label: 'Documentos', routerLink: '/documentos' },
-            { label: 'Formulario', routerLink: '/documentos/formulario' }
+            { label: 'Documentos', routerLink: '/documents' },
+            { label: 'Formulario', routerLink: '/documents/formulario' }
         ];
     }
 

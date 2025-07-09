@@ -36,7 +36,7 @@ export class AppMenu {
                 items: [
                     { label: 'Escuelas', icon: 'pi pi-fw pi-graduation-cap', routerLink: ['/escuelas'] },
                     { label: 'Ordenes de Servicios', icon: 'pi pi-fw pi-file', routerLink: ['/ordenes-servicios'] },
-                    { label: 'Documentos', icon: 'pi pi-fw pi-file-import', routerLink: ['/documentos'] },
+                    { label: 'Documentos', icon: 'pi pi-fw pi-file-import', routerLink: ['/documents'] },
                     { label: 'Entregas', icon: 'pi pi-fw pi-envelope', routerLink: ['/entregas'] },
                     { label: 'Rutas', icon: 'pi pi-fw pi-map', routerLink: ['/rutas'] },
                     { label: 'Items', icon: 'pi pi-fw pi-barcode', routerLink: ['/items'] },

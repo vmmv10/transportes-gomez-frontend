@@ -28,6 +28,7 @@ import { ToastModule } from 'primeng/toast';
 })
 export class OrdenesServiciosModalSelectComponent {
     @Input() enRuta: boolean = false;
+    @Input() single: boolean = false;
     @Input() ordenServicio: OrdenServicio | undefined;
     @Input() ordenesServiciosSeleccionados: OrdenServicio[] = [];
     @Output() ordenesServiciosSeleccionadosChange = new EventEmitter<OrdenServicio[]>();
