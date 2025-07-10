@@ -41,4 +41,12 @@ export class DevolucionesService {
     agregarDetalle(id: string, item: string): Observable<DevolucionDetalle> {
         return this.authHttp.get<DevolucionDetalle>(`${this.url}/${id}/detalle/${item}`);
     }
+
+    getById(id: string): Observable<Devolucion> {
+        return this.authHttp.get<Devolucion>(`${this.url}/${id}`);
+    }
+
+    sumarCantidadDetalle(id: string, detalle: { cantidad: number }): Observable<void> {
+        return this.authHttp.put<void>(`${this.url}/detalles/${id}/add`, detalle);
+    }
 }

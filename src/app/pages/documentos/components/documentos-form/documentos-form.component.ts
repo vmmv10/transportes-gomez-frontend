@@ -116,7 +116,7 @@ export class DocumentosFormComponent {
     }
 
     guardar() {
-        if (!this.documento.tipo || !this.documento || !this.documento.bodega || !this.documento.proveedor || !this.documento.escuela) {
+        if (!this.documento.tipo || !this.documento || !this.documento.bodega || !this.documento.proveedor) {
             this.validar = true;
             this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Debe completar todos los campos obligatorios' });
             return;
@@ -140,7 +140,7 @@ export class DocumentosFormComponent {
                 next: (data) => {
                     this.messageService.add({ severity: 'success', summary: 'Exito', detail: 'Documento creado' });
                     this.loading = false;
-                    window.location.reload();
+                    this.router.navigate(['/documents']);
                 },
                 error: (error) => {
                     this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al crear Documento' });
