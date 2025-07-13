@@ -47,7 +47,7 @@ export class EscuelasListComponent {
             icono: 'pi pi-eye',
             color: 'info',
             tipo: 'link',
-            ruta: '/escuelas/dashboard/',
+            ruta: '/establecimientos/dashboard/',
             rutaConId: true,
             label: 'Ver',
             outlined: true
@@ -60,7 +60,7 @@ export class EscuelasListComponent {
     ) {
         this.items = [
             { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
-            { label: 'Escuelas', routerLink: '/escuelas' }
+            { label: 'Establecimientos', routerLink: '/establecimientos' }
         ];
     }
 

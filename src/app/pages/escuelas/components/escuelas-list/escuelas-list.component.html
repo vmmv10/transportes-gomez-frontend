@@ -7,7 +7,7 @@
         <input type="text" class="w-12" placeholder="Comuna" pInputText [(ngModel)]="filtro.comuna" />
         <div class="flex w-12 flex-row gap-2">
             <p-button label="Buscar" [fluid]="true" class="w-12" severity="info" icon="pi pi-search" [outlined]="true" (onClick)="getEscuelas()" />
-            <p-button label="Agregar" [fluid]="true" class="w-12" severity="info" icon="pi pi-plus" [routerLink]="['/escuelas/formulario']" />
+            <p-button label="Agregar" [fluid]="true" class="w-12" severity="info" icon="pi pi-plus" [routerLink]="['/establecimientos/formulario']" />
         </div>
     </div>
     <p-table class="hidden md:block card" [value]="escuelas ? escuelas.content : []" #dt1 key="id">
@@ -28,7 +28,7 @@
                 <td>{{ item.direccion }}</td>
                 <td>{{ item.rbd }}</td>
                 <td>{{ item.telefono }}</td>
-                <td><p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="help" [routerLink]="['/escuelas/dashboard/' + item.id]" /></td>
+                <td><p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="help" [routerLink]="['/establecimientos/dashboard/' + item.id]" /></td>
             </tr>
         </ng-template>
         <ng-template #summary >

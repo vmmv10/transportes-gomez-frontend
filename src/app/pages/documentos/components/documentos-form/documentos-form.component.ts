@@ -259,4 +259,13 @@ export class DocumentosFormComponent {
         a.target = '_blank';
         a.click();
     }
+
+    createOs() {
+        this.router.navigate([
+            '/ordenes-servicios/formulario/documento/' +
+            this.documento.numero +
+            '/' +
+            (this.documento.tipo?.codigo ?? '')
+        ]);
+    }
 }

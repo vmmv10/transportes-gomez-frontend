@@ -3,20 +3,30 @@
     <p-breadcrumb class="max-w-full" [model]="breadcrumb" />
 </div>
 <div class="card flex flex-column gap-4">
-    <div class="flex flex-row gap-2 w-12 justify-content-between">
-        <p-iconfield iconPosition="left" class="p-fluid w-12">
-            <p-inputicon>
-                <i class="pi pi-search"></i>
-            </p-inputicon>
-            <input pInputText type="text" [(ngModel)]="filtro.nombre" placeholder="Buscar por nombre" class="p-fluid w-12" />
-        </p-iconfield>
-        <p-button label="Agregar" severity="info" icon="pi pi-plus" (click)="displayFormulario()" />
+    <div class="flex flex-column md:flex-row gap-2 w-12">
+        <div class="flex flex-row gap-2 w-12">
+            <p-iconfield iconPosition="left" class="p-fluid w-12">
+                <p-inputicon>
+                    <i class="pi pi-search"></i>
+                </p-inputicon>
+                <input pInputText type="text" (ngModelChange)="getData()" [(ngModel)]="filtro.nombre" placeholder="Buscar por nombre" class="p-fluid w-12" />
+            </p-iconfield>
+        </div>
+        <app-marcas-select [(marca)]="filtro.marca" [showClear]="true" [showFilter]="true" [validar]="false" />
+        <app-categorias-select [(categoria)]="filtro.categoria" [showClear]="true" [showFilter]="true" [validar]="false" />
+        <div class="flex flex-row gap-2 w-12">
+            <p-button label="Buscar" [fluid]="true" class="w-12" severity="info" icon="pi pi-search" (click)="getData()" />
+            <p-button label="Agregar" [fluid]="true" class="w-12" severity="success" icon="pi pi-plus" (click)="displayFormulario()" />
+        </div>
     </div>
-    <p-table [value]="items && items.content ? items.content : []" id="items-table" [loading]="loading">
+    <p-table class="hidden md:block w-12" [value]="items && items.content ? items.content : []" id="items-table">
         <ng-template #header>
             <tr>
-                <th class="text-center">id</th>
+                <th class="text-center">Id</th>
+                <th class="text-center">SKU</th>
                 <th class="text-center">Nombre</th>
+                <th class="text-center">Categoría</th>
+                <th class="text-center">Marca</th>
                 <th class="text-center">Unidad Medida</th>
                 <th></th>
             </tr>
@@ -24,7 +34,10 @@
         <ng-template #body let-producto>
             <tr>
                 <td class="text-center">{{ producto.id }}</td>
+                <td class="text-center">{{ producto.codigo }}</td>
                 <td class="text-center">{{ producto.nombre }}</td>
+                <td class="text-center">{{ producto.categoria?.nombre }}</td>
+                <td class="text-center">{{ producto.marca?.nombre }}</td>
                 <td class="text-center">{{ producto.unidadMedida.nombre }}</td>
                 <td class="text-center">
                     <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" (click)="editar(producto)" />
@@ -32,8 +45,19 @@
                 </td>
             </tr>
         </ng-template>
+        <ng-template #summary>
+            <p-paginator (onPageChange)="pageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="items ? items.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="6" class="text-center">No se encontraron entregas</td>
+            </tr>
+        </ng-template>
     </p-table>
 </div>
+<ng-container *ngIf="items && items.content">
+    <app-table-mobile [mostrarAcciones]="true" [acciones]="accionesItems" (accion)="resolverAccion($event)" [data]="items.content" [campos]="campos"></app-table-mobile>
+</ng-container>
 <p-dialog *ngIf="item" [header]="item && item.id == 0 ? 'Crear Item' : 'Editar Item'" [modal]="true" [(visible)]="visible" [breakpoints]="{ '780px': '50vw', '575px': '90vw' }" [style]="{ width: '50vw' }">
     <div class="flex flex-column w-12 gap-2">
         <div class="flex flex-column w-12 gap-2">
@@ -43,6 +67,14 @@
         <div class="flex flex-column w-12 gap-2">
             <label for="email" class="font-semibold">Unidad Medida</label>
             <app-select-unidad-medida [(unidadMedida)]="item.unidadMedida" [showClear]="true" [showFilter]="true" [validar]="false" />
+        </div>
+        <div class="flex flex-column w-12 gap-2">
+            <label for="descripcion" class="font-semibold">Marca</label>
+            <app-marcas-select [(marca)]="item.marca" [showClear]="true" [showFilter]="true" [validar]="false" />
+        </div>
+        <div class="flex flex-column w-12 gap-2">
+            <label for="descripcion" class="font-semibold">Categoría</label>
+            <app-categorias-select [(categoria)]="item.categoria" [showClear]="true" [showFilter]="true" [validar]="false" />
         </div>
         <div class="flex flex-column w-12 gap-2">
             <label for="descripcion" class="font-semibold">Código Barra</label>
@@ -59,4 +91,4 @@
     </ng-template>
 </p-dialog>
 <p-confirmdialog />
-<app-modal-loading [visible]="loading" ></app-modal-loading>
+<app-modal-loading [visible]="loading"></app-modal-loading>

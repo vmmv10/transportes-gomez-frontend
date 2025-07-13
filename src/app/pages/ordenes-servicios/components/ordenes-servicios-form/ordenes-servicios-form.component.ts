@@ -31,6 +31,7 @@ import { DialogModule } from 'primeng/dialog';
 import { OrdenServicioDetalle } from '../../models/orden-servicio-detalle.model';
 import { DocumentosModalSelectComponent } from '../../../documentos/components/documentos-modal-select/documentos-modal-select.component';
 import { EscuelasSelectComponent } from '../../../escuelas/components/escuelas-select/escuelas-select.component';
+import { DocumentosTiposService } from '../../../documentos/services/documentos-tipos.service';
 
 @Component({
     standalone: true,
@@ -98,7 +99,8 @@ export class OrdenesServiciosFormComponent {
         private confirmationService: ConfirmationService,
         private ordenesServiciosService: OrdenesServiciosService,
         private documentosService: DocumentosService,
-        private router: Router
+        private router: Router,
+        private documentosTiposService: DocumentosTiposService
     ) {
         this.menus = [
             { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
@@ -109,11 +111,27 @@ export class OrdenesServiciosFormComponent {
 
     async ngOnInit() {
         const id = this.route.snapshot.paramMap.get('id');
+        const doc = this.route.snapshot.paramMap.get('documento');
+        const tipo = this.route.snapshot.paramMap.get('tipo');
+        console.log('tipo:', tipo);
         if (id) {
             this.loading = true;
             await this.getOrden(id);
             await this.getImagenes(id);
             this.loading = false;
+        }
+        if (tipo !== null && doc !== null) {
+            this.documentosTiposService.getTipoDocumentoBySii(tipo).subscribe({
+                next: (tipoDoc) => {
+                    this.documento.tipo = tipoDoc;
+                    this.documento.numero = Number(doc);
+                    this.getDocumento();
+                },
+                error: (error) => {
+                    console.error('Error fetching document type:', error);
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener el tipo de documento' });
+                }
+            });
         }
     }
 
@@ -145,6 +163,7 @@ export class OrdenesServiciosFormComponent {
                 next: (data) => {
                     if (data) {
                         this.orden.documento = data;
+                        this.documento = data;
                         if (data.escuela) {
                             this.orden.documento.escuela = data.escuela;
                         }

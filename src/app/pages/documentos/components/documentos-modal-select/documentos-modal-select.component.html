@@ -7,7 +7,7 @@
     (click)="showDialog()"
     [ngClass]="documento && documento.id > 0 ? 'p-button-success p-button-outlined' : 'p-button-success'"
 ></button>
-<p-dialog header="Seleccionar Documento" [modal]="true" [(visible)]="visible" [style]="{ width: '90rem' }">
+<p-dialog header="Seleccionar Documento" [modal]="true" [(visible)]="visible" [breakpoints]="{ '960px': '75vw', '640px': '90vw' }" [style]="{ width: '70rem' }">
     <p-table
         [value]="documentos && documentos.content ? documentos.content : []"
         id="documentos-table"
@@ -20,17 +20,17 @@
     >
         <ng-template #header>
             <tr>
-                <th class="text-center"><p-inputnumber class="w-12" inputId="integeronly" (ngModelChange)="getData()" [(ngModel)]="filtro.numero" /></th>
+                <th class="text-center"><p-inputnumber class="w-12" placeholder="Buscar por folio" inputId="integeronly" (ngModelChange)="getData()" [(ngModel)]="filtro.numero" /></th>
                 <th><app-documentos-tipo-select (documentoTipo)="documentoTipoChange($event)" [(documentoTipo)]="filtro.tipo" [showClear]="true" [showFilter]="true" class="w-12"></app-documentos-tipo-select></th>
                 <th colspan="2"><app-proveedor-select [(proveedor)]="filtro.proveedor" (proveedorChange)="proveedorChange($event)" [showClear]="true" [showFilter]="true" class="w-12"></app-proveedor-select></th>
-                <th><app-escuelas-select (escuelaChange)="escuelaChange($event)" [(escuela)]="filtro.escuela" [showClear]="true" [showFilter]="true" class="w-12"></app-escuelas-select></th>
+                <!-- <th><app-escuelas-select (escuelaChange)="escuelaChange($event)" [(escuela)]="filtro.escuela" [showClear]="true" [showFilter]="true" class="w-12"></app-escuelas-select></th> -->
             </tr>
             <tr>
                 <th class="text-center">Folio</th>
                 <th class="text-center">Tipo Documento</th>
                 <th class="text-center">Proveedor</th>
                 <th class="text-center">Proveedor Rut</th>
-                <th class="text-center">Destino</th>
+                <!-- <th class="text-center">Destino</th> -->
             </tr>
         </ng-template>
         <ng-template #body let-item>
@@ -39,8 +39,11 @@
                 <td class="text-center">{{ item.tipoCodigo == 52 ? 'Guia de Despecha' : 'Factura' }}</td>
                 <td class="text-center">{{ item.proveedor.nombre }}</td>
                 <td class="text-center">{{ item.proveedor.rut }}</td>
-                <td class="text-center">{{ item.escuela.nombre }}</td>
+                <!-- <td class="text-center">{{ item.escuela.nombre }}</td> -->
             </tr>
+        </ng-template>
+        <ng-template #summary >
+            <p-paginator (onPageChange)="pageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="documentos ? documentos.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
         </ng-template>
     </p-table>
 </p-dialog>

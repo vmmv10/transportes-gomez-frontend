@@ -1,3 +1,5 @@
+import { Categoria } from "../../categorias/models/categoria.model";
+import { Marca } from "../../marcas/models/marca.model";
 import { UnidadMedida } from "../../uikit/models/unidad-medida.model";
 
 export class Item {
@@ -7,6 +9,8 @@ export class Item {
     unidadMedida: UnidadMedida;
     cantidad: number;
     codigo: string | undefined;
+    marca: Marca | undefined;
+    categoria: Categoria | undefined;
 
     constructor(
     ) {

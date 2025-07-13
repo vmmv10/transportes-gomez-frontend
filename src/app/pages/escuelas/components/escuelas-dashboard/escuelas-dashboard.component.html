@@ -4,7 +4,7 @@
 <div class="card flex flex-column gap-2" *ngIf="escuela">
     <div class="flex flex-row gap-2 w-12 justify-content-between">
         <h1 class="text-3xl">{{ escuela.nombre }}</h1>
-        <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" [routerLink]="['/escuelas/formulario/' + escuela.id]" routerLinkActive="router-link-active" />
+        <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" [routerLink]="['/establecimientos/formulario/' + escuela.id]" routerLinkActive="router-link-active" />
     </div>
     <div class="flex flex-row gap-2 w-12">
         <i class="pi pi-user text-black" style="font-size: 1rem"></i>

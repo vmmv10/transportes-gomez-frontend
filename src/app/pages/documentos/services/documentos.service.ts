@@ -16,21 +16,18 @@ export class DocumentosService {
     }
 
     getAll(filtro: DocumentoFiltro): Observable<Page<Documento>> {
-        let link = this.url + '?';
+        let link = this.url + '?size=' + filtro.size + '&page=' + filtro.page;
         if (filtro.numero) {
-            link += `id=${filtro.numero}&`;
+            link += '&numero=' + filtro.numero;
         }
         if (filtro.tipo) {
-            link += `tipo=${filtro.tipo.codigo}&`;
+            link += '&tipo=' + filtro.tipo.codigo;
         }
         if (filtro.proveedor) {
-            link += `proveedor=${filtro.proveedor.id}&`;
-        }
-        if (filtro.escuela) {
-            link += `escuela=${filtro.escuela.id}&`;
+            link += '&proveedor=' + filtro.proveedor.id;
         }
         if (filtro.asignado !== undefined) {
-            link += `asignado=${filtro.asignado}&`;
+            link += '&asignado=' + filtro.asignado;
         }
         return this.authHttp.get<Page<Documento>>(link);
     }

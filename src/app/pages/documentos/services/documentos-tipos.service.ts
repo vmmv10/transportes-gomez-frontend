@@ -16,4 +16,12 @@ export class DocumentosTiposService {
     getTiposDocumentos(): Observable<DocumentoTipo[]> {
         return this.authHttp.get<DocumentoTipo[]>(this.url);
     }
+
+    getTipoDocumento(codigo: string): Observable<DocumentoTipo> {
+        return this.authHttp.get<DocumentoTipo>(`${this.url}/${codigo}`);
+    }
+
+    getTipoDocumentoBySii(codigo: string): Observable<DocumentoTipo> {
+        return this.authHttp.get<DocumentoTipo>(`${this.url}/sii/${codigo}`);
+    }
 }

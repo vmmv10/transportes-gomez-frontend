@@ -10,4 +10,5 @@ export class Devolucion {
     observaciones: string = '';
     detalles: DevolucionDetalle[] = [];
     ordenServicio: OrdenServicio | undefined;
+    estado: number = 0;
 }

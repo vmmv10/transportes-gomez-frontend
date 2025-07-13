@@ -32,8 +32,8 @@ export class EscuelasDashboardComponent {
     ) {
         this.items = [
             { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
-            { label: 'Escuelas', routerLink: '/escuelas' },
-            { label: 'Dashboard', routerLink: '/escuelas/dashboard' }
+            { label: 'Establecimientos', routerLink: '/establecimientos' },
+            { label: 'Dashboard', routerLink: '/establecimientos/dashboard' }
         ];
     }
 

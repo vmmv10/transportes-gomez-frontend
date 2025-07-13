@@ -16,11 +16,12 @@ import { ProveedorSelectComponent } from '../../../proveedor/components/proveedo
 import { EscuelasSelectComponent } from '../../../escuelas/components/escuelas-select/escuelas-select.component';
 import { Escuela } from '../../../escuelas/models/escuela.models';
 import { Proveedor } from '../../../proveedor/models/proveedor.model';
+import { PaginatorModule } from 'primeng/paginator';
 
 @Component({
     standalone: true,
     selector: 'app-documentos-modal-select',
-    imports: [CommonModule, DialogModule, ButtonModule, TableModule, InputNumberModule, InputTextModule, FormsModule, DocumentosTipoSelectComponent, ProveedorSelectComponent, EscuelasSelectComponent],
+    imports: [CommonModule, PaginatorModule, DialogModule, ButtonModule, TableModule, InputNumberModule, InputTextModule, FormsModule, DocumentosTipoSelectComponent, ProveedorSelectComponent],
     templateUrl: './documentos-modal-select.component.html',
     styleUrl: './documentos-modal-select.component.scss',
     providers: [MessageService]
@@ -89,4 +90,11 @@ export class DocumentosModalSelectComponent {
         this.documentoChange.emit(this.documento);
         this.visible = false;
     }
+
+    pageChange(event: any) {
+      this.filtro.page = event.page;
+      this.filtro.size = event.rows;
+      this.getData();
+    }
+
 }

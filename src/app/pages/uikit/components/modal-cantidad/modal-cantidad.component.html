@@ -1,0 +1,13 @@
+<p-dialog header="Agregar Cantidad" [modal]="true" [(visible)]="visible" [breakpoints]="{ '780px': '50vw', '575px': '90vw' }" [style]="{ width: '50vw' }">
+    <div class="flex flex-column w-12 gap-2">
+        <div class="flex flex-column w-12 gap-2">
+            <label for="nombre" class="font-semibold">Nombre</label>
+            <p-inputnumber [pAutoFocus]="focus" *ngIf="!decimal" inputId="integeronly" [(ngModel)]="cantidad" />
+            <p-inputnumber [pAutoFocus]="focus" *ngIf="decimal" [(ngModel)]="cantidad" inputId="minmaxfraction" mode="decimal" [maxFractionDigits]="cantidadDecimales" />
+        </div>
+    </div>
+    <ng-template #footer>
+        <p-button label="Cancel" [text]="true" severity="secondary" class="w-12" [fluid]="true" (click)="cerrarModal()" />
+        <p-button label="Guardar" class="w-12" [fluid]="true" severity="success" (click)="guardar()" />
+    </ng-template>
+</p-dialog>

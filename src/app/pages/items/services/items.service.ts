@@ -19,12 +19,21 @@ export class ItemsService {
   }
 
   getAll(filtro: ItemFiltro): Observable<Page<Item>> {
-    let link = this.url + '?';
+    let link = this.url + '?size=' + filtro.size + '&page=' + filtro.page;
     if (filtro.nombre) {
-      link += `nombre=${filtro.nombre}&`;
+      link += `&nombre=${filtro.nombre}`;
     }
-    if (filtro.activo) {
-      link += `activo=${filtro.activo}&`;
+    if (filtro.codigo) {
+      link += `&codigo=${filtro.codigo}`;
+    }
+    if (filtro.marca) {
+      link += `&marca=${filtro.marca.id}`;
+    }
+    if (filtro.categoria) {
+      link += `&categoria=${filtro.categoria.id}`;
+    }
+    if (filtro.activo !== undefined) {
+      link += `&activo=${filtro.activo}`;
     }
     return this.authHttp.get<Page<Item>>(link);
   }

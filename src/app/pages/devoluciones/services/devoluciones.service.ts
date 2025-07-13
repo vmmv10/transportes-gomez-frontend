@@ -49,4 +49,20 @@ export class DevolucionesService {
     sumarCantidadDetalle(id: string, detalle: { cantidad: number }): Observable<void> {
         return this.authHttp.put<void>(`${this.url}/detalles/${id}/add`, detalle);
     }
+
+    cerrar(id: string): Observable<void> {
+        return this.authHttp.put<void>(`${this.url}/${id}/cerrar`, {});
+    }
+
+    abrir(id: string): Observable<void> {
+        return this.authHttp.put<void>(`${this.url}/${id}/abrir`, {});
+    }
+
+    modificarDetalle(id: string, detalle: DevolucionDetalle): Observable<void> {
+        return this.authHttp.put<void>(`${this.url}/detalles/${id}/editar-cantidad`, detalle);
+    }
+
+    eliminarDetalle(id: string): Observable<void> {
+        return this.authHttp.delete<void>(`${this.url}/detalles/${id}`);
+    }
 }

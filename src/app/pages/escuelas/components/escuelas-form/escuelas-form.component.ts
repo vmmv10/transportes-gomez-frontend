@@ -38,8 +38,8 @@ export class EscuelasFormComponent {
   ) {
     this.items = [
       { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
-      { label: 'Escuelas', routerLink: '/escuelas' },
-      { label: 'Formulario', routerLink: '/escuelas/formulario' },
+      { label: 'Establecimientos', routerLink: '/establecimientos' },
+      { label: 'Formulario', routerLink: '/establecimientos/formulario' },
     ];
   }
 

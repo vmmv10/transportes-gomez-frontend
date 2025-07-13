@@ -1,0 +1,15 @@
+<p-select
+    *ngIf="!loading"
+    [options]="categorias"
+    [(ngModel)]="categoria"
+    optionLabel="nombre"
+    placeholder="Selecciona Categoría"
+    [showClear]="showClear"
+    [filter]="showFilter"
+    filterBy="nombre"
+    class="w-12 {{ !categoria && validar ? 'ng-dirty ng-invalid' : '' }}"
+    appendTo="body"
+    (ngModelChange)="onChangeSelect($event)"
+>
+</p-select>
+<p-skeleton *ngIf="loading" class="w-12" height="3rem" />

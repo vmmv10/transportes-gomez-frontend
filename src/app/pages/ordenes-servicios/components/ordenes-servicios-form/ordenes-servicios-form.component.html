@@ -81,7 +81,7 @@
         </p-table>
     </div>
     <div class="flex flex-column gap-3 card" *ngIf="orden.documento.id > 0">
-        <textarea [(ngModel)]="orden.documento.observaciones" class="w-12 p-inputtext p-component" rows="5" placeholder="Ingrese observaciones"></textarea>
+        <textarea [(ngModel)]="orden.observaciones" class="w-12 p-inputtext p-component" rows="5" placeholder="Ingrese observaciones"></textarea>
     </div>
     <div class="flex flex-column gap-2 card w-12" *ngIf="orden.id > 0 && imagenes && imagenes.length > 0">
         <span class="text-lg font-semibold">PDF</span>
@@ -172,7 +172,7 @@
     </div>
 </div>
 <div class="flex flex-column md:flex-row gap-2 card w-12" *ngIf="orden.documento && orden.documento.id > 0">
-    <p-button class="w-12" size="large" [fluid]="true" label="Volver" severity="secondary" icon="pi pi-times" [routerLink]="['/documents/dashboard']" />
+    <p-button class="w-12" size="large" [fluid]="true" label="Volver" severity="secondary" icon="pi pi-times" [routerLink]="['/ordenes-servicios']" />
     <p-button class="w-12" size="large" [fluid]="true" [label]="orden.id == 0 ? 'Guardar' : 'Actualizar'" severity="success" icon="pi pi-save" (click)="guardar()" />
     <p-button *ngIf="orden.id > 0" class="w-12" size="large" [fluid]="true" label="Descargar PDF" severity="danger" icon="pi pi-file-pdf" (click)="obtenerPdf()" />
 </div>

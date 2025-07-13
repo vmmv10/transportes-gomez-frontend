@@ -20,6 +20,10 @@ import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { ModalLoadingComponent } from '../../../uikit/components/modal-loading/modal-loading.component';
+import { MarcasSelectComponent } from '../../../marcas/components/marcas-select/marcas-select.component';
+import { CategoriasSelectComponent } from '../../../categorias/components/categorias-select/categorias-select.component';
+import { PaginatorModule } from 'primeng/paginator';
+import { TableMobileComponent } from '../../../uikit/components/table-mobile/table-mobile.component';
 
 @Component({
   standalone: true,
@@ -40,7 +44,11 @@ import { ModalLoadingComponent } from '../../../uikit/components/modal-loading/m
     ToastModule,
     ConfirmDialogModule,
     TooltipModule,
-    ModalLoadingComponent
+    MarcasSelectComponent,
+    ModalLoadingComponent,
+    CategoriasSelectComponent,
+    PaginatorModule,
+    TableMobileComponent
   ],
   templateUrl: './items-lista.component.html',
   styleUrl: './items-lista.component.scss',
@@ -55,6 +63,48 @@ export class ItemsListaComponent {
   breadcrumb: MenuItem[] = [];
   loading: boolean = true;
   visible: boolean = false;
+
+  campos: any[] = [
+      { etiqueta: 'id', propiedad: 'id', tipo: 'texto' },
+      { etiqueta: 'SKU', propiedad: 'codigo', tipo: 'texto' },
+      { etiqueta: 'Nombre', propiedad: 'nombre', tipo: 'texto' },
+      {
+          etiqueta: 'Categoría',
+          propiedad: 'categoria.nombre',
+          tipo: 'objeto'
+      },
+      {
+          etiqueta: 'Marca',
+          propiedad: 'marca.nombre',
+          tipo: 'objeto'
+      },
+      {
+          etiqueta: 'Unidad Medida',
+          propiedad: 'unidadMedida.nombre',
+          tipo: 'objeto'
+      },
+  ];
+
+  accionesItems = [
+      {
+          tooltip: 'Editar',
+          icono: 'pi pi-pencil',
+          color: 'info',
+          tipo: 'accion',
+          label: 'Editar',
+          outlined: true
+      },
+      {
+          tooltip: 'Desactivar',
+          icono: 'pi pi-ban',
+          color: 'warn',
+          tipo: 'accion',
+          accion: 'desactivar',
+          label: 'Desactivar',
+          outlined: true
+      }
+  ];
+
 
   constructor(
     private itemService: ItemsService,
@@ -143,16 +193,20 @@ export class ItemsListaComponent {
 
   guardar() {
     if (this.item) {
+      this.loading = true;
       if (this.item.id) {
         this.itemService.update(this.item).subscribe({
           next: (updatedItem) => {
             this.MessageService.add({ severity: 'success', summary: 'Éxito', detail: 'Item actualizado correctamente' });
             this.visible = false;
+            this.item = undefined
+            this.loading = false;
             this.getData();
           },
           error: (error) => {
             this.MessageService.add({ severity: 'error', summary: 'Error', detail: 'Error al actualizar el item' });
             console.error('Error updating item:', error);
+            this.loading = false;
           }
         });
       } else {
@@ -160,11 +214,14 @@ export class ItemsListaComponent {
           next: (newItem) => {
             this.MessageService.add({ severity: 'success', summary: 'Éxito', detail: 'Item creado correctamente' });
             this.visible = false;
+            this.item = undefined
+            this.loading = false;
             this.getData();
           },
           error: (error) => {
             this.MessageService.add({ severity: 'error', summary: 'Error', detail: 'Error al crear el item' });
             console.error('Error creating item:', error);
+            this.loading = false;
           }
         });
       }
@@ -183,5 +240,22 @@ export class ItemsListaComponent {
       icon: 'pi pi-exclamation-triangle',
       accept: () => this.desactivar(item),
     });
+  }
+
+  pageChange(event: any) {
+      this.filtro.page = event.page;
+      this.filtro.size = event.rows;
+      this.getData();
+  }
+
+   resolverAccion(event: { tipo: string; item: any }) {
+    switch (event.tipo) {
+        case 'editar':
+            this.editar(event.item);
+            break;
+        case 'desactivar':
+            this.confirmarDesactivar(event.item);
+            break;
+    }
   }
 }

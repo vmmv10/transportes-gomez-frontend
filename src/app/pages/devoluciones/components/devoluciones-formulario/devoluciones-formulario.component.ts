@@ -16,13 +16,14 @@ import { DevolucionesService } from '../../services/devoluciones.service';
 import { ButtonModule } from 'primeng/button';
 import { ModalLoadingComponent } from '../../../uikit/components/modal-loading/modal-loading.component';
 import { ToastModule } from 'primeng/toast';
-import e from 'cors';
-import { SelectButtonModule } from 'primeng/selectbutton';
 import { ButtonGroupModule } from 'primeng/buttongroup';
+import { BadgeModule } from 'primeng/badge';
+import { ModalCantidadComponent } from '../../../uikit/components/modal-cantidad/modal-cantidad.component';
+import { DevolucionDetalle } from '../../models/devolucion-detalle.model';
 
 @Component({
     selector: 'app-devoluciones-formulario',
-    imports: [BreadcrumbModule, ButtonModule, ButtonGroupModule, FormsModule, AutoFocusModule, FocusTrapModule, CommonModule, ToastModule, OrdenesServiciosModalSelectComponent, TableModule, InputNumberModule, InputTextModule, ModalLoadingComponent],
+    imports: [BreadcrumbModule, ModalCantidadComponent, BadgeModule, ButtonModule, ButtonGroupModule, FormsModule, AutoFocusModule, FocusTrapModule, CommonModule, ToastModule, OrdenesServiciosModalSelectComponent, TableModule, InputNumberModule, InputTextModule, ModalLoadingComponent],
     templateUrl: './devoluciones-formulario.component.html',
     styleUrl: './devoluciones-formulario.component.scss',
     standalone: true,
@@ -35,11 +36,10 @@ export class DevolucionesFormularioComponent {
     articuloBuscar: string = '';
     focusArticulo: boolean = false;
     loading: boolean = false;
-    modo: boolean = true;
-    modos: any[] = [
-        { label: 'Manual', value: true },
-        { label: 'Unidad', value: false }
-    ];
+    modoUnidad: boolean = true;
+    modalCantidadVisible: boolean = false;
+    detalleSeleccionado: DevolucionDetalle | undefined;
+    modificarCantidad: boolean = false;
 
     constructor(
         private route: ActivatedRoute,
@@ -98,9 +98,16 @@ export class DevolucionesFormularioComponent {
             this.devolucion.detalles.forEach((detalle) => {
                 if (detalle.item.codigo === this.articuloBuscar) {
                     existeDetalle = true;
-                    this.loading = true;
-                    this.sumarCantidadDetalle(detalle, 1);
-                    this.loading = false;
+                    if (this.modoUnidad) {
+                        this.loading = true;
+                        this.sumarCantidadDetalle(detalle, 1);
+                        this.loading = false;
+                    } else {
+                        this.detalleSeleccionado = detalle;
+                        this.modificarCantidad = false;
+                        this.modalCantidadVisible = true;
+                        this.focusArticulo = false;
+                    }
                     return;
                 }
             });
@@ -172,8 +179,8 @@ export class DevolucionesFormularioComponent {
 
     modoChange() {
         this.focusArticulo = false;
-        this.modo = !this.modo;
-        if (this.modo) {
+        this.modoUnidad = !this.modoUnidad;
+        if (this.modoUnidad) {
             this.messageService.add({
                 severity: 'info',
                 summary: 'Modo Manual',
@@ -188,4 +195,142 @@ export class DevolucionesFormularioComponent {
         }
         this.focusArticulo = true;
     }
+
+    abrir() {
+        this.loading = true;
+        this.devolucionService.abrir(this.devolucion.id).subscribe({
+            next: (devolucion) => {
+                this.loading = false;
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Éxito',
+                    detail: 'Devolución abierta correctamente'
+                });
+                this.ngOnInit();
+            },
+            error: (error) => {
+                console.error('Error al abrir devolución:', error);
+                this.loading = false;
+            }
+        });
+    }
+
+    cerrar() {
+        this.loading = true;
+        this.devolucionService.cerrar(this.devolucion.id).subscribe({
+            next: (devolucion) => {
+                this.loading = false;
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Éxito',
+                    detail: 'Devolución cerrada correctamente'
+                });
+                this.ngOnInit();
+            },
+            error: (error) => {
+                console.error('Error al cerrar devolución:', error);
+                this.loading = false;
+            }
+        });
+    }
+
+    eliminarDetalle(detalle: any) {
+        this.confirmationService.confirm({
+            message: '¿Estás seguro de eliminar este detalle?',
+            accept: () => {
+                this.loading = true;
+                this.devolucionService.eliminarDetalle(detalle.id).subscribe({
+                    next: () => {
+                        this.devolucion.detalles = this.devolucion.detalles.filter(d => d.id !== detalle.id);
+                        this.loading = false;
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: 'Éxito',
+                            detail: 'Detalle eliminado correctamente'
+                        });
+                    },
+                    error: (error) => {
+                        console.error('Error al eliminar detalle:', error);
+                        this.loading = false;
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: 'Error',
+                            detail: 'No se pudo eliminar el detalle'
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    editarDetalle(detalle: DevolucionDetalle) {
+        this.detalleSeleccionado = detalle;
+        this.modificarCantidad = true;
+        this.modalCantidadVisible = true;
+        this.focusArticulo = false;
+    }
+
+    sumarCantidad(cantidad: number) {
+        if (this.detalleSeleccionado) {
+            this.loading = true;
+            let request: DevolucionDetalle = new DevolucionDetalle();
+            request.cantidad = cantidad;
+            if (this.modificarCantidad) {
+                this.devolucionService.modificarDetalle(this.detalleSeleccionado.id, request).subscribe({
+                    next: () => {
+                        this.devolucion.detalles.forEach((d) => {
+                            if (this.detalleSeleccionado && d.id === this.detalleSeleccionado.id) {
+                                d.cantidad = cantidad;
+                            }
+                        });
+                        this.loading = false;
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: 'Éxito',
+                            detail: 'Cantidad modificada correctamente'
+                        });
+                        this.modalCantidadVisible = false;
+                        this.focusArticulo = true;
+                    },
+                    error: (error) => {
+                        console.error('Error al modificar cantidad de detalle:', error);
+                        this.loading = false;
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: 'Error',
+                            detail: 'No se pudo modificar la cantidad del detalle'
+                        });
+                    }
+                });
+            } else {
+                this.devolucionService.sumarCantidadDetalle(this.detalleSeleccionado.id, request).subscribe({
+                    next: () => {
+                        this.devolucion.detalles.forEach((d) => {
+                            if (this.detalleSeleccionado && d.id === this.detalleSeleccionado.id) {
+                                d.cantidad += cantidad;
+                            }
+                        });
+                        this.loading = false;
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: 'Éxito',
+                            detail: `Cantidad actualizada a ${this.detalleSeleccionado?.cantidad ?? cantidad}`
+                        });
+                        this.modalCantidadVisible = false;
+                        this.focusArticulo = true;
+                    },
+                    error: (error) => {
+                        console.error('Error al sumar cantidad de detalle:', error);
+                        this.loading = false;
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: 'Error',
+                            detail: 'No se pudo actualizar la cantidad del detalle'
+                        });
+                    }
+                });
+            }
+        }
+    }
+
 }

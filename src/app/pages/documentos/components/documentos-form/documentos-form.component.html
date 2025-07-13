@@ -112,6 +112,7 @@
 <div class="flex flex-column md:flex-row gap-2 card w-12">
     <p-button class="w-12" size="large" [fluid]="true" label="Volver" severity="secondary" icon="pi pi-times" [routerLink]="['/documents/dashboard']" />
     <p-button class="w-12" size="large" [fluid]="true" [label]="documento.id == 0 ? 'Guardar' : 'Actualizar'" severity="success" icon="pi pi-save" (click)="guardar()" />
+    <p-button class="w-12" size="large" [fluid]="true" [label]="'Crear Orden de Servicio'" severity="info" icon="pi pi-file" (click)="createOs()" />
 </div>
 <p-confirmdialog #eliminarImage>
     <ng-template #message let-message>

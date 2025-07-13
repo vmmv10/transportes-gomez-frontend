@@ -6,6 +6,12 @@
         <app-ordenes-servicios-modal-select [enRuta]="false" (ordenesServiciosSeleccionadosChange)="ordenesServiciosSeleccionadosChange($event)" [(ordenesServiciosSeleccionados)]="ordenesServicio" class="w-12"></app-ordenes-servicios-modal-select>
     </div>
     <div class="flex flex-column gap-2" *ngIf="devolucion.ordenServicio">
+        <div class="flex flex-column gap-1" *ngIf="devolucion.ordenServicio">
+            <h2 class="text-2xl mb-0 w-12 text-center font-semibold">Devolución n° {{ devolucion.id }}</h2>
+            <p-badge *ngIf="devolucion.estado == 0" severity="danger" value="Temporal"></p-badge>
+            <p-badge *ngIf="devolucion.estado == 1" severity="success" value="Abierto"></p-badge>
+            <p-badge *ngIf="devolucion.estado == 2" severity="warn" value="Cerrado"></p-badge>
+        </div>
         <table class="table-auto w-full border border-gray-300 border-round-xl">
             <tbody class="border-round-xl">
                 <tr>
@@ -38,12 +44,12 @@
     </div>
 </div>
 <div class="flex flex-column gap-3 card" *ngIf="devolucion.id">
-    <div class="flex flex-row gap-2">
+    <div class="flex flex-row gap-2" *ngIf="devolucion.estado != 2">
         <p-buttongroup>
-            <p-button class="md:block hidden" [severity]="modo ? 'secondary' : 'success'" [outlined]="modo" label="Manual" (click)="modoChange()" />
-            <p-button class="md:hidden block" [severity]="modo ? 'secondary' : 'success'" [outlined]="modo" label="M" (click)="modoChange()" />
-            <p-button class="md:block hidden" [severity]="modo ? 'success' : 'secondary'" [outlined]="!modo" label="Unidad" (click)="modoChange()" />
-            <p-button class="md:hidden block" [severity]="modo ? 'success' : 'secondary'" [outlined]="!modo" label="U" (click)="modoChange()" />
+            <p-button class="md:block hidden" [severity]="modoUnidad ? 'secondary' : 'success'" [outlined]="modoUnidad" label="Manual" (click)="modoChange()" />
+            <p-button class="md:hidden block" [severity]="modoUnidad ? 'secondary' : 'success'" [outlined]="modoUnidad" label="M" (click)="modoChange()" />
+            <p-button class="md:block hidden" [severity]="modoUnidad ? 'success' : 'secondary'" [outlined]="!modoUnidad" label="Unidad" (click)="modoChange()" />
+            <p-button class="md:hidden block" [severity]="modoUnidad ? 'success' : 'secondary'" [outlined]="!modoUnidad" label="U" (click)="modoChange()" />
         </p-buttongroup>
         <input [fluid]="true" pInputText [pAutoFocus]="focusArticulo" id="articulo" (keydown.enter)="buscarArticulo()" [(ngModel)]="articuloBuscar" placeholder="Ingrese codigo" class="w-12" />
     </div>
@@ -66,7 +72,10 @@
                 <td class="text-center">
                     <span class="text-xl">{{ item.cantidad }}</span>
                 </td>
-                <td class="text-center"></td>
+                <td class="text-center">
+                    <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="eliminarDetalle(item)" />
+                    <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="success" (click)="editarDetalle(item)" />
+                </td>
             </tr>
         </ng-template>
         <ng-template #emptymessage>
@@ -76,5 +85,10 @@
         </ng-template>
     </p-table>
 </div>
+<div class="flex flex-column gap-2 card" *ngIf="devolucion.id && devolucion.estado != 2">
+    <button *ngIf="devolucion.estado == 0" pButton [fluid]="true" label="Guardar" severity="success" class="w-12" (click)="abrir()"></button>
+    <button *ngIf="devolucion.estado == 1" pButton [fluid]="true" label="Cerrar" severity="success" class="w-12" (click)="cerrar()"></button>
+</div>
 <app-modal-loading [visible]="loading"></app-modal-loading>
 <p-toast />
+<app-modal-cantidad (cantidadChange)="sumarCantidad($event)" [visible]="modalCantidadVisible"></app-modal-cantidad>
