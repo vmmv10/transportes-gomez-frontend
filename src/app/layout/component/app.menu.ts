@@ -39,9 +39,16 @@ export class AppMenu {
                     { label: 'Documentos', icon: 'pi pi-fw pi-file-import', routerLink: ['/documents'] },
                     { label: 'Entregas', icon: 'pi pi-fw pi-envelope', routerLink: ['/entregas'] },
                     { label: 'Rutas', icon: 'pi pi-fw pi-map', routerLink: ['/rutas'] },
-                    { label: 'Items', icon: 'pi pi-fw pi-barcode', routerLink: ['/items'] },
-                    { label: 'Inventario', icon: 'pi pi-fw pi-warehouse', routerLink: ['/inventario'] },
+                    { label: 'Inventario', icon: 'pi pi-fw pi-warehouse',
+                        items: [
+                            { label: 'Items', routerLink: ['/items'] },
+                            { label: 'Saldo Bodega', routerLink: ['/inventario'] },
+                            { label: 'Marcas', routerLink: ['/marcas'] },
+                            { label: 'Categorías', routerLink: ['/categorias'] },
+                        ]
+                     },
                     { label: 'Devolución', icon: 'pi pi-fw pi-warehouse', routerLink: ['/devoluciones'] },
+                    { label: 'Ingreso Emergencias', icon: 'pi pi-fw pi-warehouse', routerLink: ['/ingreso-emergencia'] },
                     { label: 'Proveedores', icon: 'pi pi-fw pi-user', routerLink: ['/proveedores'] },
                     { label: 'Transportes', icon: 'pi pi-fw pi-truck', routerLink: ['/transportes'] }
                 ].filter((item) => this.canAccess(item.label))

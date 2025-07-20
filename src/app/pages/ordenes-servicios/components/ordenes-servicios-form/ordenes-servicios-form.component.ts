@@ -32,6 +32,8 @@ import { OrdenServicioDetalle } from '../../models/orden-servicio-detalle.model'
 import { DocumentosModalSelectComponent } from '../../../documentos/components/documentos-modal-select/documentos-modal-select.component';
 import { EscuelasSelectComponent } from '../../../escuelas/components/escuelas-select/escuelas-select.component';
 import { DocumentosTiposService } from '../../../documentos/services/documentos-tipos.service';
+import { BodegasSelectComponent } from '../../../bodegas/components/bodegas-select/bodegas-select.component';
+import { Bodega } from '../../../bodegas/models/Bodega.model';
 
 @Component({
     standalone: true,
@@ -60,7 +62,8 @@ import { DocumentosTiposService } from '../../../documentos/services/documentos-
         TableModule,
         TextareaModule,
         DialogModule,
-        DocumentosModalSelectComponent
+        DocumentosModalSelectComponent,
+        BodegasSelectComponent
     ],
     templateUrl: './ordenes-servicios-form.component.html',
     styleUrl: './ordenes-servicios-form.component.scss',
@@ -79,6 +82,7 @@ export class OrdenesServiciosFormComponent {
     documento: Documento = new Documento();
     displayItem: boolean = false;
     detalle: OrdenServicioDetalle = new OrdenServicioDetalle();
+    origen: Bodega | undefined;
 
     responsiveOptions: any[] = [
         {

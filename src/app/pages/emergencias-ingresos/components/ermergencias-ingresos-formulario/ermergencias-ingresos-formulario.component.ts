@@ -7,50 +7,52 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { OrdenesServiciosModalSelectComponent } from '../../../ordenes-servicios/components/ordenes-servicios-modal-select/ordenes-servicios-modal-select.component';
 import { OrdenServicio } from '../../../ordenes-servicios/models/orden-servicio.model';
 import { TableModule } from 'primeng/table';
-import { Devolucion } from '../../models/devolucion.model';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { FocusTrapModule } from 'primeng/focustrap';
 import { AutoFocusModule } from 'primeng/autofocus';
-import { DevolucionesService } from '../../services/devoluciones.service';
 import { ButtonModule } from 'primeng/button';
 import { ModalLoadingComponent } from '../../../uikit/components/modal-loading/modal-loading.component';
 import { ToastModule } from 'primeng/toast';
 import { ButtonGroupModule } from 'primeng/buttongroup';
 import { BadgeModule } from 'primeng/badge';
 import { ModalCantidadComponent } from '../../../uikit/components/modal-cantidad/modal-cantidad.component';
-import { DevolucionDetalle } from '../../models/devolucion-detalle.model';
+import { EmergenciaIngreso } from '../../models/emergencia-ingreso.model';
+import { EmergenciaIngresosDetalle } from '../../models/emergencia-ingresos-detalle.model';
+import { EmergenciasIngresosService } from '../../services/emergencias-ingresos.service';
+import { DocumentosTipoSelectComponent } from '../../../documentos/components/documentos-tipo-select/documentos-tipo-select.component';
+
 
 @Component({
-    selector: 'app-devoluciones-formulario',
-    imports: [BreadcrumbModule, ModalCantidadComponent, BadgeModule, ButtonModule, ButtonGroupModule, FormsModule, AutoFocusModule, FocusTrapModule, CommonModule, ToastModule, OrdenesServiciosModalSelectComponent, TableModule, InputNumberModule, InputTextModule, ModalLoadingComponent],
-    templateUrl: './devoluciones-formulario.component.html',
-    styleUrl: './devoluciones-formulario.component.scss',
-    standalone: true,
-    providers: [MessageService, ConfirmationService]
+  selector: 'app-ermergencias-ingresos-formulario',
+  imports: [BreadcrumbModule, DocumentosTipoSelectComponent, ModalCantidadComponent, BadgeModule, ButtonModule, ButtonGroupModule, FormsModule, AutoFocusModule, FocusTrapModule, CommonModule, ToastModule, TableModule, InputNumberModule, InputTextModule, ModalLoadingComponent],
+  templateUrl: './ermergencias-ingresos-formulario.component.html',
+  styleUrl: './ermergencias-ingresos-formulario.component.scss',
+  standalone: true,
+  providers: [MessageService, ConfirmationService]
 })
-export class DevolucionesFormularioComponent {
+export class ErmergenciasIngresosFormularioComponent {
     breadcrumb: MenuItem[] = [];
     ordenesServicio: OrdenServicio[] = [];
-    devolucion: Devolucion = new Devolucion();
+    ingreso: EmergenciaIngreso = new EmergenciaIngreso();
     articuloBuscar: string = '';
     focusArticulo: boolean = false;
     loading: boolean = false;
     modoUnidad: boolean = true;
     modalCantidadVisible: boolean = false;
-    detalleSeleccionado: DevolucionDetalle | undefined;
+    detalleSeleccionado: EmergenciaIngresosDetalle | undefined;
     modificarCantidad: boolean = false;
     validar: boolean = false;
 
     constructor(
         private route: ActivatedRoute,
-        private devolucionService: DevolucionesService,
+        private emergenciasIngresosServices: EmergenciasIngresosService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService
     ) {
         this.breadcrumb = [
             { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
-            { label: 'Devoluciones', routerLink: '/devoluciones' }
+            { label: 'Ingresos Emergencias', routerLink: '/ingreso-emergencia' }
         ];
     }
 
@@ -58,46 +60,35 @@ export class DevolucionesFormularioComponent {
         const id = this.route.snapshot.paramMap.get('id');
         if (id) {
             this.get(id);
-            this.breadcrumb.push({ label: 'Devolución ' + id, routerLink: `/devoluciones/formulario/${id}` });
+            this.breadcrumb.push({ label: 'Ingreso ' + id, routerLink: `/ingreso-emergencia/formulario/${id}` });
         } else {
-            this.breadcrumb.push({ label: 'Nueva Devolución', routerLink: '/devoluciones/formulario' });
+            this.breadcrumb.push({ label: 'Nuevo Ingreso', routerLink: '/ingreso-emergencia/formulario' });
         }
     }
 
     comenzar() {
-        this.validar = true;
-        if (!this.devolucion.ordenServicio || !this.devolucion.escuela) {
+      this.validar = true;
+      if (!this.ingreso.documento || !this.ingreso.documentoTipo) {
             this.messageService.add({
                 severity: 'error',
                 summary: 'Error',
-                detail: 'Debe seleccionar una orden de servicio y una escuela antes de comenzar'
+                detail: 'Debe ingresar un documento y tipo de documento antes de comenzar'
             });
             return;
         }
         this.validar = false;
         this.loading = true;
-        this.devolucionService.crear(this.devolucion).subscribe({
-            next: (devolucion) => {
-                this.devolucion = devolucion;
+        this.emergenciasIngresosServices.crear(this.ingreso).subscribe({
+            next: (ingreso) => {
+                this.ingreso = ingreso;
                 this.loading = false;
                 this.focusArticulo = true;
             },
             error: (error) => {
-                console.error('Error al crear devolución:', error);
+                console.error('Error al crear:', error);
                 this.loading = false;
             }
         });
-    }
-
-    ordenesServiciosSeleccionadosChange(event: any) {
-        this.ordenesServicio = event;
-        if (this.ordenesServicio.length > 0) {
-            this.focusArticulo = true;
-            this.devolucion.ordenServicio = this.ordenesServicio[0];
-            if (this.ordenesServicio[0].escuela) {
-                this.devolucion.escuela = this.ordenesServicio[0].escuela;
-            }
-        }
     }
 
     buscarArticulo() {
@@ -105,8 +96,8 @@ export class DevolucionesFormularioComponent {
             return;
         }
         let existeDetalle = false;
-        if (this.devolucion && this.devolucion.detalles) {
-            this.devolucion.detalles.forEach((detalle) => {
+        if (this.ingreso && this.ingreso.detalles) {
+            this.ingreso.detalles.forEach((detalle) => {
                 if (detalle.item.codigo === this.articuloBuscar) {
                     existeDetalle = true;
                     if (this.modoUnidad) {
@@ -128,9 +119,9 @@ export class DevolucionesFormularioComponent {
             this.focusArticulo = true;
             return;
         }
-        this.devolucionService.agregarDetalle(this.devolucion.id, this.articuloBuscar).subscribe({
+        this.emergenciasIngresosServices.agregarDetalle(this.ingreso.id, this.articuloBuscar).subscribe({
             next: (detalle) => {
-                this.devolucion.detalles.push(detalle);
+                this.ingreso.detalles.push(detalle);
                 this.articuloBuscar = '';
                 this.loading = false;
                 this.focusArticulo = true;
@@ -149,14 +140,14 @@ export class DevolucionesFormularioComponent {
 
     get(id: string) {
         this.loading = true;
-        this.devolucionService.getById(id).subscribe({
-            next: (devolucion) => {
-                this.devolucion = devolucion;
+        this.emergenciasIngresosServices.getById(id).subscribe({
+            next: (ingreso) => {
+                this.ingreso = ingreso;
                 this.loading = false;
                 this.focusArticulo = true;
             },
             error: (error) => {
-                console.error('Error al obtener devolución:', error);
+                console.error('Error al obtener:', error);
                 this.loading = false;
             }
         });
@@ -164,8 +155,8 @@ export class DevolucionesFormularioComponent {
 
     async sumarCantidadDetalle(detalle: any, cantidad: number) {
         try {
-            await this.devolucionService.sumarCantidadDetalle(detalle.id, { cantidad }).toPromise();
-            this.devolucion.detalles.forEach((d) => {
+            await this.emergenciasIngresosServices.sumarCantidadDetalle(detalle.id, { cantidad }).toPromise();
+            this.ingreso.detalles.forEach((d) => {
                 if (d.id === detalle.id) {
                     d.cantidad += cantidad;
                 }
@@ -209,18 +200,18 @@ export class DevolucionesFormularioComponent {
 
     abrir() {
         this.loading = true;
-        this.devolucionService.abrir(this.devolucion.id).subscribe({
-            next: (devolucion) => {
+        this.emergenciasIngresosServices.abrir(this.ingreso.id).subscribe({
+            next: (ingreso) => {
                 this.loading = false;
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Éxito',
-                    detail: 'Devolución abierta correctamente'
+                    detail: 'Actualizado correctamente'
                 });
                 this.ngOnInit();
             },
             error: (error) => {
-                console.error('Error al abrir devolución:', error);
+                console.error('Error al abrir:', error);
                 this.loading = false;
             }
         });
@@ -228,8 +219,8 @@ export class DevolucionesFormularioComponent {
 
     cerrar() {
         this.loading = true;
-        this.devolucionService.cerrar(this.devolucion.id).subscribe({
-            next: (devolucion) => {
+        this.emergenciasIngresosServices.cerrar(this.ingreso.id).subscribe({
+            next: (ingreso) => {
                 this.loading = false;
                 this.messageService.add({
                     severity: 'success',
@@ -239,7 +230,7 @@ export class DevolucionesFormularioComponent {
                 this.ngOnInit();
             },
             error: (error) => {
-                console.error('Error al cerrar devolución:', error);
+                console.error('Error al cerrar:', error);
                 this.loading = false;
             }
         });
@@ -250,9 +241,9 @@ export class DevolucionesFormularioComponent {
             message: '¿Estás seguro de eliminar este detalle?',
             accept: () => {
                 this.loading = true;
-                this.devolucionService.eliminarDetalle(detalle.id).subscribe({
+                this.emergenciasIngresosServices.eliminarDetalle(detalle.id).subscribe({
                     next: () => {
-                        this.devolucion.detalles = this.devolucion.detalles.filter(d => d.id !== detalle.id);
+                        this.ingreso.detalles = this.ingreso.detalles.filter(d => d.id !== detalle.id);
                         this.loading = false;
                         this.messageService.add({
                             severity: 'success',
@@ -274,7 +265,7 @@ export class DevolucionesFormularioComponent {
         });
     }
 
-    editarDetalle(detalle: DevolucionDetalle) {
+    editarDetalle(detalle: EmergenciaIngresosDetalle) {
         this.detalleSeleccionado = detalle;
         this.modificarCantidad = true;
         this.modalCantidadVisible = true;
@@ -284,12 +275,12 @@ export class DevolucionesFormularioComponent {
     sumarCantidad(cantidad: number) {
         if (this.detalleSeleccionado) {
             this.loading = true;
-            let request: DevolucionDetalle = new DevolucionDetalle();
+            let request: EmergenciaIngresosDetalle = new EmergenciaIngresosDetalle();
             request.cantidad = cantidad;
             if (this.modificarCantidad) {
-                this.devolucionService.modificarDetalle(this.detalleSeleccionado.id, request).subscribe({
+                this.emergenciasIngresosServices.modificarDetalle(this.detalleSeleccionado.id, request).subscribe({
                     next: () => {
-                        this.devolucion.detalles.forEach((d) => {
+                        this.ingreso.detalles.forEach((d) => {
                             if (this.detalleSeleccionado && d.id === this.detalleSeleccionado.id) {
                                 d.cantidad = cantidad;
                             }
@@ -314,9 +305,9 @@ export class DevolucionesFormularioComponent {
                     }
                 });
             } else {
-                this.devolucionService.sumarCantidadDetalle(this.detalleSeleccionado.id, request).subscribe({
+                this.emergenciasIngresosServices.sumarCantidadDetalle(this.detalleSeleccionado.id, request).subscribe({
                     next: () => {
-                        this.devolucion.detalles.forEach((d) => {
+                        this.ingreso.detalles.forEach((d) => {
                             if (this.detalleSeleccionado && d.id === this.detalleSeleccionado.id) {
                                 d.cantidad += cantidad;
                             }
@@ -343,5 +334,4 @@ export class DevolucionesFormularioComponent {
             }
         }
     }
-
 }

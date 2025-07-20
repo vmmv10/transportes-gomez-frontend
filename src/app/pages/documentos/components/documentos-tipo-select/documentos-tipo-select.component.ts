@@ -20,6 +20,7 @@ export class DocumentosTipoSelectComponent {
     @Output() documentoTipoChange = new EventEmitter<DocumentoTipo>();
     @Input() showClear: boolean = false;
     @Input() validar: boolean = false;
+    @Input() disabled: boolean = false;
     @Input() showFilter: boolean = false;
 
     documentosTipos: DocumentoTipo[] = [];
@@ -34,8 +35,6 @@ export class DocumentosTipoSelectComponent {
         this.loading = true;
         await this.getData();
         this.loading = false;
-        console.log('Proveedores:', this.documentosTipos);
-        console.log('DocumentoTipo:', this.documentoTipo);
     }
 
     async getData() {

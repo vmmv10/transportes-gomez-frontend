@@ -15,10 +15,11 @@ import { TooltipModule } from 'primeng/tooltip';
 import { RouterModule } from '@angular/router';
 import { Devolucion } from '../../models/devolucion.model';
 import { InputTextModule } from 'primeng/inputtext';
+import { FechaPipe } from '../../../uikit/pipe/fecha';
 
 @Component({
     selector: 'app-devoluciones-table',
-    imports: [FormsModule, CommonModule, InputTextModule, RouterModule, PaginatorModule, TooltipModule, TableModule, ButtonModule, ModalLoadingComponent, TableMobileComponent, ToastModule, ConfirmDialogModule],
+    imports: [FormsModule, FechaPipe, CommonModule, InputTextModule, RouterModule, PaginatorModule, TooltipModule, TableModule, ButtonModule, ModalLoadingComponent, TableMobileComponent, ToastModule, ConfirmDialogModule],
     templateUrl: './devoluciones-table.component.html',
     styleUrl: './devoluciones-table.component.scss',
     standalone: true,
@@ -35,15 +36,11 @@ export class DevolucionesTableComponent {
     data!: Page<any>;
 
     campos: any[] = [
-        { etiqueta: 'Folio', propiedad: 'numero', tipo: 'texto' },
-        {
-            etiqueta: 'Tipo Documento',
-            propiedad: 'tipo.nombre',
-            tipo: 'objeto'
-        },
-        { etiqueta: 'Proveedor', propiedad: 'proveedor.nombre', tipo: 'objeto' },
-        { etiqueta: 'Proveedor Rut', propiedad: 'proveedor.rut', tipo: 'objeto' },
-        { etiqueta: 'Bodega', propiedad: 'bodega.nombre', tipo: 'objeto' },
+        { etiqueta: 'Folio', propiedad: 'id', tipo: 'texto' },
+        { etiqueta: 'Fecha', propiedad: 'fecha', tipo: 'fecha' },
+        { etiqueta: 'Escuela', propiedad: 'escuela.nombre', tipo: 'objeto' },
+        { etiqueta: 'Comuna', propiedad: 'escuela.comuna', tipo: 'objeto' },
+        { etiqueta: 'Orden Servicio', propiedad: 'ordenServicio.id', tipo: 'objeto' },
     ];
 
     accionesDevoluciones = [
@@ -52,7 +49,7 @@ export class DevolucionesTableComponent {
             icono: 'pi pi-pencil',
             color: 'info',
             tipo: 'link',
-            ruta: '/documents/formulario/',
+            ruta: '/devoluciones/formulario/',
             rutaConId: true,
             label: 'Editar',
             outlined: true
@@ -65,15 +62,6 @@ export class DevolucionesTableComponent {
             accion: 'eliminar',
             deshabilitarSi: 'asignado',
             label: 'Eliminar',
-            outlined: true
-        },
-        {
-            tooltip: 'Ver PDF',
-            icono: 'pi pi-file-pdf',
-            color: 'danger',
-            tipo: 'accion',
-            accion: 'verPdf',
-            label: ' PDF',
             outlined: true
         }
     ];
@@ -105,12 +93,12 @@ export class DevolucionesTableComponent {
     }
 
     resolverAccion(event: { tipo: string; item: any }) {
-      switch (event.tipo) {
-          case 'eliminar':
-              this.confirmarEliminar(event.item);
-              break;
+        switch (event.tipo) {
+            case 'eliminar':
+                this.confirmarEliminar(event.item);
+                break;
+        }
     }
-  }
 
    confirmarEliminar(item: Devolucion) {
         this.confirmationService.confirm({

@@ -1,11 +1,8 @@
 import { Documento } from "../../documentos/models/documento.model";
+import { Item } from "../../items/models/item.model";
 
 export class EmergenciaIngresosDetalle {
     id!: string;
-    tipo: string = '';
-    fechaCreacion: Date = new Date();
-    observaciones: string = '';
-    detalles: EmergenciaIngresosDetalle[] = [];
-    documento: Documento | undefined;
-    estado: number = 0;
+    item: Item = new Item();
+    cantidad: number = 0;
 }

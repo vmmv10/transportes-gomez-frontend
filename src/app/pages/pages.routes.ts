@@ -2,9 +2,6 @@ import { Routes } from '@angular/router';
 import { Documentation } from './documentation/documentation';
 import { Crud } from './crud/crud';
 import { Empty } from './empty/empty';
-import { EscuelasListComponent } from './escuelas/components/escuelas-list/escuelas-list.component';
-import { EscuelasFormComponent } from './escuelas/components/escuelas-form/escuelas-form.component';
-import { EscuelasDashboardComponent } from './escuelas/components/escuelas-dashboard/escuelas-dashboard.component';
 import { Dashboard } from './dashboard/dashboard';
 import { ItemsListaComponent } from './items/components/items-lista/items-lista.component';
 import { DocumentosComponent } from './documentos/components/documentos/documentos.component';
@@ -20,6 +17,7 @@ import { ProveedorListComponent } from './proveedor/components/proveedor-list/pr
 import { ProveedorFormComponent } from './proveedor/components/proveedor-form/proveedor-form.component';
 import { DevolucionesComponent } from './devoluciones/components/devoluciones/devoluciones.component';
 import { DevolucionesFormularioComponent } from './devoluciones/components/devoluciones-formulario/devoluciones-formulario.component';
+import { InventarioComponent } from './inventario/components/inventario/inventario.component';
 
 export default [
     { path: 'documentation', component: Documentation },
@@ -28,12 +26,15 @@ export default [
     { path: 'establecimientos',
         children: [{ path: '', loadChildren: () => import('./escuelas/establecimientos.routes') }]
     },
+    { path: 'ingreso-emergencia',
+        children: [{ path: '', loadChildren: () => import('./emergencias-ingresos/routes') }]
+    },
     { path: '', component: Dashboard, canActivate: [authGuard] },
     { path: 'rutas', component: RutasComponent, canActivate: [authGuard], data: { roles: ['Conductor', 'Administrador'] } },
     { path: 'rutas/formulario', component: RutasFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'rutas/formulario/:id', component: RutasFormComponent, canActivate: [authGuard], data: { roles: ['Conductor', 'Administrador'] } },
     { path: 'entregas', component: EntregasComponent, canActivate: [authGuard], data: { roles: ['Conductor', 'Administrador'] } },
-    { path: 'devoluciones', component: DevolucionesComponent, canActivate: [authGuard], data: { roles: ['Cliente', 'Administrador'] } },
+    { path: 'devoluciones', component: DevolucionesComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'devoluciones/formulario', component: DevolucionesFormularioComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'devoluciones/formulario/:id', component: DevolucionesFormularioComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'documents', component: DocumentosComponent, canActivate: [authGuard], data: { roles: ['Cliente', 'Administrador'] } },
@@ -43,6 +44,7 @@ export default [
     { path: 'proveedores/formulario', component: ProveedorFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'proveedores/formulario/:id', component: ProveedorFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'items', component: ItemsListaComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
+    { path: 'inventario', component: InventarioComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'ordenes-servicios', component: OrdenesServiciosComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'ordenes-servicios/formulario', component: OrdenesServiciosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'ordenes-servicios/formulario/:id', component: OrdenesServiciosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },

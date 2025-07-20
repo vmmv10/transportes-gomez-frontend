@@ -1,0 +1,11 @@
+<button
+    pButton
+    icon="pi pi-plus"
+    label="Agregar Item"
+    [fluid]="true"
+    class="w-12 p-button-success"
+    (click)="showDialog()"
+></button>
+<p-dialog header="Seleccionar Documento" [modal]="true" [(visible)]="visible" [breakpoints]="{ '960px': '75vw', '640px': '90vw' }" [style]="{ width: '70rem' }">
+    <app-inventario [filtro]="filtro" [conBodega]="true" />
+</p-dialog>

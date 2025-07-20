@@ -3,7 +3,11 @@
     <p-breadcrumb class="max-w-full" [model]="menus" />
 </div>
 <div class="flex flex-column">
-    <div *ngIf="orden.id == 0" class="flex flex-column gap-3 card">
+    <div class="flex flex-column gap-1 card">
+        <label class="text-md font-semibold">Bodega origen de la Orden de Servicio</label>
+        <app-bodegas-select [validar]="validar" [(bodega)]="origen" [showClear]="true" [showFilter]="true" class="w-12"></app-bodegas-select>
+    </div>
+    <div *ngIf="origen && origen.id == 1 && orden.id == 0" class="flex flex-column gap-3 card">
         <app-documentos-modal-select class="flex w-12" [asignado]="false" [documento]="documento" (documentoChange)="documentoChange($event)"></app-documentos-modal-select>
     </div>
     <div class="flex flex-col gap-2 w-12 card" *ngIf="orden.documento && orden.documento.id > 0">
@@ -35,22 +39,6 @@
                 </tr>
             </table>
         </p-panel>
-        <!-- <p-panel header="Proveedor" *ngIf="orden.documento.id > 0" class="w-12">
-            <table class="table-auto border-collapse w-12">
-                <tr>
-                    <th class="text-left p-2">Razón Social</th>
-                    <th class="text-left p-2">Sociedad Comercial Gomez Velasquez Limitada</th>
-                </tr>
-                <tr>
-                    <th class="text-left p-2">Rut</th>
-                    <th class="text-left p-2">76651672-5</th>
-                </tr>
-                <tr>
-                    <th class="text-left p-2">Dirección</th>
-                    <th class="text-left p-2">Pasaje Los Coigues 109</th>
-                </tr>
-            </table>
-        </p-panel> -->
     </div>
     <div *ngIf="orden.documento.id > 0" class="flex flex-column gap-2 card">
         <div class="flex flex-row gap-2 w-12 justify-content-between">

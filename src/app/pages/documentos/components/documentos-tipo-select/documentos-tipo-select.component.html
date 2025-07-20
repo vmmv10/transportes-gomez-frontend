@@ -10,6 +10,7 @@
     class="w-12 {{ !documentoTipo && validar ? 'ng-dirty ng-invalid' : '' }}"
     appendTo="body"
     (ngModelChange)="onChangeSelect($event)"
+    [disabled]="disabled"
 >
     <ng-template let-tipo #item>
         <div class="flex items-center gap-2">

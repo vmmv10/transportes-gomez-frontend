@@ -1,0 +1,75 @@
+<div class="card flex flex-column gap-2 py-1">
+    <p-breadcrumb class="max-w-full" [model]="breadcrumb" />
+</div>
+<div class="flex flex-column gap-3 card">
+    <div class="flex md:flex-row gap-2 flex-column" *ngIf="!ingreso.id">
+        <div class="flex flex-column gap-2 w-12" *ngIf="!ingreso.id">
+            <label for="documento">Documento</label>
+            <input [disabled]="ingreso.id" pInputText id="documento" [(ngModel)]="ingreso.documento" placeholder="Ingrese número de documento" class="w-12 {{ validar && !ingreso.documento ? 'ng-dirty ng-invalid' : ''}}" />
+        </div>
+        <div class="flex flex-column gap-2 w-12" *ngIf="!ingreso.id">
+            <label for="documento">Tipo Documento</label>
+            <app-documentos-tipo-select [disabled]="ingreso.id != undefined" [validar]="validar" [(documentoTipo)]="ingreso.documentoTipo"></app-documentos-tipo-select>
+        </div>
+        <div class="flex flex-column algin-items-end justify-content-end w-12" *ngIf="!ingreso.id">
+        <button *ngIf="!ingreso.id" pButton [fluid]="true" label="Comenzar" severity="info" class="w-12" (click)="comenzar()"></button>
+    </div>
+    </div>
+    <div class="flex flex-column gap-2" *ngIf="ingreso.id">
+        <div class="flex flex-column gap-1">
+            <h2 class="text-2xl mb-0 w-12 text-center font-semibold">Ingreso n° {{ ingreso.id }}</h2>
+            <p-badge *ngIf="ingreso.estado == 0" severity="danger" value="Temporal"></p-badge>
+            <p-badge *ngIf="ingreso.estado == 1" severity="success" value="Abierto"></p-badge>
+            <p-badge *ngIf="ingreso.estado == 2" severity="warn" value="Cerrado"></p-badge>
+        </div>
+    </div>
+</div>
+<div class="flex flex-column gap-3 card" *ngIf="ingreso.id">
+    <div class="flex flex-row gap-2" *ngIf="ingreso.estado != 2">
+        <p-buttongroup>
+            <p-button class="md:block hidden" [severity]="modoUnidad ? 'secondary' : 'success'" [outlined]="modoUnidad" label="Manual" (click)="modoChange()" />
+            <p-button class="md:hidden block" [severity]="modoUnidad ? 'secondary' : 'success'" [outlined]="modoUnidad" label="M" (click)="modoChange()" />
+            <p-button class="md:block hidden" [severity]="modoUnidad ? 'success' : 'secondary'" [outlined]="!modoUnidad" label="Unidad" (click)="modoChange()" />
+            <p-button class="md:hidden block" [severity]="modoUnidad ? 'success' : 'secondary'" [outlined]="!modoUnidad" label="U" (click)="modoChange()" />
+        </p-buttongroup>
+        <input [fluid]="true" pInputText [pAutoFocus]="focusArticulo" id="articulo" (keydown.enter)="buscarArticulo()" [(ngModel)]="articuloBuscar" placeholder="Ingrese codigo" class="w-12" />
+    </div>
+    <p-table showGridlines [responsive]="true" [value]="ingreso.detalles">
+        <ng-template #header>
+            <tr>
+                <th class="text-center">Detalle</th>
+                <th class="text-center">Cantidad</th>
+                <th class="text-center"></th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-item>
+            <tr>
+                <td class="text-center">
+                    <div class="flex flex-column gap-1">
+                        <span class="text-sm font-semibold">{{ item.item.codigo }}</span>
+                        <span class="text-xs text-gray-500">{{ item.item.nombre }}</span>
+                    </div>
+                </td>
+                <td class="text-center">
+                    <span class="text-xl">{{ item.cantidad }}</span>
+                </td>
+                <td class="text-center">
+                    <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="eliminarDetalle(item)" />
+                    <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="success" (click)="editarDetalle(item)" />
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="4" class="text-center">No se han agregados artículos.</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<div class="flex flex-column gap-2 card" *ngIf="ingreso.id && ingreso.estado != 2">
+    <button *ngIf="ingreso.estado == 0" pButton [fluid]="true" label="Guardar" severity="success" class="w-12" (click)="abrir()"></button>
+    <button *ngIf="ingreso.estado == 1" pButton [fluid]="true" label="Cerrar" severity="success" class="w-12" (click)="cerrar()"></button>
+</div>
+<app-modal-loading [visible]="loading"></app-modal-loading>
+<p-toast />
+<app-modal-cantidad (cantidadChange)="sumarCantidad($event)" [visible]="modalCantidadVisible"></app-modal-cantidad>
