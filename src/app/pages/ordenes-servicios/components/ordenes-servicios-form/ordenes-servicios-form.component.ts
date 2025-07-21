@@ -33,7 +33,8 @@ import { DocumentosModalSelectComponent } from '../../../documentos/components/d
 import { EscuelasSelectComponent } from '../../../escuelas/components/escuelas-select/escuelas-select.component';
 import { DocumentosTiposService } from '../../../documentos/services/documentos-tipos.service';
 import { BodegasSelectComponent } from '../../../bodegas/components/bodegas-select/bodegas-select.component';
-import { Bodega } from '../../../bodegas/models/Bodega.model';
+import { AutocompleteSelectComponent } from '../../../inventario/components/autocomplete-select/autocomplete-select.component';
+import { SaldoBodegaFiltro } from '../../../inventario/models/saldo-bodega-filtro.model';
 
 @Component({
     standalone: true,
@@ -63,7 +64,8 @@ import { Bodega } from '../../../bodegas/models/Bodega.model';
         TextareaModule,
         DialogModule,
         DocumentosModalSelectComponent,
-        BodegasSelectComponent
+        BodegasSelectComponent,
+        AutocompleteSelectComponent
     ],
     templateUrl: './ordenes-servicios-form.component.html',
     styleUrl: './ordenes-servicios-form.component.scss',
@@ -82,7 +84,10 @@ export class OrdenesServiciosFormComponent {
     documento: Documento = new Documento();
     displayItem: boolean = false;
     detalle: OrdenServicioDetalle = new OrdenServicioDetalle();
-    origen: Bodega | undefined;
+    filtroSaldoBodega: SaldoBodegaFiltro = new SaldoBodegaFiltro();
+    visibleItem: boolean = false;
+    habililitarSaldo: boolean = false;
+    disabled: boolean = false;
 
     responsiveOptions: any[] = [
         {
@@ -117,7 +122,6 @@ export class OrdenesServiciosFormComponent {
         const id = this.route.snapshot.paramMap.get('id');
         const doc = this.route.snapshot.paramMap.get('documento');
         const tipo = this.route.snapshot.paramMap.get('tipo');
-        console.log('tipo:', tipo);
         if (id) {
             this.loading = true;
             await this.getOrden(id);
@@ -144,8 +148,11 @@ export class OrdenesServiciosFormComponent {
             const data = await this.ordenesServiciosService.get(id).toPromise();
             if (data) {
                 this.orden = data;
-            } else {
-                this.messageService.add({ severity: 'info', summary: 'Información', detail: 'Orden de Servicio no encontrado' });
+                if (this.orden.documento && this.orden.documento.id > 0) {
+                    this.disabled = false;
+                } else {
+                    this.disabled = true;
+                }
             }
         } catch (error) {
             console.error('Error fetching orden:', error);
@@ -322,7 +329,13 @@ export class OrdenesServiciosFormComponent {
     }
 
     agregarFila() {
-        this.displayItem = true;
+        if (this.orden.bodega && this.orden.bodega.id === 1) {
+            this.displayItem = true;
+        }
+        if (this.orden.bodega && this.orden.bodega.id !== 1) {
+            this.visibleItem = true;
+            this.filtroSaldoBodega.bodega = this.orden.bodega;
+        }
     }
 
     guardarDetalle() {
@@ -330,15 +343,40 @@ export class OrdenesServiciosFormComponent {
             this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Debe completar todos los campos del detalle' });
             return;
         }
+        if (this.orden.bodega && this.orden.bodega.id !== 1) {
+            if (this.detalle.saldoBodega && this.detalle.cantidad > this.detalle.saldoBodega.saldo) {
+                this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'La cantidad no puede ser mayor al saldo disponible' });
+                return;
+            }
+        }
         if (this.detalle.id) {
             const index = this.orden.detalles.findIndex((d) => d.id === this.detalle.id);
             if (index !== -1) {
                 this.orden.detalles[index] = { ...this.detalle };
             }
         } else {
-            this.orden.detalles.push(this.detalle);
+            if (this.orden.detalles && this.orden.detalles.length > 0) {
+                let exists = false;
+                this.orden.detalles.forEach((d) => {
+                    if ((this.orden.bodega && this.orden.bodega.id === 1 && d.nombre === this.detalle.nombre) || (this.orden.bodega && this.orden.bodega.id !== 1 && d.saldoBodega && d.saldoBodega.item.id === this.detalle.saldoBodega?.item.id)) {
+                        d.cantidad = this.detalle.cantidad;
+                        exists = true;
+                    }
+                });
+                if (!exists) {
+                    this.orden.detalles.push({ ...this.detalle });
+                }
+            } else {
+                this.orden.detalles.push({ ...this.detalle });
+            }
         }
-        this.cerrardialogItem();
+        if (this.orden.bodega && this.orden.bodega.id === 1) {
+            this.cerrardialogItem();
+        }
+        if (this.orden.bodega && this.orden.bodega.id !== 1) {
+            this.visibleItem = false;
+        }
+        this.detalle = new OrdenServicioDetalle();
         this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Detalle agregado correctamente' });
     }
 
@@ -348,8 +386,14 @@ export class OrdenesServiciosFormComponent {
     }
 
     editarDetalle(detalle: OrdenServicioDetalle) {
-        this.detalle = { ...detalle }; // Clonar el detalle para editar
-        this.displayItem = true;
+        this.detalle = { ...detalle };
+        if (this.orden.bodega && this.orden.bodega.id === 1) {
+            this.displayItem = true;
+        }
+        if (this.orden.bodega && this.orden.bodega.id !== 1) {
+            this.visibleItem = true;
+            this.filtroSaldoBodega.bodega = this.orden.bodega;
+        }
     }
 
     obtenerPdf() {
@@ -380,5 +424,65 @@ export class OrdenesServiciosFormComponent {
         a.download = ''; // El nombre lo pone el navegador o el servidor
         a.target = '_blank';
         a.click();
+    }
+
+    saldoSeleccionado(saldo: any) {
+        if (saldo) {
+            this.detalle.saldoBodega = saldo;
+            this.detalle.nombre = saldo.item.nombre;
+            this.habililitarSaldo = true;
+        }
+    }
+
+    confirmarGuardar() {
+        this.confirmationService.confirm({
+            message: '¿Está seguro de que desea guardar los cambios?',
+            accept: () => {
+                this.guardar();
+            },
+            key: 'cGuardar'
+        });
+    }
+
+    confirmarEliminarDetalle(detalle: OrdenServicioDetalle) {
+        this.confirmationService.confirm({
+            message: '¿Está seguro de que desea eliminar este detalle?',
+            accept: () => {
+                if (this.orden.id > 0) {
+                    this.eliminarDetalle(detalle);
+                } else {
+                    console.log(detalle);
+                    if (this.orden.documento && this.orden.documento.id > 0) {
+                        this.orden.detalles = this.orden.detalles.filter((d) => d.nombre !== detalle.nombre);
+                        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Detalle eliminado correctamente' });
+                    } else {
+                        this.orden.detalles.forEach((d, index) => {
+                            if (d.saldoBodega?.item.id === detalle.saldoBodega?.item.id) {
+                                console.log('Detalle encontrado para eliminar:', d);
+                                this.orden.detalles.splice(index, 1);
+                            }
+                        });
+                        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Detalle eliminado correctamente' });
+                    }
+                }
+            },
+            key: 'cEliminarDetalle'
+        });
+    }
+
+    eliminarDetalle(detalle: OrdenServicioDetalle) {
+        this.ordenesServiciosService.deleteDetalle(detalle.id).subscribe({
+            next: () => {
+                const index = this.orden.detalles.indexOf(detalle);
+                if (index > -1) {
+                    this.orden.detalles.splice(index, 1);
+                    this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Detalle eliminado correctamente' });
+                }
+            },
+            error: (error) => {
+                console.error('Error deleting detalle:', error);
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al eliminar el detalle' });
+            }
+        });
     }
 }

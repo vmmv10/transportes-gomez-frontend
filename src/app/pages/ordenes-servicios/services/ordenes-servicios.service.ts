@@ -59,4 +59,8 @@ export class OrdenesServiciosService {
             responseType: 'blob' as 'json' // TypeScript requiere el cast aquí
         });
     }
+
+    deleteDetalle(detalleId: number): Observable<void> {
+        return this.authHttp.delete<void>(`${this.url}/detalles/${detalleId}`);
+    }
 }

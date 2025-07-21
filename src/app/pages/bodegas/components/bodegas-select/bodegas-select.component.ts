@@ -20,6 +20,7 @@ export class BodegasSelectComponent {
     @Input() showClear: boolean = false;
     @Input() validar: boolean = false;
     @Input() showFilter: boolean = false;
+    @Input() disabled: boolean = false;
 
     bodegas: Bodega[] = [];
     loading: boolean = true;

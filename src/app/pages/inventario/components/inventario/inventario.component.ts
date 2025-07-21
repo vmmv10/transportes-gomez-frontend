@@ -26,97 +26,95 @@ import { SaldoBodegaService } from '../../services/saldo-bodega.service';
 import { BodegasSelectComponent } from '../../../bodegas/components/bodegas-select/bodegas-select.component';
 
 @Component({
-  selector: 'app-inventario',
-  imports: [
-    CommonModule,
-    TableModule,
-    ButtonModule,
-    FormsModule,
-    InputTextModule,
-    IconFieldModule,
-    InputIconModule,
-    BreadcrumbModule,
-    RouterModule,
-    DialogModule,
-    TextareaModule,
-    ToastModule,
-    ConfirmDialogModule,
-    TooltipModule,
-    MarcasSelectComponent,
-    ModalLoadingComponent,
-    CategoriasSelectComponent,
-    PaginatorModule,
-    TableMobileComponent,
-    BodegasSelectComponent
-  ],
-  templateUrl: './inventario.component.html',
-  styleUrl: './inventario.component.scss',
-  providers: [MessageService, ConfirmationService],
-  standalone: true
+    selector: 'app-inventario',
+    imports: [
+        CommonModule,
+        TableModule,
+        ButtonModule,
+        FormsModule,
+        InputTextModule,
+        IconFieldModule,
+        InputIconModule,
+        BreadcrumbModule,
+        RouterModule,
+        DialogModule,
+        TextareaModule,
+        ToastModule,
+        ConfirmDialogModule,
+        TooltipModule,
+        MarcasSelectComponent,
+        ModalLoadingComponent,
+        CategoriasSelectComponent,
+        PaginatorModule,
+        TableMobileComponent,
+        BodegasSelectComponent
+    ],
+    templateUrl: './inventario.component.html',
+    styleUrl: './inventario.component.scss',
+    providers: [MessageService, ConfirmationService],
+    standalone: true
 })
 export class InventarioComponent {
+    @Input() filtro: SaldoBodegaFiltro = new SaldoBodegaFiltro();
+    @Input() conBodega: boolean = true;
+    data!: Page<SaldoBodega>;
+    breadcrumb: MenuItem[] = [];
+    loading: boolean = false;
 
-  @Input() filtro: SaldoBodegaFiltro = new SaldoBodegaFiltro();
-  @Input() conBodega: boolean = true;
-  data!: Page<SaldoBodega>;
-  breadcrumb: MenuItem[] = [];
-  loading: boolean = false;
-
-  campos: any[] = [
-      { etiqueta: 'id', propiedad: 'id', tipo: 'texto' },
-      { etiqueta: 'SKU', propiedad: 'codigo', tipo: 'texto' },
-      { etiqueta: 'Nombre', propiedad: 'nombre', tipo: 'texto' },
-      {
-          etiqueta: 'Categoría',
-          propiedad: 'categoria.nombre',
-          tipo: 'objeto'
-      },
-      {
-          etiqueta: 'Marca',
-          propiedad: 'marca.nombre',
-          tipo: 'objeto'
-      },
-      {
-          etiqueta: 'Unidad Medida',
-          propiedad: 'unidadMedida.nombre',
-          tipo: 'objeto'
-      },
-  ];
-
-  constructor(
-    private MessageService: MessageService,
-    private confirmationService: ConfirmationService, 
-    private saldoBodegaService: SaldoBodegaService
-  ) {
-    this.breadcrumb = [
-      { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
-      { label: 'Inventario', routerLink: '/inventario' },
+    campos: any[] = [
+        { etiqueta: 'id', propiedad: 'id', tipo: 'texto' },
+        { etiqueta: 'SKU', propiedad: 'codigo', tipo: 'texto' },
+        { etiqueta: 'Nombre', propiedad: 'nombre', tipo: 'texto' },
+        {
+            etiqueta: 'Categoría',
+            propiedad: 'categoria.nombre',
+            tipo: 'objeto'
+        },
+        {
+            etiqueta: 'Marca',
+            propiedad: 'marca.nombre',
+            tipo: 'objeto'
+        },
+        {
+            etiqueta: 'Unidad Medida',
+            propiedad: 'unidadMedida.nombre',
+            tipo: 'objeto'
+        }
     ];
-  }
 
-  getData() {
-    this.loading = true;
-    this.saldoBodegaService.getSaldoBodega(this.filtro).subscribe({
-      next: (data) => {
-        this.data = data;
-        this.loading = false;
-      },
-      error: (error) => {
-        this.MessageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar el inventario.' });
-        this.loading = false;
-      }
-    });
-  }
+    constructor(
+        private MessageService: MessageService,
+        private confirmationService: ConfirmationService,
+        private saldoBodegaService: SaldoBodegaService
+    ) {
+        this.breadcrumb = [
+            { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
+            { label: 'Inventario', routerLink: '/inventario' }
+        ];
+    }
 
-  pageChange(event: any) {
-      this.filtro.page = event.page;
-      this.filtro.size = event.rows;
-      this.getData();
-  }
+    getData() {
+        this.loading = true;
+        this.saldoBodegaService.getSaldoBodega(this.filtro).subscribe({
+            next: (data) => {
+                this.data = data;
+                this.loading = false;
+            },
+            error: (error) => {
+                this.MessageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar el inventario.' });
+                this.loading = false;
+            }
+        });
+    }
 
-  bodegaChange(bodega: any) {
-    this.filtro.bodega = bodega;
-    this.getData();
-  }
+    pageChange(event: any) {
+        this.filtro.page = event.page;
+        this.filtro.size = event.rows;
+        this.getData();
+    }
 
+    bodegaChange(bodega: any) {
+        this.filtro.bodega = bodega;
+        this.getData();
+    }
 }

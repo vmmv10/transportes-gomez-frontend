@@ -1,3 +1,4 @@
+import { Bodega } from '../../bodegas/models/Bodega.model';
 import { DocumentoTipo } from '../../documentos/models/documento-tipo.model';
 import { Escuela } from '../../escuelas/models/escuela.models';
 
@@ -14,6 +15,7 @@ export class OrdenServicioFiltro {
     documentoNumero: string | undefined;
     enRuta: boolean | undefined;
     entregado: boolean | undefined;
+    bodega: Bodega | undefined;
 
     constructor() {}
 }

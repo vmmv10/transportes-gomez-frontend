@@ -1,3 +1,4 @@
+import { Bodega } from '../../bodegas/models/Bodega.model';
 import { Documento } from '../../documentos/models/documento.model';
 import { Escuela } from '../../escuelas/models/escuela.models';
 import { Insumo } from '../../insumos/models/insumo.model';
@@ -14,6 +15,7 @@ export class OrdenServicio {
     valorTotal: number;
     entregado: boolean;
     documento: Documento;
+    bodega: Bodega | undefined;
 
     constructor() {
         this.id = 0;
