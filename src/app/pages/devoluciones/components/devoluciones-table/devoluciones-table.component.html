@@ -22,13 +22,13 @@
         <ng-template #body let-item>
             <tr>
                 <td class="text-center">{{ item.id }}</td>
-                <td class="text-center">{{ item.fecha | fecha}}</td>
+                <td class="text-center">{{ item.fecha | fecha }}</td>
                 <td class="text-center">{{ item.escuela.nombre }}</td>
                 <td class="text-center">{{ item.escuela.comuna }}</td>
                 <td class="text-center">{{ item.ordenServicio.id }}</td>
                 <td class="text-center">
                     <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="success" [routerLink]="['/devoluciones/formulario/' + item.id]" routerLinkActive="router-link-active" />
-                    <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminar(item)" />
+                    <!-- <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminar(item)" /> -->
                 </td>
             </tr>
         </ng-template>

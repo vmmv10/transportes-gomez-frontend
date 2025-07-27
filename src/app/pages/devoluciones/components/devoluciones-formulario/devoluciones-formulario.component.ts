@@ -20,10 +20,28 @@ import { ButtonGroupModule } from 'primeng/buttongroup';
 import { BadgeModule } from 'primeng/badge';
 import { ModalCantidadComponent } from '../../../uikit/components/modal-cantidad/modal-cantidad.component';
 import { DevolucionDetalle } from '../../models/devolucion-detalle.model';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
     selector: 'app-devoluciones-formulario',
-    imports: [BreadcrumbModule, ModalCantidadComponent, BadgeModule, ButtonModule, ButtonGroupModule, FormsModule, AutoFocusModule, FocusTrapModule, CommonModule, ToastModule, OrdenesServiciosModalSelectComponent, TableModule, InputNumberModule, InputTextModule, ModalLoadingComponent],
+    imports: [
+        BreadcrumbModule,
+        ModalCantidadComponent,
+        BadgeModule,
+        ButtonModule,
+        ButtonGroupModule,
+        FormsModule,
+        AutoFocusModule,
+        FocusTrapModule,
+        CommonModule,
+        ToastModule,
+        OrdenesServiciosModalSelectComponent,
+        TableModule,
+        InputNumberModule,
+        InputTextModule,
+        ModalLoadingComponent,
+        ConfirmDialogModule
+    ],
     templateUrl: './devoluciones-formulario.component.html',
     styleUrl: './devoluciones-formulario.component.scss',
     standalone: true,
@@ -60,7 +78,60 @@ export class DevolucionesFormularioComponent {
             this.get(id);
             this.breadcrumb.push({ label: 'Devolución ' + id, routerLink: `/devoluciones/formulario/${id}` });
         } else {
-            this.breadcrumb.push({ label: 'Nueva Devolución', routerLink: '/devoluciones/formulario' });
+            this.loading = true;
+            this.devolucionService.getTemporal().subscribe({
+                next: (devolucion) => {
+                    this.loading = false;
+                    if (devolucion) {
+                        this.devolucion = devolucion;
+                        this.confirmationService.confirm({
+                            key: 'temporal',
+                            message: 'Ya existe una devolución temporal. ¿Deseas continuar con esta devolución?',
+                            accept: () => {
+                                this.breadcrumb.push({ label: 'Devolución Temporal', routerLink: `/devoluciones/formulario/${devolucion.id}` });
+                            },
+                            reject: () => {
+                                this.devolucion = new Devolucion();
+                                this.loading = true;
+                                this.breadcrumb.push({ label: 'Nueva Devolución', routerLink: '/devoluciones/formulario' });
+                                this.devolucionService.delete(devolucion.id).subscribe({
+                                    next: () => {
+                                        this.loading = false;
+                                        this.messageService.add({
+                                            severity: 'info',
+                                            summary: 'Información',
+                                            detail: 'Devolución temporal eliminada'
+                                        });
+                                    },
+                                    error: (error) => {
+                                        this.loading = false;
+                                        console.error('Error al eliminar devolución temporal:', error);
+                                        this.messageService.add({
+                                            severity: 'error',
+                                            summary: 'Error',
+                                            detail: 'No se pudo eliminar la devolución temporal'
+                                        });
+                                        this.devolucion = new Devolucion();
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        this.breadcrumb.push({ label: 'Nueva Devolución', routerLink: '/devoluciones/formulario' });
+                        this.devolucion = new Devolucion();
+                    }
+                    this.loading = false;
+                },
+                error: (error) => {
+                    console.error('Error al obtener devolución temporal:', error);
+                    this.loading = false;
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Error',
+                        detail: 'No se pudo obtener la devolución temporal'
+                    });
+                }
+            });
         }
     }
 
@@ -128,6 +199,7 @@ export class DevolucionesFormularioComponent {
             this.focusArticulo = true;
             return;
         }
+        this.loading = true;
         this.devolucionService.agregarDetalle(this.devolucion.id, this.articuloBuscar).subscribe({
             next: (detalle) => {
                 this.devolucion.detalles.push(detalle);
@@ -248,11 +320,12 @@ export class DevolucionesFormularioComponent {
     eliminarDetalle(detalle: any) {
         this.confirmationService.confirm({
             message: '¿Estás seguro de eliminar este detalle?',
+            key: 'confirmDeleteDetalle',
             accept: () => {
                 this.loading = true;
                 this.devolucionService.eliminarDetalle(detalle.id).subscribe({
                     next: () => {
-                        this.devolucion.detalles = this.devolucion.detalles.filter(d => d.id !== detalle.id);
+                        this.devolucion.detalles = this.devolucion.detalles.filter((d) => d.id !== detalle.id);
                         this.loading = false;
                         this.messageService.add({
                             severity: 'success',
@@ -343,5 +416,4 @@ export class DevolucionesFormularioComponent {
             }
         }
     }
-
 }

@@ -5,17 +5,17 @@
     <div class="flex md:flex-row gap-2 flex-column" *ngIf="!ingreso.id">
         <div class="flex flex-column gap-2 w-12" *ngIf="!ingreso.id">
             <label for="documento">Documento</label>
-            <input [disabled]="ingreso.id" pInputText id="documento" [(ngModel)]="ingreso.documento" placeholder="Ingrese número de documento" class="w-12 {{ validar && !ingreso.documento ? 'ng-dirty ng-invalid' : ''}}" />
+            <input [disabled]="ingreso.id" pInputText id="documento" [(ngModel)]="ingreso.documento" placeholder="Ingrese número de documento" class="w-12 {{ validar && !ingreso.documento ? 'ng-dirty ng-invalid' : '' }}" />
         </div>
         <div class="flex flex-column gap-2 w-12" *ngIf="!ingreso.id">
             <label for="documento">Tipo Documento</label>
             <app-documentos-tipo-select [disabled]="ingreso.id != undefined" [validar]="validar" [(documentoTipo)]="ingreso.documentoTipo"></app-documentos-tipo-select>
         </div>
         <div class="flex flex-column algin-items-end justify-content-end w-12" *ngIf="!ingreso.id">
-        <button *ngIf="!ingreso.id" pButton [fluid]="true" label="Comenzar" severity="info" class="w-12" (click)="comenzar()"></button>
+            <button *ngIf="!ingreso.id" pButton [fluid]="true" label="Comenzar" severity="info" class="w-12" (click)="comenzar()"></button>
+        </div>
     </div>
-    </div>
-    <div class="flex flex-column gap-2" *ngIf="ingreso.id">
+    <div class="flex flex-column gap-2 justify-content-center" *ngIf="ingreso.id">
         <div class="flex flex-column gap-1">
             <h2 class="text-2xl mb-0 w-12 text-center font-semibold">Ingreso n° {{ ingreso.id }}</h2>
             <p-badge *ngIf="ingreso.estado == 0" severity="danger" value="Temporal"></p-badge>
@@ -39,23 +39,23 @@
             <tr>
                 <th class="text-center">Detalle</th>
                 <th class="text-center">Cantidad</th>
-                <th class="text-center"></th>
+                <th class="text-center" *ngIf="ingreso.id && ingreso.estado != 2"></th>
             </tr>
         </ng-template>
         <ng-template #body let-item>
             <tr>
                 <td class="text-center">
                     <div class="flex flex-column gap-1">
-                        <span class="text-sm font-semibold">{{ item.item.codigo }}</span>
-                        <span class="text-xs text-gray-500">{{ item.item.nombre }}</span>
+                        <span class="text-xl font-semibold">{{ item.item.codigo }}</span>
+                        <span class="text-xl text-gray-500">{{ item.item.nombre }}</span>
                     </div>
                 </td>
                 <td class="text-center">
                     <span class="text-xl">{{ item.cantidad }}</span>
                 </td>
-                <td class="text-center">
+                <td class="text-center" *ngIf="ingreso.id && ingreso.estado != 2">
                     <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="eliminarDetalle(item)" />
-                    <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="success" (click)="editarDetalle(item)" />
+                    <p-button *ngIf="ingreso.id && ingreso.estado != 2" pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="success" (click)="editarDetalle(item)" />
                 </td>
             </tr>
         </ng-template>
@@ -73,3 +73,26 @@
 <app-modal-loading [visible]="loading"></app-modal-loading>
 <p-toast />
 <app-modal-cantidad (cantidadChange)="sumarCantidad($event)" [visible]="modalCantidadVisible"></app-modal-cantidad>
+<p-confirmdialog #confirmDelete key="confirmDelete">
+    <ng-template #message let-message>
+        <div class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700">
+            <i class="pi pi-trash !text-6xl text-red-500"></i>
+            <p>¿Está seguro de Eliminar la imagen?</p>
+        </div>
+    </ng-template>
+    <ng-template #footer>
+        <p-button label="Cancelar" variant="text" icon="pi pi-times" class="w-12" [fluid]="true" severity="secondary" (click)="confirmDelete.onReject()" />
+        <p-button label="Eliminar" icon="pi pi-check" class="w-12" [fluid]="true" severity="danger" (click)="confirmDelete.onAccept()" />
+    </ng-template>
+</p-confirmdialog>
+<p-confirmdialog #temporal key="temporal" header="Ingreso Temporal">
+    <ng-template #message let-message>
+        <div class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700">
+            <p>¿Desea seguir trabajando en el Ingreso {{ ingreso.id }}?</p>
+        </div>
+    </ng-template>
+    <ng-template #footer>
+        <p-button label="Eliminar" class="w-12" [fluid]="true" severity="danger" (click)="temporal.onReject()" />
+        <p-button label="Continuar" class="w-12" [fluid]="true" severity="success" (click)="temporal.onAccept()" />
+    </ng-template>
+</p-confirmdialog>

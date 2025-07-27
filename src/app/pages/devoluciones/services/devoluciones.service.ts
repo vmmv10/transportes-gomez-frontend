@@ -65,4 +65,8 @@ export class DevolucionesService {
     eliminarDetalle(id: string): Observable<void> {
         return this.authHttp.delete<void>(`${this.url}/detalles/${id}`);
     }
+
+    getTemporal(): Observable<Devolucion> {
+        return this.authHttp.get<Devolucion>(`${this.url}/temporal`);
+    }
 }

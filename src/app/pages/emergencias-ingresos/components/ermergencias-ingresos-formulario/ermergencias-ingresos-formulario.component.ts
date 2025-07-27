@@ -21,15 +21,32 @@ import { EmergenciaIngreso } from '../../models/emergencia-ingreso.model';
 import { EmergenciaIngresosDetalle } from '../../models/emergencia-ingresos-detalle.model';
 import { EmergenciasIngresosService } from '../../services/emergencias-ingresos.service';
 import { DocumentosTipoSelectComponent } from '../../../documentos/components/documentos-tipo-select/documentos-tipo-select.component';
-
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
-  selector: 'app-ermergencias-ingresos-formulario',
-  imports: [BreadcrumbModule, DocumentosTipoSelectComponent, ModalCantidadComponent, BadgeModule, ButtonModule, ButtonGroupModule, FormsModule, AutoFocusModule, FocusTrapModule, CommonModule, ToastModule, TableModule, InputNumberModule, InputTextModule, ModalLoadingComponent],
-  templateUrl: './ermergencias-ingresos-formulario.component.html',
-  styleUrl: './ermergencias-ingresos-formulario.component.scss',
-  standalone: true,
-  providers: [MessageService, ConfirmationService]
+    selector: 'app-ermergencias-ingresos-formulario',
+    imports: [
+        BreadcrumbModule,
+        DocumentosTipoSelectComponent,
+        ModalCantidadComponent,
+        BadgeModule,
+        ButtonModule,
+        ButtonGroupModule,
+        FormsModule,
+        AutoFocusModule,
+        FocusTrapModule,
+        CommonModule,
+        ToastModule,
+        TableModule,
+        InputNumberModule,
+        InputTextModule,
+        ModalLoadingComponent,
+        ConfirmDialogModule
+    ],
+    templateUrl: './ermergencias-ingresos-formulario.component.html',
+    styleUrl: './ermergencias-ingresos-formulario.component.scss',
+    standalone: true,
+    providers: [MessageService, ConfirmationService]
 })
 export class ErmergenciasIngresosFormularioComponent {
     breadcrumb: MenuItem[] = [];
@@ -62,13 +79,51 @@ export class ErmergenciasIngresosFormularioComponent {
             this.get(id);
             this.breadcrumb.push({ label: 'Ingreso ' + id, routerLink: `/ingreso-emergencia/formulario/${id}` });
         } else {
-            this.breadcrumb.push({ label: 'Nuevo Ingreso', routerLink: '/ingreso-emergencia/formulario' });
+            this.loading = true;
+            this.emergenciasIngresosServices.getTemporal().subscribe({
+                next: (ingreso) => {
+                    this.loading = false;
+                    if (ingreso) {
+                        this.ingreso = ingreso;
+                        this.confirmationService.confirm({
+                            key: 'temporal',
+                            message: 'Ya existe un ingreso temporal. ¿Deseas continuar con este ingreso?',
+                            reject: () => {
+                                this.loading = true;
+                                this.ingreso = new EmergenciaIngreso();
+                                this.emergenciasIngresosServices.delete(ingreso.id).subscribe({
+                                    next: () => {
+                                        this.loading = false;
+                                        this.messageService.add({
+                                            severity: 'info',
+                                            summary: 'Ingreso Temporal Eliminado',
+                                            detail: 'Se ha eliminado el ingreso temporal existente.'
+                                        });
+                                    },
+                                    error: (error) => {
+                                        console.error('Error al eliminar ingreso temporal:', error);
+                                        this.loading = false;
+                                    }
+                                });
+                                this.breadcrumb.push({ label: 'Nuevo Ingreso', routerLink: '/ingreso-emergencia/formulario' });
+                            }
+                        });
+                    } else {
+                        this.ingreso = new EmergenciaIngreso();
+                        this.breadcrumb.push({ label: 'Nuevo Ingreso', routerLink: '/ingreso-emergencia/formulario' });
+                    }
+                },
+                error: (error) => {
+                    this.loading = false;
+                    console.error('Error al obtener ingresos temporales:', error);
+                }
+            });
         }
     }
 
     comenzar() {
-      this.validar = true;
-      if (!this.ingreso.documento || !this.ingreso.documentoTipo) {
+        this.validar = true;
+        if (!this.ingreso.documento || !this.ingreso.documentoTipo) {
             this.messageService.add({
                 severity: 'error',
                 summary: 'Error',
@@ -119,6 +174,7 @@ export class ErmergenciasIngresosFormularioComponent {
             this.focusArticulo = true;
             return;
         }
+        this.loading = true;
         this.emergenciasIngresosServices.agregarDetalle(this.ingreso.id, this.articuloBuscar).subscribe({
             next: (detalle) => {
                 this.ingreso.detalles.push(detalle);
@@ -239,11 +295,12 @@ export class ErmergenciasIngresosFormularioComponent {
     eliminarDetalle(detalle: any) {
         this.confirmationService.confirm({
             message: '¿Estás seguro de eliminar este detalle?',
+            key: 'confirmDelete',
             accept: () => {
                 this.loading = true;
                 this.emergenciasIngresosServices.eliminarDetalle(detalle.id).subscribe({
                     next: () => {
-                        this.ingreso.detalles = this.ingreso.detalles.filter(d => d.id !== detalle.id);
+                        this.ingreso.detalles = this.ingreso.detalles.filter((d) => d.id !== detalle.id);
                         this.loading = false;
                         this.messageService.add({
                             severity: 'success',

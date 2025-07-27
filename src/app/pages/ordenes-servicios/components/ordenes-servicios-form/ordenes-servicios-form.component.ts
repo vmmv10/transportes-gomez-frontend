@@ -134,6 +134,11 @@ export class OrdenesServiciosFormComponent {
                     this.documento.tipo = tipoDoc;
                     this.documento.numero = Number(doc);
                     this.getDocumento();
+                    this.orden.bodega = {
+                        id: 1,
+                        nombre: 'Principal',
+                        direccion: 'Castro'
+                    };
                 },
                 error: (error) => {
                     console.error('Error fetching document type:', error);

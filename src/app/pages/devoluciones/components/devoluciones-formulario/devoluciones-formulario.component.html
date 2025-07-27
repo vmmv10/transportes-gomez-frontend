@@ -92,3 +92,38 @@
 <app-modal-loading [visible]="loading"></app-modal-loading>
 <p-toast />
 <app-modal-cantidad (cantidadChange)="sumarCantidad($event)" [visible]="modalCantidadVisible"></app-modal-cantidad>
+<p-confirmdialog #confirmDelete key="confirmDelete">
+    <ng-template #message let-message>
+        <div class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700">
+            <i class="pi pi-trash !text-6xl text-red-500"></i>
+            <p>¿Está seguro de Eliminar la imagen?</p>
+        </div>
+    </ng-template>
+    <ng-template #footer>
+        <p-button label="Cancelar" variant="text" icon="pi pi-times" class="w-12" [fluid]="true" severity="secondary" (click)="confirmDelete.onReject()" />
+        <p-button label="Eliminar" icon="pi pi-check" class="w-12" [fluid]="true" severity="danger" (click)="confirmDelete.onAccept()" />
+    </ng-template>
+</p-confirmdialog>
+<p-confirmdialog #confirmDeleteDetalle key="confirmDeleteDetalle">
+    <ng-template #message let-message>
+        <div class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700">
+            <i class="pi pi-trash !text-6xl text-red-500"></i>
+            <p>¿Está seguro de Eliminar el detalle?</p>
+        </div>
+    </ng-template>
+    <ng-template #footer>
+        <p-button label="Cancelar" variant="text" icon="pi pi-times" class="w-12" [fluid]="true" severity="secondary" (click)="confirmDeleteDetalle.onReject()" />
+        <p-button label="Eliminar" icon="pi pi-check" class="w-12" [fluid]="true" severity="danger" (click)="confirmDeleteDetalle.onAccept()" />
+    </ng-template>
+</p-confirmdialog>
+<p-confirmdialog #temporal key="temporal" header="Ingreso Temporal">
+    <ng-template #message let-message>
+        <div class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700">
+            <p>¿Desea seguir trabajando en el Ingreso {{ devolucion.id }}?</p>
+        </div>
+    </ng-template>
+    <ng-template #footer>
+        <p-button label="Eliminar" class="w-12" [fluid]="true" severity="danger" (click)="temporal.onReject()" />
+        <p-button label="Continuar" class="w-12" [fluid]="true" severity="success" (click)="temporal.onAccept()" />
+    </ng-template>
+</p-confirmdialog>
