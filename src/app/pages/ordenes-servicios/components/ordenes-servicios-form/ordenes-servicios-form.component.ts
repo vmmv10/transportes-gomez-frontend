@@ -88,6 +88,7 @@ export class OrdenesServiciosFormComponent {
     visibleItem: boolean = false;
     habililitarSaldo: boolean = false;
     disabled: boolean = false;
+    displayConfirmacion: boolean = false;
 
     responsiveOptions: any[] = [
         {
@@ -334,10 +335,10 @@ export class OrdenesServiciosFormComponent {
     }
 
     agregarFila() {
-        if (this.orden.bodega && this.orden.bodega.id === 1) {
+        if (this.orden.bodega && this.orden.bodega.id === 4) {
             this.displayItem = true;
         }
-        if (this.orden.bodega && this.orden.bodega.id !== 1) {
+        if (this.orden.bodega && this.orden.bodega.id !== 4) {
             this.visibleItem = true;
             this.filtroSaldoBodega.bodega = this.orden.bodega;
         }
@@ -375,10 +376,10 @@ export class OrdenesServiciosFormComponent {
                 this.orden.detalles.push({ ...this.detalle });
             }
         }
-        if (this.orden.bodega && this.orden.bodega.id === 1) {
+        if (this.orden.bodega && this.orden.bodega.id === 4) {
             this.cerrardialogItem();
         }
-        if (this.orden.bodega && this.orden.bodega.id !== 1) {
+        if (this.orden.bodega && this.orden.bodega.id !== 4) {
             this.visibleItem = false;
         }
         this.detalle = new OrdenServicioDetalle();
@@ -440,13 +441,25 @@ export class OrdenesServiciosFormComponent {
     }
 
     confirmarGuardar() {
-        this.confirmationService.confirm({
-            message: '¿Está seguro de que desea guardar los cambios?',
-            accept: () => {
-                this.guardar();
-            },
-            key: 'cGuardar'
-        });
+        if (this.orden.detalles.length === 0) {
+            this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Debe agregar al menos un detalle a la orden de servicio' });
+            return;
+        }
+        if (this.orden && this.orden.bodega && this.orden.bodega.id === 4) {
+            this.confirmationService.confirm({
+                message: '¿Está seguro de que desea guardar los cambios?',
+                accept: () => {
+                    this.guardar();
+                },
+                key: 'cGuardar'
+            });
+        } else {
+            this.displayConfirmacion = true;
+        }
+    }
+
+    cerrardialogConfirmacion() {
+        this.displayConfirmacion = false;
     }
 
     confirmarEliminarDetalle(detalle: OrdenServicioDetalle) {

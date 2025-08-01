@@ -16,19 +16,27 @@ export class OrdenesServiciosService {
     }
 
     getAll(filtro: OrdenServicioFiltro): Observable<Page<OrdenServicio>> {
-        let link = this.url + '?';
-        if (filtro.enRuta !== undefined && filtro.enRuta !== null) {
-            console.log('Filtro enRuta:', filtro.enRuta);
-            link += `enRuta=${filtro.enRuta}&`;
-        }
-        if (filtro.id) {
-            link += `id=${filtro.id}&`;
-        }
+        let link = `${this.url}?size=${filtro.size}&page=${filtro.page}&sort=${filtro.key},${filtro.sort}`;
         if (filtro.escuela) {
-            link += `escuela=${filtro.escuela.id}&`;
+            link += '&escuelaId=' + filtro.escuela.id;
         }
-        if (filtro.fecha) {
-            link += `fecha=${filtro.fecha.toISOString()}&`;
+        if (filtro.fechaDesde) {
+            link += '&fechaDesde=' + filtro.fechaDesde.toISOString();
+        }
+        if (filtro.fechaHasta) {
+            link += '&fechaHasta=' + filtro.fechaHasta.toISOString();
+        }
+        if (filtro.estado) {
+            link += '&estado=' + filtro.estado;
+        }
+        if (filtro.documentoTipo && filtro.documentoTipo.id) {
+            link += '&documentoTipoId=' + filtro.documentoTipo.id;
+        }
+        if (filtro.documentoNumero) {
+            link += '&documentoNumero=' + filtro.documentoNumero;
+        }
+        if (filtro.enRuta !== undefined) {
+            link += '&enRuta=' + filtro.enRuta;
         }
         return this.authHttp.get<Page<OrdenServicio>>(link);
     }

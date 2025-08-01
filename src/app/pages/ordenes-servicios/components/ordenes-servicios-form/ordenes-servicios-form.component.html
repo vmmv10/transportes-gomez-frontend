@@ -11,7 +11,7 @@
             </div>
             <div class="flex flex-col gap-2 w-12">
                 <div class="flex flex-col gap-2 w-12">
-                    <label for="escuela">Escuela Destino</label>
+                    <label for="escuela">Establecimiento Destino</label>
                     <app-escuelas-select [disabled]="disabled" [validar]="validar" [(escuela)]="orden.escuela" [showClear]="true" [showFilter]="true" class="w-12"></app-escuelas-select>
                 </div>
             </div>
@@ -41,15 +41,15 @@
             </table>
         </p-panel>
     </div>
-    <div *ngIf="orden.bodega && orden.bodega.id == 1 && orden.id == 0 && orden.escuela" class="flex flex-column gap-3 card">
+    <div *ngIf="orden.bodega && orden.bodega.id == 4 && orden.id == 0 && orden.escuela" class="flex flex-column gap-3 card">
         <app-documentos-modal-select class="flex w-12" [asignado]="false" [documento]="documento" (documentoChange)="documentoChange($event)"></app-documentos-modal-select>
     </div>
-    <div *ngIf="(orden.bodega && orden.bodega.id != 1 && orden.escuela) || (orden.bodega && orden.bodega.id == 1 && orden.documento.id > 0 && orden.escuela)" class="flex flex-column gap-2 card">
+    <div *ngIf="(orden.bodega && orden.bodega.id != 4 && orden.escuela) || (orden.bodega && orden.bodega.id == 4 && orden.documento.id > 0 && orden.escuela)" class="flex flex-column gap-2 card">
         <div class="flex flex-row gap-2 w-12 justify-content-between">
             <h3 class="text-lg font-semibold mb-0 {{ validar && orden.detalles.length == 0 ? 'text-red-600' : '' }}">Detalles de la Orden</h3>
             <i *ngIf="validar && orden.detalles.length == 0" class="text-xl pi pi-exclamation-triangle text-red-600 align-items-center flex"></i>
         </div>
-        <p-table *ngIf="(orden.bodega && orden.bodega.id != 1) || (orden.bodega && orden.bodega.id == 1 && orden.documento.id > 0)" [value]="orden.detalles" id="ordenes-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
+        <p-table *ngIf="(orden.bodega && orden.bodega.id != 4) || (orden.bodega && orden.bodega.id == 4 && orden.documento.id > 0)" [value]="orden.detalles" id="ordenes-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
             <ng-template #header>
                 <tr>
                     <th class="text-center">Insumo</th>
@@ -72,7 +72,7 @@
             </ng-template>
         </p-table>
     </div>
-    <div class="flex flex-column gap-3 card" *ngIf="(orden.bodega && orden.bodega.id != 1 && orden.escuela) || (orden.bodega && orden.bodega.id == 1 && orden.documento.id > 0 && orden.escuela)">
+    <div class="flex flex-column gap-3 card" *ngIf="(orden.bodega && orden.bodega.id != 4 && orden.escuela) || (orden.bodega && orden.bodega.id == 4 && orden.documento.id > 0 && orden.escuela)">
         <textarea [(ngModel)]="orden.observaciones" [disabled]="disabled" class="w-12 p-inputtext p-component" rows="5" placeholder="Ingrese observaciones"></textarea>
     </div>
     <div class="flex flex-column gap-2 card w-12" *ngIf="orden.id > 0 && imagenes && imagenes.length > 0">
@@ -163,7 +163,7 @@
         </p-fileupload>
     </div>
 </div>
-<div class="flex flex-column md:flex-row gap-2 card w-12" *ngIf="(orden.bodega && orden.bodega.id != 1 && orden.escuela) || (orden.bodega && orden.bodega.id == 1 && orden.documento.id > 0 && orden.escuela)">
+<div class="flex flex-column md:flex-row gap-2 card w-12" *ngIf="(orden.bodega && orden.bodega.id != 4 && orden.escuela) || (orden.bodega && orden.bodega.id == 4 && orden.documento.id > 0 && orden.escuela)">
     <p-button class="w-12" size="large" [fluid]="true" label="Volver" severity="secondary" icon="pi pi-times" [routerLink]="['/ordenes-servicios']" />
     <p-button *ngIf="orden.id == 0" class="w-12" size="large" [fluid]="true" [label]="'Guardar'" severity="success" icon="pi pi-save" (click)="confirmarGuardar()" />
     <p-button *ngIf="orden.id != 0" class="w-12" size="large" [fluid]="true" [label]="'Actualizar'" severity="success" icon="pi pi-save" (click)="guardar()" />
@@ -238,3 +238,26 @@
         <p-button label="Eliminar" icon="pi pi-check" class="w-12" [fluid]="true" severity="danger" (click)="cEliminarDetalle.onAccept()" />
     </ng-template>
 </p-confirmdialog>
+<p-dialog *ngIf="orden && orden.detalles && orden.detalles.length > 0" header="Confirmar Orden de Servicio" [modal]="true" [(visible)]="displayConfirmacion" [style]="{ width: '75rem' }">
+    <p-table [value]="orden.detalles" id="ordenes-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
+        <ng-template #header>
+            <tr>
+                <th class="text-center">Insumo</th>
+                <th class="text-center">Cantidad</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-producto>
+            <tr>
+                <td class="text-center">{{ producto.nombre }}</td>
+                <td class="text-center">{{ producto.cantidad }}</td>
+            </tr>
+        </ng-template>
+        <ng-template #emptymesage>
+            <div class="flex items-center w-12 p-2 text-center justify-between">Sin Items</div>
+        </ng-template>
+    </p-table>
+    <ng-template #footer>
+        <p-button label="Cancelar" [text]="true" severity="secondary" class="w-12" [fluid]="true" (click)="cerrardialogConfirmacion()" />
+        <p-button label="Guardar" severity="success" class="w-12" [fluid]="true" (click)="guardar()" />
+    </ng-template>
+</p-dialog>

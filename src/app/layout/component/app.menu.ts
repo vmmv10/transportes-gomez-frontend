@@ -39,16 +39,17 @@ export class AppMenu {
                     { label: 'Documentos', icon: 'pi pi-fw pi-file-import', routerLink: ['/documents'] },
                     { label: 'Entregas', icon: 'pi pi-fw pi-envelope', routerLink: ['/entregas'] },
                     { label: 'Rutas', icon: 'pi pi-fw pi-map', routerLink: ['/rutas'] },
-                    { label: 'Inventario', icon: 'pi pi-fw pi-warehouse',
+                    {
+                        label: 'Inventario',
+                        icon: 'pi pi-fw pi-warehouse',
                         items: [
-                            { label: 'Items', routerLink: ['/items'] },
+                            { label: 'Articulos', routerLink: ['/items'] },
                             { label: 'Saldo Bodega', routerLink: ['/inventario'] },
                             { label: 'Marcas', routerLink: ['/marcas'] },
-                            { label: 'Categorías', routerLink: ['/categorias'] },
+                            { label: 'Categorías', routerLink: ['/categorias'] }
                         ]
-                     },
-                    { label: 'Devolución', icon: 'pi pi-fw pi-warehouse', routerLink: ['/devoluciones'] },
-                    { label: 'Ingreso Emergencias', icon: 'pi pi-fw pi-warehouse', routerLink: ['/ingreso-emergencia'] },
+                    },
+                    { label: 'Ingresos a Bodega', icon: 'pi pi-fw pi-cart-minus', routerLink: ['/ingresos'] },
                     { label: 'Proveedores', icon: 'pi pi-fw pi-user', routerLink: ['/proveedores'] },
                     { label: 'Transportes', icon: 'pi pi-fw pi-truck', routerLink: ['/transportes'] }
                 ].filter((item) => this.canAccess(item.label))
@@ -63,6 +64,10 @@ export class AppMenu {
 
         if (this.roles.includes('Conductor')) {
             return ['Entregas', 'Rutas'].includes(menuLabel);
+        }
+
+        if (this.roles.includes('Cliente')) {
+            return ['Establecimientos', 'Documentos'].includes(menuLabel);
         }
 
         return false;

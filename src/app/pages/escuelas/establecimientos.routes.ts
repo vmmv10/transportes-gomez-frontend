@@ -5,7 +5,7 @@ import { EscuelasFormComponent } from './components/escuelas-form/escuelas-form.
 import { EscuelasListComponent } from './components/escuelas-list/escuelas-list.component';
 
 export default [
-    { path: '', component: EscuelasListComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
+    { path: '', component: EscuelasListComponent, canActivate: [authGuard], data: { roles: ['Administrador', 'Cliente'] } },
     { path: 'formulario', component: EscuelasFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'formulario/:id', component: EscuelasFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'dashboard/:id', component: EscuelasDashboardComponent, canActivate: [authGuard], data: { roles: ['Administrador', 'Cliente'] } }

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { OrdenServicio } from '../../../ordenes-servicios/models/orden-servicio.model';
@@ -16,14 +16,15 @@ import { ToastModule } from 'primeng/toast';
 import { ButtonGroupModule } from 'primeng/buttongroup';
 import { BadgeModule } from 'primeng/badge';
 import { ModalCantidadComponent } from '../../../uikit/components/modal-cantidad/modal-cantidad.component';
-import { EmergenciaIngreso } from '../../models/emergencia-ingreso.model';
-import { EmergenciaIngresosDetalle } from '../../models/emergencia-ingresos-detalle.model';
-import { EmergenciasIngresosService } from '../../services/emergencias-ingresos.service';
 import { DocumentosTipoSelectComponent } from '../../../documentos/components/documentos-tipo-select/documentos-tipo-select.component';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { Ingreso } from '../../models/ingreso.model';
+import { IngresoDetalle } from '../../models/ingreso-detalle.model';
+import { IngresosService } from '../../services/ingresos.service';
+import { BodegasSelectComponent } from '../../../bodegas/components/bodegas-select/bodegas-select.component';
 
 @Component({
-    selector: 'app-ermergencias-ingresos-formulario',
+    selector: 'app-ingresos-formulario',
     imports: [
         BreadcrumbModule,
         DocumentosTipoSelectComponent,
@@ -40,35 +41,37 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
         InputNumberModule,
         InputTextModule,
         ModalLoadingComponent,
-        ConfirmDialogModule
+        ConfirmDialogModule,
+        BodegasSelectComponent
     ],
-    templateUrl: './ermergencias-ingresos-formulario.component.html',
-    styleUrl: './ermergencias-ingresos-formulario.component.scss',
+    templateUrl: './ingresos-formulario.component.html',
+    styleUrl: './ingresos-formulario.component.scss',
     standalone: true,
     providers: [MessageService, ConfirmationService]
 })
-export class ErmergenciasIngresosFormularioComponent {
+export class IngresosFormularioComponent {
     breadcrumb: MenuItem[] = [];
     ordenesServicio: OrdenServicio[] = [];
-    ingreso: EmergenciaIngreso = new EmergenciaIngreso();
+    ingreso: Ingreso = new Ingreso();
     articuloBuscar: string = '';
     focusArticulo: boolean = false;
     loading: boolean = false;
     modoUnidad: boolean = true;
     modalCantidadVisible: boolean = false;
-    detalleSeleccionado: EmergenciaIngresosDetalle | undefined;
+    detalleSeleccionado: IngresoDetalle | undefined;
     modificarCantidad: boolean = false;
     validar: boolean = false;
 
     constructor(
         private route: ActivatedRoute,
-        private emergenciasIngresosServices: EmergenciasIngresosService,
+        private router: Router,
+        private ingresosService: IngresosService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService
     ) {
         this.breadcrumb = [
             { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
-            { label: 'Ingresos Emergencias', routerLink: '/ingreso-emergencia' }
+            { label: 'Ingresos', routerLink: '/ingresos' }
         ];
     }
 
@@ -76,10 +79,10 @@ export class ErmergenciasIngresosFormularioComponent {
         const id = this.route.snapshot.paramMap.get('id');
         if (id) {
             this.get(id);
-            this.breadcrumb.push({ label: 'Ingreso ' + id, routerLink: `/ingreso-emergencia/formulario/${id}` });
+            this.breadcrumb.push({ label: 'Ingreso ' + id, routerLink: `/ingresos/formulario/${id}` });
         } else {
             this.loading = true;
-            this.emergenciasIngresosServices.getTemporal().subscribe({
+            this.ingresosService.getTemporal().subscribe({
                 next: (ingreso) => {
                     this.loading = false;
                     if (ingreso) {
@@ -89,8 +92,8 @@ export class ErmergenciasIngresosFormularioComponent {
                             message: 'Ya existe un ingreso temporal. ¿Deseas continuar con este ingreso?',
                             reject: () => {
                                 this.loading = true;
-                                this.ingreso = new EmergenciaIngreso();
-                                this.emergenciasIngresosServices.delete(ingreso.id).subscribe({
+                                this.ingreso = new Ingreso();
+                                this.ingresosService.delete(ingreso.id).subscribe({
                                     next: () => {
                                         this.loading = false;
                                         this.messageService.add({
@@ -104,12 +107,12 @@ export class ErmergenciasIngresosFormularioComponent {
                                         this.loading = false;
                                     }
                                 });
-                                this.breadcrumb.push({ label: 'Nuevo Ingreso', routerLink: '/ingreso-emergencia/formulario' });
+                                this.breadcrumb.push({ label: 'Nuevo Ingreso', routerLink: '/ingresos/formulario' });
                             }
                         });
                     } else {
-                        this.ingreso = new EmergenciaIngreso();
-                        this.breadcrumb.push({ label: 'Nuevo Ingreso', routerLink: '/ingreso-emergencia/formulario' });
+                        this.ingreso = new Ingreso();
+                        this.breadcrumb.push({ label: 'Nuevo Ingreso', routerLink: '/ingresos/formulario' });
                     }
                 },
                 error: (error) => {
@@ -132,7 +135,7 @@ export class ErmergenciasIngresosFormularioComponent {
         }
         this.validar = false;
         this.loading = true;
-        this.emergenciasIngresosServices.crear(this.ingreso).subscribe({
+        this.ingresosService.crear(this.ingreso).subscribe({
             next: (ingreso) => {
                 this.ingreso = ingreso;
                 this.loading = false;
@@ -145,18 +148,18 @@ export class ErmergenciasIngresosFormularioComponent {
         });
     }
 
-    buscarArticulo() {
+    async buscarArticulo() {
         if (this.articuloBuscar.trim() === '') {
             return;
         }
         let existeDetalle = false;
         if (this.ingreso && this.ingreso.detalles) {
-            this.ingreso.detalles.forEach((detalle) => {
+            this.ingreso.detalles.forEach(async (detalle) => {
                 if (detalle.item.codigo === this.articuloBuscar) {
                     existeDetalle = true;
                     if (this.modoUnidad) {
                         this.loading = true;
-                        this.sumarCantidadDetalle(detalle, 1);
+                        await this.sumarCantidadDetalle(detalle, 1);
                         this.loading = false;
                     } else {
                         this.detalleSeleccionado = detalle;
@@ -174,17 +177,23 @@ export class ErmergenciasIngresosFormularioComponent {
             return;
         }
         this.loading = true;
-        this.emergenciasIngresosServices.agregarDetalle(this.ingreso.id, this.articuloBuscar).subscribe({
-            next: (detalle) => {
-                this.ingreso.detalles.push(detalle);
-                this.articuloBuscar = '';
+        this.ingresosService.agregarDetalle(this.ingreso.id, this.articuloBuscar).subscribe({
+            next: async (detalle) => {
                 this.loading = false;
-                this.focusArticulo = true;
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Éxito',
-                    detail: 'Detalle agregado correctamente'
-                });
+                if (!this.ingreso.detalles) {
+                    this.ingreso.detalles = [];
+                }
+                this.ingreso.detalles.push(detalle);
+                if (this.modoUnidad) {
+                    this.articuloBuscar = '';
+                    this.loading = true;
+                    await this.sumarCantidadDetalle(detalle, 1);
+                    this.loading = false;
+                } else {
+                    this.modalCantidadVisible = true;
+                    this.detalleSeleccionado = detalle;
+                    this.modificarCantidad = false;
+                }
             },
             error: (error) => {
                 this.loading = false;
@@ -195,7 +204,7 @@ export class ErmergenciasIngresosFormularioComponent {
 
     get(id: string) {
         this.loading = true;
-        this.emergenciasIngresosServices.getById(id).subscribe({
+        this.ingresosService.getById(id).subscribe({
             next: (ingreso) => {
                 this.ingreso = ingreso;
                 this.loading = false;
@@ -210,7 +219,7 @@ export class ErmergenciasIngresosFormularioComponent {
 
     async sumarCantidadDetalle(detalle: any, cantidad: number) {
         try {
-            await this.emergenciasIngresosServices.sumarCantidadDetalle(detalle.id, { cantidad }).toPromise();
+            await this.ingresosService.sumarCantidadDetalle(detalle.id, { cantidad }).toPromise();
             this.ingreso.detalles.forEach((d) => {
                 if (d.id === detalle.id) {
                     d.cantidad += cantidad;
@@ -255,15 +264,15 @@ export class ErmergenciasIngresosFormularioComponent {
 
     abrir() {
         this.loading = true;
-        this.emergenciasIngresosServices.abrir(this.ingreso.id).subscribe({
-            next: (ingreso) => {
+        this.ingresosService.abrir(this.ingreso.id).subscribe({
+            next: () => {
                 this.loading = false;
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Éxito',
                     detail: 'Actualizado correctamente'
                 });
-                this.ngOnInit();
+                this.router.navigate(['/ingresos/formulario', this.ingreso.id]);
             },
             error: (error) => {
                 console.error('Error al abrir:', error);
@@ -274,7 +283,7 @@ export class ErmergenciasIngresosFormularioComponent {
 
     cerrar() {
         this.loading = true;
-        this.emergenciasIngresosServices.cerrar(this.ingreso.id).subscribe({
+        this.ingresosService.cerrar(this.ingreso.id).subscribe({
             next: (ingreso) => {
                 this.loading = false;
                 this.messageService.add({
@@ -297,7 +306,7 @@ export class ErmergenciasIngresosFormularioComponent {
             key: 'confirmDelete',
             accept: () => {
                 this.loading = true;
-                this.emergenciasIngresosServices.eliminarDetalle(detalle.id).subscribe({
+                this.ingresosService.eliminarDetalle(detalle.id).subscribe({
                     next: () => {
                         this.ingreso.detalles = this.ingreso.detalles.filter((d) => d.id !== detalle.id);
                         this.loading = false;
@@ -321,7 +330,7 @@ export class ErmergenciasIngresosFormularioComponent {
         });
     }
 
-    editarDetalle(detalle: EmergenciaIngresosDetalle) {
+    editarDetalle(detalle: IngresoDetalle) {
         this.detalleSeleccionado = detalle;
         this.modificarCantidad = true;
         this.modalCantidadVisible = true;
@@ -331,10 +340,10 @@ export class ErmergenciasIngresosFormularioComponent {
     sumarCantidad(cantidad: number) {
         if (this.detalleSeleccionado) {
             this.loading = true;
-            let request: EmergenciaIngresosDetalle = new EmergenciaIngresosDetalle();
+            let request: IngresoDetalle = new IngresoDetalle();
             request.cantidad = cantidad;
             if (this.modificarCantidad) {
-                this.emergenciasIngresosServices.modificarDetalle(this.detalleSeleccionado.id, request).subscribe({
+                this.ingresosService.modificarDetalle(this.detalleSeleccionado.id, request).subscribe({
                     next: () => {
                         this.ingreso.detalles.forEach((d) => {
                             if (this.detalleSeleccionado && d.id === this.detalleSeleccionado.id) {
@@ -349,6 +358,7 @@ export class ErmergenciasIngresosFormularioComponent {
                         });
                         this.modalCantidadVisible = false;
                         this.focusArticulo = true;
+                        this.articuloBuscar = '';
                     },
                     error: (error) => {
                         console.error('Error al modificar cantidad de detalle:', error);
@@ -361,7 +371,7 @@ export class ErmergenciasIngresosFormularioComponent {
                     }
                 });
             } else {
-                this.emergenciasIngresosServices.sumarCantidadDetalle(this.detalleSeleccionado.id, request).subscribe({
+                this.ingresosService.sumarCantidadDetalle(this.detalleSeleccionado.id, request).subscribe({
                     next: () => {
                         this.ingreso.detalles.forEach((d) => {
                             if (this.detalleSeleccionado && d.id === this.detalleSeleccionado.id) {

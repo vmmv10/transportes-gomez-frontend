@@ -17,11 +17,12 @@ import { Escuela } from '../../../escuelas/models/escuela.models';
 import { DocumentosTipoSelectComponent } from '../../../documentos/components/documentos-tipo-select/documentos-tipo-select.component';
 import { EscuelasSelectComponent } from '../../../escuelas/components/escuelas-select/escuelas-select.component';
 import { ToastModule } from 'primeng/toast';
+import { PaginatorModule } from 'primeng/paginator';
 
 @Component({
     standalone: true,
     selector: 'app-ordenes-servicios-modal-select',
-    imports: [CommonModule, ToastModule, DialogModule, ButtonModule, TableModule, InputNumberModule, InputTextModule, FormsModule, TagModule, FechaHoraPipe, DocumentosTipoSelectComponent, EscuelasSelectComponent],
+    imports: [CommonModule, PaginatorModule, ToastModule, DialogModule, ButtonModule, TableModule, InputNumberModule, InputTextModule, FormsModule, TagModule, FechaHoraPipe, DocumentosTipoSelectComponent, EscuelasSelectComponent],
     templateUrl: './ordenes-servicios-modal-select.component.html',
     styleUrl: './ordenes-servicios-modal-select.component.scss',
     providers: [MessageService]
@@ -95,5 +96,11 @@ export class OrdenesServiciosModalSelectComponent {
             return this.MessageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Debe seleccionar al menos una orden de servicio.' });
         }
         this.visible = false;
+    }
+
+    pageChange(event: any) {
+        this.filtro.page = event.page;
+        this.filtro.size = event.rows;
+        this.getData();
     }
 }

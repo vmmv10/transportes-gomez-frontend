@@ -23,13 +23,9 @@ export default [
     { path: 'documentation', component: Documentation },
     { path: 'crud', component: Crud },
     { path: 'empty', component: Empty },
-    { path: 'establecimientos',
-        children: [{ path: '', loadChildren: () => import('./escuelas/establecimientos.routes') }]
-    },
-    { path: 'ingreso-emergencia',
-        children: [{ path: '', loadChildren: () => import('./emergencias-ingresos/routes') }]
-    },
-    { path: '', component: Dashboard, canActivate: [authGuard] },
+    { path: 'establecimientos', children: [{ path: '', loadChildren: () => import('./escuelas/establecimientos.routes') }] },
+    { path: 'ingresos', children: [{ path: '', loadChildren: () => import('./ingresos/routes') }] },
+    { path: '', component: Dashboard, canActivate: [authGuard], data: { roles: ['Conductor', 'Administrador', 'Cliente'] } },
     { path: 'rutas', component: RutasComponent, canActivate: [authGuard], data: { roles: ['Conductor', 'Administrador'] } },
     { path: 'rutas/formulario', component: RutasFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'rutas/formulario/:id', component: RutasFormComponent, canActivate: [authGuard], data: { roles: ['Conductor', 'Administrador'] } },
@@ -49,7 +45,5 @@ export default [
     { path: 'ordenes-servicios/formulario', component: OrdenesServiciosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'ordenes-servicios/formulario/:id', component: OrdenesServiciosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'ordenes-servicios/formulario/documento/:documento/:tipo', component: OrdenesServiciosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
-    { path: 'usuarios/perfil', component: UsuariosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador', 'Conductor','Cliente'] } },
-
+    { path: 'usuarios/perfil', component: UsuariosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador', 'Conductor', 'Cliente'] } }
 ] as Routes;
-

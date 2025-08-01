@@ -16,6 +16,8 @@ export class OrdenServicioFiltro {
     enRuta: boolean | undefined;
     entregado: boolean | undefined;
     bodega: Bodega | undefined;
+    sort: String = 'desc';
+    key: String = 'id';
 
     constructor() {}
 }

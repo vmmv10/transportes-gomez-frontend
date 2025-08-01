@@ -7,15 +7,15 @@
     (click)="showDialog()"
     [ngClass]="ordenServicio && ordenServicio.id > 0 ? 'p-button-success p-button-outlined' : 'p-button-success'"
 ></button>
-<p-dialog (onShow)="getData()" header="Seleccionar Documento" [modal]="true" [(visible)]="visible">
+<p-dialog (onShow)="getData()" header="Seleccionar Ordenes" [modal]="true" [(visible)]="visible" [style]="{ width: '89vw' }" [breakpoints]="{ '1199px': '89vw', '575px': '90vw' }">
     <div class="flex flex-column w-12 gap-2">
         <p-table
             [value]="ordenesServicios && ordenesServicios.content ? ordenesServicios.content : []"
             id="ordenesServicios-table"
             dataKey="id"
             [loading]="loading"
-            [tableStyle]="{ 'min-width': '50rem' }"
-            [selectionMode]="single ? 'single':'multiple'"
+            class="w-12"
+            [selectionMode]="single ? 'single' : 'multiple'"
             [(selection)]="ordenesServiciosSeleccionados"
         >
             <ng-template #header>
@@ -45,8 +45,8 @@
                     </td>
                     <td class="text-center">{{ item.id }}</td>
                     <td class="text-center">{{ item.fecha | fechaHora }}</td>
-                    <td class="text-center">{{ item.documento.numero }}</td>
-                    <td class="text-center">{{ item.documento.tipo.nombre }}</td>
+                    <td class="text-center">{{ item.documento && item.documento.numero ? item.documento.numero : '' }}</td>
+                    <td class="text-center">{{ item.documento && item.documento.tipo && item.documento.tipo.nombre ? item.documento.tipo.nombre : '' }}</td>
                     <td class="text-center">{{ item.escuela.nombre }}</td>
                     <td class="text-center" *ngIf="item.entregado">
                         <p-tag severity="success" value="Entregado" />
@@ -55,6 +55,9 @@
                         <p-tag severity="warn" value="No entregado" />
                     </td>
                 </tr>
+            </ng-template>
+            <ng-template #summary>
+                <p-paginator (onPageChange)="pageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="ordenesServicios ? ordenesServicios.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
             </ng-template>
         </p-table>
     </div>

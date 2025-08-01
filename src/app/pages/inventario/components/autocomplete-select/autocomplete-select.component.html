@@ -1,4 +1,4 @@
-<p-autocomplete optionLabel="item.nombre" (onSelect)="seleccionado($event)" [(ngModel)]="saldo" [fluid]="true" class="w-12" [dropdown]="true" [suggestions]="data" (completeMethod)="search($event)">
+<p-autocomplete optionLabel="item.nombre" (onSelect)="seleccionado($event)" appendTo="body" [(ngModel)]="saldo" [fluid]="true" class="w-12" [dropdown]="true" [suggestions]="data" (completeMethod)="search($event)">
     <ng-template let-saldo #item>
         <div class="flex items-center gap-2">
             <span class="font-semibold">{{ saldo.item.nombre }} ({{ saldo.saldo }})</span>

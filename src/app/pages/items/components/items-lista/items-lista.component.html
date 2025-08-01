@@ -9,7 +9,7 @@
                 <p-inputicon>
                     <i class="pi pi-search"></i>
                 </p-inputicon>
-                <input pInputText type="text" (ngModelChange)="getData()" [(ngModel)]="filtro.nombre" placeholder="Buscar por nombre" class="p-fluid w-12" />
+                <input pInputText type="text" (keydown.enter)="getData()" [(ngModel)]="filtro.nombre" placeholder="Buscar por nombre" class="p-fluid w-12" />
             </p-iconfield>
         </div>
         <app-marcas-select [(marca)]="filtro.marca" [showClear]="true" [showFilter]="true" [validar]="false" />
