@@ -43,7 +43,7 @@
         </ng-template>
     </p-table>
 </div>
-<app-table-mobile [card]="true" [mostrarAcciones]="true" (accion)="resolverAccion($event)" [acciones]="acciones" [data]="data ? data.content : []" [campos]="campos"></app-table-mobile>
+<app-table-mobile [size]="filtro.size" [page]="filtro.page" (pageChange)="pageChange($event)" [card]="true" [mostrarAcciones]="true" (accion)="resolverAccion($event)" [acciones]="acciones" [data]="data ? data.content : []" [campos]="campos"></app-table-mobile>
 <app-modal-loading [visible]="loading" />
 <p-toast />
 <p-confirmdialog #cProveedor key="cProveedor">

@@ -89,6 +89,7 @@ export class OrdenesServiciosFormComponent {
     habililitarSaldo: boolean = false;
     disabled: boolean = false;
     displayConfirmacion: boolean = false;
+    indexDetalle: number = -1;
 
     responsiveOptions: any[] = [
         {
@@ -349,32 +350,20 @@ export class OrdenesServiciosFormComponent {
             this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Debe completar todos los campos del detalle' });
             return;
         }
-        if (this.orden.bodega && this.orden.bodega.id !== 1) {
+        if (this.orden.bodega && this.orden.bodega.id !== 4) {
             if (this.detalle.saldoBodega && this.detalle.cantidad > this.detalle.saldoBodega.saldo) {
                 this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'La cantidad no puede ser mayor al saldo disponible' });
                 return;
             }
         }
-        if (this.detalle.id) {
-            const index = this.orden.detalles.findIndex((d) => d.id === this.detalle.id);
-            if (index !== -1) {
-                this.orden.detalles[index] = { ...this.detalle };
-            }
+        if (!this.orden.detalles){
+            this.orden.detalles = [];
+        }
+        if (this.indexDetalle !== -1) {
+            this.orden.detalles[this.indexDetalle] = { ...this.detalle };
+            this.indexDetalle = -1;
         } else {
-            if (this.orden.detalles && this.orden.detalles.length > 0) {
-                let exists = false;
-                this.orden.detalles.forEach((d) => {
-                    if ((this.orden.bodega && this.orden.bodega.id === 1 && d.nombre === this.detalle.nombre) || (this.orden.bodega && this.orden.bodega.id !== 1 && d.saldoBodega && d.saldoBodega.item.id === this.detalle.saldoBodega?.item.id)) {
-                        d.cantidad = this.detalle.cantidad;
-                        exists = true;
-                    }
-                });
-                if (!exists) {
-                    this.orden.detalles.push({ ...this.detalle });
-                }
-            } else {
-                this.orden.detalles.push({ ...this.detalle });
-            }
+            this.orden.detalles.push({ ...this.detalle });
         }
         if (this.orden.bodega && this.orden.bodega.id === 4) {
             this.cerrardialogItem();
@@ -391,12 +380,13 @@ export class OrdenesServiciosFormComponent {
         this.detalle = new OrdenServicioDetalle();
     }
 
-    editarDetalle(detalle: OrdenServicioDetalle) {
-        this.detalle = { ...detalle };
-        if (this.orden.bodega && this.orden.bodega.id === 1) {
+    editarDetalle(index: number) {
+        this.detalle = { ...this.orden.detalles[index] };
+        this.indexDetalle = index;
+        if (this.orden.bodega && this.orden.bodega.id === 4) {
             this.displayItem = true;
         }
-        if (this.orden.bodega && this.orden.bodega.id !== 1) {
+        if (this.orden.bodega && this.orden.bodega.id !== 4) {
             this.visibleItem = true;
             this.filtroSaldoBodega.bodega = this.orden.bodega;
         }

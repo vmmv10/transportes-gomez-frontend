@@ -54,7 +54,7 @@
     </p-table>
 </div>
 <ng-container *ngIf="filtro.bodega && data && data.content">
-    <app-table-mobile [mostrarAcciones]="true" [data]="data.content" [campos]="campos"></app-table-mobile>
+    <app-table-mobile [size]="filtro.size" [page]="filtro.page" (pageChange)="pageChange($event)" [mostrarAcciones]="true" [data]="data.content" [campos]="campos"></app-table-mobile>
 </ng-container>
 <app-modal-loading [visible]="loading"></app-modal-loading>
 /

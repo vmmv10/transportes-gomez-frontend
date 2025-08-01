@@ -43,7 +43,7 @@
             <p-paginator (onPageChange)="onPageChange($event)" [first]="filtro.page * filtro.size" [rows]="data && data.size ? data.size : 0" [totalRecords]="data && data.totalElements ? data.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
         </ng-template>
     </p-table>
-    <app-table-mobile [mostrarAcciones]="true" (accion)="resolverAccion($event)" [acciones]="acciones" [data]="data ? data.content : []" [campos]="campos"></app-table-mobile>
+    <app-table-mobile [size]="filtro.size" [page]="filtro.page" (pageChange)="onPageChange($event)" [mostrarAcciones]="true" (accion)="resolverAccion($event)" [acciones]="acciones" [data]="data ? data.content : []" [campos]="campos"></app-table-mobile>
 </div>
 <app-modal-loading [visible]="loading" />
 <p-confirmdialog #eliminarRuta key="eliminarRuta">

@@ -48,7 +48,7 @@
         </ng-template>
     </p-table>
 </div>
-<app-table-mobile [mostrarAcciones]="true" (accion)="resolverAccion($event)" [acciones]="acciones" [data]="ordenes ? ordenes.content : []" [campos]="campos"></app-table-mobile>
+<app-table-mobile [size]="filtro.size" [page]="filtro.page" (pageChange)="pageChange($event)" [mostrarAcciones]="true" [acciones]="acciones" [data]="ordenes ? ordenes.content : []" [campos]="campos"></app-table-mobile>
 <app-modal-loading [visible]="loading" />
 <p-confirmdialog #eliminarOs key="eliminarOs">
     <ng-template #message let-message>

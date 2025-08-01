@@ -21,7 +21,7 @@ export class MarcasService {
   }
 
   getAll(filtro: MarcaFiltro): Observable<Page<Marca>> {
-    let link = this.url + '?size=' + filtro.size + '&page=' + filtro.page;
+    let link = this.url + '?size=' + filtro.size + '&page=' + filtro.page + '&sort=' + filtro.key + ',' + filtro.sort;
     if (filtro.nombre) {
       link += '&nombre=' + filtro.nombre;
     }
@@ -44,6 +44,6 @@ export class MarcasService {
   }
 
   desactivate(id: number): Observable<void> {
-    return this.authHttp.put<void>(this.url + '/' + id + '/desactivate', null);
+    return this.authHttp.put<void>(this.url + '/' + id + '/desactive', null);
   }
 }

@@ -57,13 +57,13 @@
                     <th class="text-center"><p-button [disabled]="disabled" pTooltip="Agregar Item" icon="pi pi-plus" [rounded]="true" [text]="true" severity="success" (click)="agregarFila()" /></th>
                 </tr>
             </ng-template>
-            <ng-template #body let-producto>
+            <ng-template #body let-producto let-index="rowIndex">
                 <tr>
                     <td class="text-center">{{ producto.nombre }}</td>
                     <td class="text-center">{{ producto.cantidad }}</td>
                     <td class="text-center">
                         <p-button [disabled]="disabled" pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminarDetalle(producto)" />
-                        <p-button [disabled]="disabled" pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" (click)="editarDetalle(producto)" />
+                        <p-button [disabled]="disabled" pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" (click)="editarDetalle(index)" />
                     </td>
                 </tr>
             </ng-template>
@@ -103,7 +103,7 @@
             name="myfile[]"
             url="https://www.primefaces.org/cdn/api/upload.php"
             [multiple]="true"
-            accept="application/pdf"
+            accept="application/pdf, image/*"
             maxFileSize="1000000"
             (onUpload)="onTemplatedUpload()"
             (onSelect)="onSelectedFiles($event)"

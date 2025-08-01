@@ -48,6 +48,6 @@
         </ng-template>
     </p-table>
 </div>
-<app-table-mobile [card]="card" [mostrarAcciones]="true" [acciones]="acciones" [data]="entregas ? entregas.content : []" [campos]="campos"></app-table-mobile>
+<app-table-mobile [size]="filtro.size" [page]="filtro.page" (pageChange)="pageChange($event)" [card]="card" [mostrarAcciones]="true" [acciones]="acciones" [data]="entregas ? entregas.content : []" [campos]="campos"></app-table-mobile>
 <app-modal-loading [visible]="loading" />
 <p-toast />

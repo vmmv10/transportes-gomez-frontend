@@ -40,7 +40,7 @@
         </ng-template>
     </p-table>
 </div>
-<app-table-mobile [card]="true" [mostrarAcciones]="acciones" (accion)="resolverAccion($event)" [acciones]="accionesDevoluciones" [data]="data ? data.content : []" [campos]="campos"></app-table-mobile>
+<app-table-mobile [size]="filtro.size" [page]="filtro.page" (pageChange)="pageChange($event)" [card]="true" [mostrarAcciones]="acciones" (accion)="resolverAccion($event)" [acciones]="accionesDevoluciones" [data]="data ? data.content : []" [campos]="campos"></app-table-mobile>
 <app-modal-loading [visible]="loading" />
 <p-toast />
 <p-confirmdialog #cEmergencia key="cEmergencia">
