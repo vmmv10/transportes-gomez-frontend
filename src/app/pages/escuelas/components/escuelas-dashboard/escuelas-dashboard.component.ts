@@ -41,13 +41,13 @@ export class EscuelasDashboardComponent {
         const id = this.route.snapshot.paramMap.get('id');
         if (id) {
             await this.getEscuela(id);
-            this.filtroEntegas.escuela = id;
         }
     }
 
     async getEscuela(id: string) {
         try {
             this.escuela = await this.escuelasService.getEscuela(id).toPromise();
+            this.filtroEntegas.escuela = this.escuela;
             this.initMap();
         } catch (error) {
             console.error('Error al obtener la escuela:', error);

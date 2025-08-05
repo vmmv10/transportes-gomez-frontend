@@ -201,10 +201,6 @@ export class OrdenesServiciosFormComponent {
 
     guardar() {
         this.validar = true;
-        if (!this.orden.documento) {
-            this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Debe seleccionar un documento' });
-            return;
-        }
         if (this.orden.detalles.length === 0 || !this.orden.escuela) {
             this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Debe completar los campos obligatorios' });
             return;

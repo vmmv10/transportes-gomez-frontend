@@ -15,7 +15,7 @@
     </div>
     <i *ngIf="loading" class="pi pi-spin pi-cog text-center w-12" style="font-size: 4rem"></i>
 </div>
-<div *ngIf="!loading" class="card flex flex-column gap-2">
+<div *ngIf="!loading && ruta" class="card flex flex-column gap-2">
     <h2 class="text-center text-xl">Entregas de la Ruta</h2>
     <p-table showGridlines *ngIf="ruta" [value]="ruta.entregas" class="w-12">
         <ng-template pTemplate="header">

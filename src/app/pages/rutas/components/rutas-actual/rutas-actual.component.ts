@@ -26,6 +26,7 @@ export class RutasActualComponent {
     constructor(
         private rutasService: RutasService,
         private confirmationService: ConfirmationService,
+        private messageService: MessageService
     ) {}
 
     ngOnInit() {
@@ -36,13 +37,18 @@ export class RutasActualComponent {
         this.loading = true;
         this.rutasService.getRutaHoy().subscribe({
             next: (data) => {
-                this.ruta = data;
-                for (const entrega of data.entregas) {
-                    if (!entrega.entregado) {
-                        this.entrega = entrega;
-                        break; // Solo necesitamos la primera entrega pendiente
-                        
+                if (data) {
+                    this.ruta = data;
+                    for (const entrega of data.entregas) {
+                        if (!entrega.entregado) {
+                            this.entrega = entrega;
+                            break; // Solo necesitamos la primera entrega pendiente
+                            
+                        }
                     }
+                } else {
+                    this.ruta = undefined;
+                    this.entrega = undefined;
                 }
                 this.loading = false;
             },
@@ -54,6 +60,7 @@ export class RutasActualComponent {
     }
 
     recepcionado() {
+        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Entrega recepcionada correctamente.' });
         this.cargarRuta();
     }
 

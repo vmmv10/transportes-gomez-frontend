@@ -19,11 +19,12 @@ import { PaginatorModule } from 'primeng/paginator';
 import { ProveedorSelectComponent } from '../../../proveedor/components/proveedor-select/proveedor-select.component';
 import { TableMobileComponent } from '../../../uikit/components/table-mobile/table-mobile.component';
 import e from 'cors';
+import { EscuelasSelectComponent } from '../../../escuelas/components/escuelas-select/escuelas-select.component';
 
 @Component({
     standalone: true,
     selector: 'app-entregas-table',
-    imports: [CommonModule, ButtonModule, TableMobileComponent, ProveedorSelectComponent, PaginatorModule, SelectBooleanComponent, TableModule, TagModule, ButtonModule, FormsModule, InputTextModule, RouterModule, ToastModule, TooltipModule, ModalLoadingComponent],
+    imports: [CommonModule, ButtonModule, TableMobileComponent, PaginatorModule, SelectBooleanComponent, TableModule, TagModule, ButtonModule, FormsModule, InputTextModule, RouterModule, ToastModule, TooltipModule, ModalLoadingComponent, EscuelasSelectComponent],
     templateUrl: './entregas-table.component.html',
     styleUrl: './entregas-table.component.scss',
     providers: [MessageService]
@@ -43,8 +44,6 @@ export class EntregasTableComponent {
 
     campos: any[] = [
         { etiqueta: 'Orden de Servicio', propiedad: 'ordenServicio.id', tipo: 'objeto' },
-        { etiqueta: 'Documento', propiedad: 'ordenServicio.documento.numero', tipo: 'objeto' },
-        { etiqueta: 'Proveedor', propiedad: 'ordenServicio.documento.proveedor.nombre', tipo: 'objeto' },
         { etiqueta: 'Escuela', propiedad: 'ordenServicio.escuela.nombre', tipo: 'objeto' },
         { etiqueta: 'Comuna', propiedad: 'ordenServicio.escuela.comuna', tipo: 'objeto' },
         { etiqueta: 'Estado', propiedad: 'entregado', tipo: 'tag' },

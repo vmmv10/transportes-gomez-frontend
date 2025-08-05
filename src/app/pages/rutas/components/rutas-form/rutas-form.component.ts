@@ -101,9 +101,10 @@ export class RutasFormComponent {
                 return;
             }
             this.ruta = data;
+            console.log('Ruta obtenida:', this.ruta);
             const [anio, mes, dia] = data.fecha.split('-').map(Number);
-            this.ruta.fechaJS = new Date(anio, mes - 1, dia);
-            console.log('Ruta cargada:', this.ruta.fechaJS);
+            this.ruta.fechaJS = new Date(Date.UTC(anio, mes - 1, dia));
+            this.ruta.fechaJS.setHours(this.ruta.fechaJS.getHours() + (new Date().getTimezoneOffset() / -60) - 4);
             await this.cargarMapa();
             await this.actualizarPuntos();
         } catch (error) {
@@ -253,16 +254,20 @@ export class RutasFormComponent {
     }
 
     async eliminarOrden(orden: OrdenServicio) {
-        this.rutasService.deleteEntrega(this.ruta.id.toString(), orden.id.toString()).subscribe({
-            next: async () => {
-                this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Orden de servicio eliminada correctamente.' });
-                this.ruta.ordenes = this.ruta.ordenes.filter((o) => o.id !== orden.id);
-                await this.actualizarPuntos();
-            },
-            error: (error) => {
-                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al eliminar la orden de servicio.' });
-                console.error('Error deleting orden:', error);
-            }
-        });
+        if (!this.ruta.id && this.ruta.id > 0) {
+            this.rutasService.deleteEntrega(this.ruta.id.toString(), orden.id.toString()).subscribe({
+                next: async () => {
+                    this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Orden de servicio eliminada correctamente.' });
+                    this.ruta.ordenes = this.ruta.ordenes.filter((o) => o.id !== orden.id);
+                    await this.actualizarPuntos();
+                },
+                error: (error) => {
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al eliminar la orden de servicio.' });
+                    console.error('Error deleting orden:', error);
+                }
+            });
+        } else {
+            this.ruta.ordenes = this.ruta.ordenes.filter((o) => o.id !== orden.id);
+        }
     }
 }

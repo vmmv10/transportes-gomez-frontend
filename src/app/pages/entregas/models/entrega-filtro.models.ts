@@ -1,3 +1,4 @@
+import { Escuela } from "../../escuelas/models/escuela.models";
 import { Proveedor } from "../../proveedor/models/proveedor.model";
 
 export class EntregaFiltro {
@@ -7,7 +8,7 @@ export class EntregaFiltro {
     estado: boolean | undefined;
     entregado: boolean | undefined;
     ordenServicioId: string;
-    escuela: string | undefined;
+    escuela: Escuela | undefined;
     documento: number | undefined;
     proveedor: Proveedor | undefined;
     size: number = 10;

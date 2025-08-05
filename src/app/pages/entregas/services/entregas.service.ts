@@ -25,7 +25,7 @@ export class EntregasService {
             link += `&ordenServicio=${filtro.ordenServicioId}`;
         }
         if (filtro.escuela != undefined) {
-            link += `&escuela=${filtro.escuela}`;
+            link += `&escuela=${filtro.escuela.id}`;
         }
         if (filtro.entregado != undefined) {
             link += `&entregado=${filtro.entregado}`;
@@ -45,7 +45,13 @@ export class EntregasService {
         return this.authHttp.get<ReporteMes[]>(link);
     }
 
-    entregaRecepcionada(id: string): Observable<void> {
-        return this.authHttp.put<void>(`${this.url}/${id}/recepcionado`, {});
-    }
+
+    entregaRecepcionada(id: string , files: any[]): Observable<void> {
+            const formData = new FormData();
+            files.forEach((file, index) => {
+                formData.append('files', file);
+            });
+            return this.authHttp.put<void>(`${this.url}/${id}/recepcionado`, formData);
+        }
+    
 }

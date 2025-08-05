@@ -4,6 +4,7 @@ import { MessageService } from 'primeng/api';
 import { ChartModule } from 'primeng/chart';
 import { ReporteMes } from '../../../uikit/models/reporte-mes.model';
 import { EntregaFiltro } from '../../models/entrega-filtro.models';
+import { Escuela } from '../../../escuelas/models/escuela.models';
 
 @Component({
     standalone: true,
@@ -29,7 +30,8 @@ export class EntregasMesChartComponent {
 
     getEntregasMes() {
         if (this.escuela) {
-            this.filtro.escuela = this.escuela;
+            this.filtro.escuela = new Escuela();
+            this.filtro.escuela.id = Number(this.escuela);
         }
         this.entregasService.getEntregasMes(this.filtro).subscribe({
             next: (data) => {

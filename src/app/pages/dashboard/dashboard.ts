@@ -6,10 +6,11 @@ import { CommonModule } from '@angular/common';
 import { RolService } from '../uikit/services/rol.service';
 import { Observable } from 'rxjs';
 import { RutasActualComponent } from '../rutas/components/rutas-actual/rutas-actual.component';
+import { EntregasTableComponent } from '../entregas/components/entregas-table/entregas-table.component';
 
 @Component({
     selector: 'app-dashboard',
-    imports: [EntregasComponent, EntregasMesChartComponent, EntregasCountComponent, CommonModule, RutasActualComponent],
+    imports: [EntregasComponent, EntregasTableComponent, EntregasMesChartComponent, EntregasCountComponent, CommonModule, RutasActualComponent],
     template: `
         <div class="flex flex-column gap-2" *ngIf="esAdmin$ | async">
             <div class="flex flex-column md:flex-row gap-5 md:gap-2 w-12 mb-5">
@@ -28,17 +29,23 @@ import { RutasActualComponent } from '../rutas/components/rutas-actual/rutas-act
         <div class="flex flex-column gap-2" *ngIf="esConductor$ | async">
             <app-rutas-actual class="w-12" />
         </div>
+        <div class="flex flex-column gap-2" *ngIf="esCliente$ | async">
+            <div class="card">
+                <app-entregas-table [escuela]="true" [card]="false" [proveedor]="true" [documento]="true" [filtros]="true"></app-entregas-table>
+            </div>
+        </div>
     `
 })
 export class Dashboard {
     esAdmin$!: Observable<boolean>;
     esConductor$!: Observable<boolean>;
+    esCliente$!: Observable<boolean>;
 
     constructor(private rolService: RolService) {}
 
     ngOnInit() {
         this.esAdmin$ = this.rolService.tieneRol('Administrador');
         this.esConductor$ = this.rolService.tieneRol('Conductor');
+        this.esCliente$ = this.rolService.tieneRol('Cliente');
     }
-
 }

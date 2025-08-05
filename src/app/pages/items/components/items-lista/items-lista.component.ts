@@ -27,6 +27,7 @@ import { TableMobileComponent } from '../../../uikit/components/table-mobile/tab
 import { ItemCodigoProveedor } from '../../models/item-codigo-proveedor.model';
 import { ProveedorSelectComponent } from '../../../proveedor/components/proveedor-select/proveedor-select.component';
 import { DividerModule } from 'primeng/divider';
+import e from 'cors';
 
 @Component({
     standalone: true,
@@ -210,7 +211,7 @@ export class ItemsListaComponent {
                         this.getData();
                     },
                     error: (error) => {
-                        this.MessageService.add({ severity: 'error', summary: 'Error', detail: 'Error al actualizar el item' });
+                        this.MessageService.add({ severity: 'error', summary: 'Error', detail: error.error.message || 'Error al actualizar el item' });
                         console.error('Error updating item:', error);
                         this.loading = false;
                     }
@@ -225,7 +226,7 @@ export class ItemsListaComponent {
                         this.getData();
                     },
                     error: (error) => {
-                        this.MessageService.add({ severity: 'error', summary: 'Error', detail: 'Error al crear el item' });
+                        this.MessageService.add({ severity: 'error', summary: 'Error', detail: error.error.message || 'Error al crear el item' });
                         console.error('Error creating item:', error);
                         this.loading = false;
                     }

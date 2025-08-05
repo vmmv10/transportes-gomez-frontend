@@ -1,5 +1,51 @@
-<button [fluid]="true" pButton label="Recepcionado" icon="pi pi-check" severity="success"
-        (click)="confirmarRecepcion()" class="w-12" size="large"></button>
+<div class="flex gap-2 w-12 flex-col">
+    <p-fileupload
+        *ngIf="entregaId && imagenes && imagenes.length == 0"
+        name="myfile[]"
+        url="https://www.primefaces.org/cdn/api/upload.php"
+        [multiple]="true"
+        accept="application/pdf, image/*"
+        maxFileSize="10000000"
+        (onUpload)="onTemplatedUpload()"
+        (onSelect)="onSelectedFiles($event)"
+    >
+        <ng-template #header let-files let-chooseCallback="chooseCallback" let-clearCallback="clearCallback" let-uploadCallback="uploadCallback">
+            <div class="flex gap-2 md:flex-row w-12 flex-col">
+                <p-button accept="image/*" class="w-12" capture="environment" icon="pi pi-camera" fluid="true" (onClick)="choose($event, chooseCallback)" severity="contrast" label="Tomar Imagen" />
+            </div>
+        </ng-template>
+        <ng-template #content let-files let-uploadedFiles="uploadedFiles" let-removeFileCallback="removeFileCallback" let-removeUploadedFileCallback="removeUploadedFileCallback">
+            <div class="flex flex-col gap-2">
+                <div *ngIf="files?.length > 0">
+                    <h5>Pendientes</h5>
+                    <div class="flex flex-wrap gap-4">
+                        <div *ngFor="let file of files; let i = index" class="p-1 rounded-border flex flex-col border border-surface items-center gap-1">
+                            <div>
+                                <ng-container *ngIf="file.type.startsWith('image/'); else pdfPreview">
+                                    <img role="presentation" [alt]="file.name" [src]="file.objectURL" width="50" height="25" />
+                                </ng-container>
+                                <ng-template #pdfPreview>
+                                    <i class="pi pi-file-pdf text-4xl text-red-600"></i>
+                                </ng-template>
+                            </div>
+                            <span class="font-semibold text-ellipsis max-w-60 whitespace-nowrap overflow-hidden">{{ file.name }}</span>
+                            <div>{{ formatSize(file.size) }}</div>
+                            <p-badge value="Pendiente" severity="warn" />
+                            <p-button icon="pi pi-times" (click)="onRemoveTemplatingFile($event, file, removeFileCallback, i)" [outlined]="true" [rounded]="true" severity="danger" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template #file></ng-template>
+        <ng-template #empty>
+            <div class="flex items-center justify-center flex-col">
+                <i class="pi pi-cloud-upload !border-2 !rounded-full !p-8 !text-4xl !text-muted-color"></i>
+            </div>
+        </ng-template>
+    </p-fileupload>
+    <button [fluid]="true" pButton label="Recepcionado" icon="pi pi-check" severity="success" (click)="confirmarRecepcion()" class="w-12" size="large"></button>
+</div>
 <p-confirmdialog #cRecepcion key="cRecepcion">
     <ng-template #message let-message>
         <div class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700">

@@ -23,18 +23,18 @@
                     <th></th>
                     <th class="text-center"><p-inputnumber class="w-12" inputId="id" (keydown.enter)="getData()" [(ngModel)]="filtro.id" /></th>
                     <th class="text-center"><p-inputnumber class="w-12" [disabled]="true" /></th>
+                    <th><app-escuelas-select (escuelaChange)="escuelaChange($event)" [(escuela)]="filtro.escuela" [showClear]="true" [showFilter]="true" class="w-12"></app-escuelas-select></th>
                     <th class="text-center"><p-inputnumber class="w-12" inputId="id" (keydown.enter)="getData()" [(ngModel)]="filtro.documentoNumero" /></th>
                     <th><app-documentos-tipo-select (documentoTipo)="documentoTipoChange($event)" [(documentoTipo)]="filtro.documentoTipo" [showClear]="true" [showFilter]="true" class="w-12"></app-documentos-tipo-select></th>
-                    <th><app-escuelas-select (escuelaChange)="escuelaChange($event)" [(escuela)]="filtro.escuela" [showClear]="true" [showFilter]="true" class="w-12"></app-escuelas-select></th>
                     <th class="text-center"><p-inputnumber class="w-12" [disabled]="true" /></th>
                 </tr>
                 <tr>
                     <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
-                    <th class="text-center">id</th>
+                    <th class="text-center">Folio</th>
                     <th class="text-center">Fecha</th>
+                    <th class="text-center">Escuela</th>
                     <th class="text-center">Documento</th>
                     <th class="text-center">Tipo Documento</th>
-                    <th class="text-center">Escuela</th>
                     <th class="text-center">Estado</th>
                 </tr>
             </ng-template>
@@ -45,9 +45,9 @@
                     </td>
                     <td class="text-center">{{ item.id }}</td>
                     <td class="text-center">{{ item.fecha | fechaHora }}</td>
+                    <td class="text-center">{{ item.escuela.nombre }}</td>
                     <td class="text-center">{{ item.documento && item.documento.numero ? item.documento.numero : '' }}</td>
                     <td class="text-center">{{ item.documento && item.documento.tipo && item.documento.tipo.nombre ? item.documento.tipo.nombre : '' }}</td>
-                    <td class="text-center">{{ item.escuela.nombre }}</td>
                     <td class="text-center" *ngIf="item.entregado">
                         <p-tag severity="success" value="Entregado" />
                     </td>
