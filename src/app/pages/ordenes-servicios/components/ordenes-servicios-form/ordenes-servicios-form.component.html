@@ -7,12 +7,12 @@
         <div class="flex md:flex-row flex-column gap-1">
             <div class="flex flex-column gap-2 w-12">
                 <label class="text-md font-semibold">Bodega origen</label>
-                <app-bodegas-select [disabled]="disabled" [validar]="validar" [(bodega)]="orden.bodega" [showClear]="true" [showFilter]="true" class="w-12"></app-bodegas-select>
+                <app-bodegas-select [validar]="validar" [(bodega)]="orden.bodega" [showClear]="true" [showFilter]="true" class="w-12"></app-bodegas-select>
             </div>
             <div class="flex flex-col gap-2 w-12">
                 <div class="flex flex-col gap-2 w-12">
                     <label for="escuela">Establecimiento Destino</label>
-                    <app-escuelas-select [disabled]="disabled" [validar]="validar" [(escuela)]="orden.escuela" [showClear]="true" [showFilter]="true" class="w-12"></app-escuelas-select>
+                    <app-escuelas-select [validar]="validar" [(escuela)]="orden.escuela" [showClear]="true" [showFilter]="true" class="w-12"></app-escuelas-select>
                 </div>
             </div>
         </div>
@@ -54,7 +54,7 @@
                 <tr>
                     <th class="text-center">Insumo</th>
                     <th class="text-center">Cantidad</th>
-                    <th class="text-center"><p-button [disabled]="disabled" pTooltip="Agregar Item" icon="pi pi-plus" [rounded]="true" [text]="true" severity="success" (click)="agregarFila()" /></th>
+                    <th class="text-center"><p-button pTooltip="Agregar Item" icon="pi pi-plus" [rounded]="true" [text]="true" severity="success" (click)="agregarFila()" /></th>
                 </tr>
             </ng-template>
             <ng-template #body let-producto let-index="rowIndex">
@@ -62,8 +62,8 @@
                     <td class="text-center">{{ producto.nombre }}</td>
                     <td class="text-center">{{ producto.cantidad }}</td>
                     <td class="text-center">
-                        <p-button [disabled]="disabled" pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminarDetalle(producto)" />
-                        <p-button [disabled]="disabled" pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" (click)="editarDetalle(index)" />
+                        <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminarDetalle(producto)" />
+                        <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" (click)="editarDetalle(index)" />
                     </td>
                 </tr>
             </ng-template>
@@ -73,7 +73,7 @@
         </p-table>
     </div>
     <div class="flex flex-column gap-3 card" *ngIf="(orden.bodega && orden.bodega.id != 4 && orden.escuela) || (orden.bodega && orden.bodega.id == 4 && orden.documento.id > 0 && orden.escuela)">
-        <textarea [(ngModel)]="orden.observaciones" [disabled]="disabled" class="w-12 p-inputtext p-component" rows="5" placeholder="Ingrese observaciones"></textarea>
+        <textarea [(ngModel)]="orden.observaciones" class="w-12 p-inputtext p-component" rows="5" placeholder="Ingrese observaciones"></textarea>
     </div>
     <!--<div class="flex flex-column gap-2 card w-12" *ngIf="orden.id > 0 && imagenes && imagenes.length > 0">
         <span class="text-lg font-semibold">PDF</span>
@@ -188,15 +188,19 @@
     <div class="flex flex-col gap-2 w-12">
         <div class="flex flex-col gap-2 w-12">
             <label for="nombre">Buscar Item</label>
-            <app-autocomplete-select [saldo]="detalle.saldoBodega" [filtro]="filtroSaldoBodega" (selected)="saldoSeleccionado($event)" class="w-12" />
+            <input pInputText disabled *ngIf="indexDetalle != -1" id="nombre" type="text" [(ngModel)]="detalle.nombre" class="w-12" />
+            <app-autocomplete-select *ngIf="indexDetalle == -1" [saldo]="detalle.saldoBodega" [filtro]="filtroSaldoBodega" (selected)="saldoSeleccionado($event)" class="w-12" />
         </div>
         <div class="flex flex-col gap-2 w-12">
-            <label for="cantidad">Cantidad</label>
-            <p-inputnumber class="w-12 {{ detalle && detalle.saldoBodega && detalle.saldoBodega.saldo > detalle.cantidad ? '' : 'ng-dirty ng-invalid' }}" [disabled]="!habililitarSaldo" inputId="cantidad" [(ngModel)]="detalle.cantidad" />
+            <div class="flex flex-row gap-1 w-12">
+                <label for="cantidad">Cantidad</label>
+                <span class="text-red-500 text-sm" *ngIf="detalle && detalle.saldoBodega && detalle.cantidad > detalle.saldoBodega.saldo">(No puede super el saldo en Bodega)</span>
+            </div>
+            <p-inputnumber class="w-12 {{ detalle && detalle.saldoBodega && detalle.saldoBodega.saldo >= detalle.cantidad ? '' : 'ng-dirty ng-invalid' }}" inputId="cantidad" [(ngModel)]="detalle.cantidad" />
         </div>
     </div>
     <ng-template #footer>
-        <p-button label="Cancelar" [text]="true" severity="secondary" class="w-12" [fluid]="true" (click)="cerrardialogItem()" />
+        <p-button label="Cancelar" [text]="true" severity="secondary" class="w-12" [fluid]="true" (click)="cerrarVistaItem()" />
         <p-button label="Guardar" severity="success" class="w-12" [fluid]="true" (click)="guardarDetalle()" />
     </ng-template>
 </p-dialog>

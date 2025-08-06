@@ -2,13 +2,13 @@
     <div class="card flex flex-column md:flex-row gap-1">
         <div class="flex flex-column md:flex-row gap-1 w-12">
             <input pInputText id="numero" (keydown.enter)="getData()" [(ngModel)]="filtro.id" placeholder="Buscar por Número" class="w-12" />
-            <app-escuelas-select class="w-12" [(escuela)]="filtro.escuela" [showClear]="true" [showFilter]="true" [validar]="false" (ngModelChange)="getData()" ></app-escuelas-select>
+            <app-escuelas-select class="w-12" [(escuela)]="filtro.escuela" [showClear]="true" [showFilter]="true" [validar]="false"></app-escuelas-select>
         </div>
         <div class="flex flex-column md:flex-row gap-1 w-12">
             <!-- <app-proveedor-select class="w-12" [(proveedor)]="filtro.proveedor" [showClear]="true" [showFilter]="true" [validar]="false" (ngModelChange)="getData()" ></app-proveedor-select> -->
-            <select-boolean class="w-12" [(variable)]="filtro.entregado" [showClear]="true" [showFilter]="true" [validar]="false" (ngModelChange)="getData()" ></select-boolean>
+            <select-boolean [opciones]="opcionesSelectBoolean" class="w-12" [(variable)]="filtro.entregado" [showClear]="true" [showFilter]="true" [validar]="false"></select-boolean>
         </div>
-        <button pButton icon="pi pi-search" label="Buscar" class="md:w-4 w-12" [loading]="loading" (click)="getData()" ></button>
+        <button pButton icon="pi pi-search" label="Buscar" class="md:w-4 w-12" [loading]="loading" (click)="getData()"></button>
     </div>
     <p-table class="hidden md:block card" [value]="ordenes && ordenes.content ? ordenes.content : []" id="ordenes-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
         <ng-template #header>
@@ -38,7 +38,7 @@
                 </td>
             </tr>
         </ng-template>
-        <ng-template #summary >
+        <ng-template #summary>
             <p-paginator (onPageChange)="pageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="ordenes ? ordenes.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
         </ng-template>
         <ng-template #emptymessage>

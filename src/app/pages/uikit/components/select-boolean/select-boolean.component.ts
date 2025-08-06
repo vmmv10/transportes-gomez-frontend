@@ -4,10 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
 
 @Component({
-  selector: 'select-boolean',
-  imports: [SelectModule, FormsModule, CommonModule],
-  templateUrl: './select-boolean.component.html',
-  styleUrl: './select-boolean.component.scss'
+    selector: 'select-boolean',
+    imports: [SelectModule, FormsModule, CommonModule],
+    templateUrl: './select-boolean.component.html',
+    styleUrl: './select-boolean.component.scss'
 })
 export class SelectBooleanComponent {
     @Input() variable: boolean | undefined;
@@ -16,15 +16,15 @@ export class SelectBooleanComponent {
     @Input() validar: boolean = false;
     @Input() showFilter: boolean = false;
 
-    opciones: {label:string, value: boolean}[] = [
-      { label: 'En Proceso', value: true },
-      { label: 'Finalizado', value: false }
-    ]
+    @Input() opciones: { label: string; value: boolean }[] = [
+        { label: 'Si', value: true },
+        { label: 'No', value: false }
+    ];
 
     constructor() {}
 
     onChangeSelect(event: any) {
         this.variable = event;
-        this.variableChange.emit(event.value);
+        this.variableChange.emit(event);
     }
 }

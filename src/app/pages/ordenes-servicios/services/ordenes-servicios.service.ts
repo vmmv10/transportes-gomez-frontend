@@ -35,8 +35,15 @@ export class OrdenesServiciosService {
         if (filtro.documentoNumero) {
             link += '&documentoNumero=' + filtro.documentoNumero;
         }
-        if (filtro.enRuta !== undefined) {
+        if (filtro.enRuta !== undefined && filtro.enRuta !== null) {
             link += '&enRuta=' + filtro.enRuta;
+        }
+        if (filtro.entregado !== undefined && filtro.entregado !== null) {
+            link += '&entregado=' + filtro.entregado;
+        }
+        console.log(filtro);
+        if (filtro.id !== undefined && filtro.id !== null) {
+            link += '&id=' + filtro.id;
         }
         return this.authHttp.get<Page<OrdenServicio>>(link);
     }
