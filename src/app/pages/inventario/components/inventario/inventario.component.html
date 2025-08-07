@@ -13,11 +13,19 @@
                 <p-inputicon>
                     <i class="pi pi-search"></i>
                 </p-inputicon>
-                <input pInputText type="text" (ngModelChange)="getData()" [(ngModel)]="filtro.nombre" placeholder="Buscar por nombre" class="p-fluid w-12" />
+                <input pInputText type="text" [(ngModel)]="filtro.nombre" placeholder="Buscar por nombre" class="p-fluid w-12" />
             </p-iconfield>
         </div>
-        <app-marcas-select [(marca)]="filtro.marca" [showClear]="true" [showFilter]="true" [validar]="false" />
-        <app-categorias-select [(categoria)]="filtro.categoria" [showClear]="true" [showFilter]="true" [validar]="false" />
+        <div class="flex flex-row gap-2 w-12">
+            <p-iconfield iconPosition="left" class="p-fluid w-12">
+                <p-inputicon>
+                    <i class="pi pi-search"></i>
+                </p-inputicon>
+                <input pInputText type="text" [(ngModel)]="filtro.codigo" placeholder="Buscar por código" class="p-fluid w-12" />
+            </p-iconfield>
+        </div>
+        <app-marcas-select class="w-12" [(marca)]="filtro.marca" [showClear]="true" [showFilter]="true" [validar]="false" />
+        <app-categorias-select class="w-12" [(categoria)]="filtro.categoria" [showClear]="true" [showFilter]="true" [validar]="false" />
         <div class="flex flex-row gap-2 w-12">
             <p-button label="Buscar" [fluid]="true" class="w-12" severity="info" icon="pi pi-search" (click)="getData()" />
         </div>
@@ -31,6 +39,7 @@
                 <th class="text-center">Marca</th>
                 <th class="text-center">Unidad Medida</th>
                 <th class="text-center">Saldo</th>
+                <th class="text-center"></th>
             </tr>
         </ng-template>
         <ng-template #body let-producto>
@@ -41,6 +50,9 @@
                 <td class="text-center">{{ producto.item.marca?.nombre }}</td>
                 <td class="text-center">{{ producto.item.unidadMedida.nombre }}</td>
                 <td class="text-center">{{ producto.saldo }}</td>
+                <td class="text-center">
+                    <p-button label="Ajustar Saldo" class="p-button-rounded p-button-text" (click)="ajustarDisplayChange(producto)" />
+                </td>
             </tr>
         </ng-template>
         <ng-template #summary>
@@ -57,3 +69,27 @@
     <app-table-mobile [size]="filtro.size" [page]="filtro.page" (pageChange)="pageChange($event)" [mostrarAcciones]="true" [data]="data.content" [campos]="campos"></app-table-mobile>
 </ng-container>
 <app-modal-loading [visible]="loading"></app-modal-loading>
+<p-dialog header="Ajustar Saldo" *ngIf="seleccionado" [modal]="true" [(visible)]="ajustarDisplay" [style]="{ width: '45rem' }">
+    <div class="flex flex-col gap-2 w-12">
+        <div class="flex flex-col gap-2 w-12">
+            <label for="cantidad">Cantidad</label>
+            <p-inputnumber class="w-12 {{ seleccionado && seleccionado.saldo >= 0 ? '' : 'ng-dirty ng-invalid' }}" inputId="cantidad" [(ngModel)]="seleccionado.saldo" />
+        </div>
+    </div>
+    <ng-template #footer>
+        <p-button label="Cancelar" [text]="true" severity="secondary" class="w-12" [fluid]="true" (click)="cerrarAjustarDisplay()" />
+        <p-button label="Guardar" severity="success" class="w-12" [fluid]="true" (click)="ajustar()" />
+    </ng-template>
+</p-dialog>
+<p-confirmdialog #cGuardar key="cGuardar">
+    <ng-template #message let-message>
+        <div class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700">
+            <i class="pi pi-save !text-4xl text-green-500"></i>
+            <p>Recuerde que al guardar se harán los respectivos movimientos en bodega</p>
+        </div>
+    </ng-template>
+    <ng-template #footer>
+        <p-button label="Cancelar" variant="text" class="w-12" [fluid]="true" severity="secondary" (click)="cGuardar.onReject()" />
+        <p-button label="Guardar" class="w-12" [fluid]="true" severity="success" (click)="cGuardar.onAccept()" />
+    </ng-template>
+</p-confirmdialog>

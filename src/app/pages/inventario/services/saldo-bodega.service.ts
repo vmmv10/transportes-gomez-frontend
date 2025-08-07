@@ -28,10 +28,17 @@ export class SaldoBodegaService {
         if (filtro.categoria) {
             link += '&categoria=' + filtro.categoria.id;
         }
+        if (filtro.codigo) {
+            link += '&codigo=' + filtro.codigo;
+        }
         return this.authHttp.get<Page<SaldoBodega>>(link);
     }
 
     getByBodegaAndCodigo(bodegaId: number, itemId: number): Observable<SaldoBodega> {
         return this.authHttp.get<SaldoBodega>(`${this.url}/${itemId}/bodega/${bodegaId}`);
+    }
+
+    ajustarSaldo(saldoBodega: SaldoBodega, bodega: number): Observable<void> {
+        return this.authHttp.put<void>(`${this.url}/ajustar/${bodega}`, saldoBodega);
     }
 }

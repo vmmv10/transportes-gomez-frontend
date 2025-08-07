@@ -24,6 +24,7 @@ import { SaldoBodega } from '../../models/saldo-bodega.model';
 import { SaldoBodegaFiltro } from '../../models/saldo-bodega-filtro.model';
 import { SaldoBodegaService } from '../../services/saldo-bodega.service';
 import { BodegasSelectComponent } from '../../../bodegas/components/bodegas-select/bodegas-select.component';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 @Component({
     selector: 'app-inventario',
@@ -47,7 +48,9 @@ import { BodegasSelectComponent } from '../../../bodegas/components/bodegas-sele
         CategoriasSelectComponent,
         PaginatorModule,
         TableMobileComponent,
-        BodegasSelectComponent
+        BodegasSelectComponent,
+        DialogModule,
+        InputNumberModule
     ],
     templateUrl: './inventario.component.html',
     styleUrl: './inventario.component.scss',
@@ -60,6 +63,8 @@ export class InventarioComponent {
     data!: Page<SaldoBodega>;
     breadcrumb: MenuItem[] = [];
     loading: boolean = false;
+    ajustarDisplay: boolean = false;
+    seleccionado!: SaldoBodega | undefined;
 
     campos: any[] = [
         { etiqueta: 'id', propiedad: 'id', tipo: 'texto' },
@@ -116,5 +121,39 @@ export class InventarioComponent {
     bodegaChange(bodega: any) {
         this.filtro.bodega = bodega;
         this.getData();
+    }
+
+    ajustarDisplayChange(item: any) {
+        this.ajustarDisplay = true;
+        console.log('Ajustar saldo para:', item);
+        this.seleccionado = item;
+    }
+
+    ajustar() {
+        this.confirmationService.confirm({
+            message: '¿Está seguro de ajustar el saldo?',
+            key: 'cGuardar',
+            accept: () => {
+                if (!this.seleccionado || !this.filtro.bodega) {
+                    this.MessageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Debe seleccionar un saldo y una bodega.' });
+                    return;
+                }
+                this.saldoBodegaService.ajustarSaldo(this.seleccionado, this.filtro.bodega.id).subscribe({
+                    next: () => {
+                        this.MessageService.add({ severity: 'success', summary: 'Éxito', detail: 'Saldo ajustado correctamente.' });
+                        this.cerrarAjustarDisplay();
+                        this.getData();
+                    },
+                    error: (error) => {
+                        this.MessageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo ajustar el saldo.' });
+                    }
+                });
+            }
+        });
+    }
+
+    cerrarAjustarDisplay() {
+        this.ajustarDisplay = false;
+        this.seleccionado = new SaldoBodega();
     }
 }
