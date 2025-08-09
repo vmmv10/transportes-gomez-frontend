@@ -10,7 +10,7 @@
     <div class="flex flex-column md:flex-row gap-2 w-12 card">
         <input pInputText id="filtro" (keydown.enter)="getData()" [(ngModel)]="filtro.id" placeholder="Buscar por id" class="w-12" />
         <app-usuarios-select [rol]="'repartidor'" [(usuario)]="filtro.chofer" [showClear]="true" [showFilter]="true" class="w-12"></app-usuarios-select>
-        <button pButton icon="pi pi-search" label="Buscar" class="md:w-4 w-12" [loading]="loading" (click)="getData()" ></button>
+        <button pButton icon="pi pi-search" label="Buscar" class="md:w-4 w-12" [loading]="loading" (click)="getData()"></button>
     </div>
     <p-table class="hidden md:block" [value]="data && data.content ? data.content : []" id="ordenes-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
         <ng-template #header>
@@ -30,8 +30,8 @@
                 <td class="text-center" *ngIf="item.entregado">
                     <p-tag severity="success" value="Entregado" />
                 </td>
-                <td class="text-center" *ngIf="!item.entregado">
-                    <p-tag severity="warn" value="No entregado" />
+                <td class="text-center" *ngIf="item.estado == 'FINALIZADA'">
+                    <p-tag severity="success" value="Finalizada" />
                 </td>
                 <td class="text-center">
                     <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" [routerLink]="['/rutas/formulario/' + item.id]" />
@@ -43,7 +43,16 @@
             <p-paginator (onPageChange)="onPageChange($event)" [first]="filtro.page * filtro.size" [rows]="data && data.size ? data.size : 0" [totalRecords]="data && data.totalElements ? data.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
         </ng-template>
     </p-table>
-    <app-table-mobile [size]="filtro.size" [page]="filtro.page" (pageChange)="onPageChange($event)" [mostrarAcciones]="true" (accion)="resolverAccion($event)" [acciones]="acciones" [data]="data ? data.content : []" [campos]="campos"></app-table-mobile>
+    <app-table-mobile
+        [size]="filtro.size"
+        [page]="filtro.page"
+        (pageChange)="onPageChange($event)"
+        [mostrarAcciones]="true"
+        (accion)="resolverAccion($event)"
+        [acciones]="acciones"
+        [data]="data ? data.content : []"
+        [campos]="campos"
+    ></app-table-mobile>
 </div>
 <app-modal-loading [visible]="loading" />
 <p-confirmdialog #eliminarRuta key="eliminarRuta">

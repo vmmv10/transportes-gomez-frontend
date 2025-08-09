@@ -1,5 +1,5 @@
 <div class="flex flex-column gap-3">
-    <div class="card flex flex-column md:flex-row gap-1">
+    <div class="card flex flex-column md:flex-row gap-1" *ngIf="filtros">
         <div class="flex flex-column md:flex-row gap-1 w-12">
             <input pInputText id="numero" (keydown.enter)="getData()" [(ngModel)]="filtro.id" placeholder="Buscar por Número" class="w-12" />
             <app-escuelas-select class="w-12" [(escuela)]="filtro.escuela" [showClear]="true" [showFilter]="true" [validar]="false"></app-escuelas-select>

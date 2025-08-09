@@ -18,7 +18,6 @@ import { OrdenServicio } from '../../models/orden-servicio.model';
 import { Page } from '../../../uikit/models/page.model';
 import { PaginatorModule } from 'primeng/paginator';
 import { TableMobileComponent } from '../../../uikit/components/table-mobile/table-mobile.component';
-import { ProveedorSelectComponent } from '../../../proveedor/components/proveedor-select/proveedor-select.component';
 import { EscuelasSelectComponent } from '../../../escuelas/components/escuelas-select/escuelas-select.component';
 import { SelectBooleanComponent } from '../../../uikit/components/select-boolean/select-boolean.component';
 
@@ -48,6 +47,7 @@ import { SelectBooleanComponent } from '../../../uikit/components/select-boolean
 })
 export class OrdenesServiciosTableComponent {
     @Input() filtro: OrdenServicioFiltro = new OrdenServicioFiltro();
+    @Input() filtros: boolean = true;
     ordenes!: Page<OrdenServicio>;
     orden: OrdenServicio | undefined;
     loading: boolean = true;

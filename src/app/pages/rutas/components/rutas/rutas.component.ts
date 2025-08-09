@@ -48,7 +48,6 @@ import { UsuariosSelectComponent } from '../../../usuarios/components/usuarios-s
         TableMobileComponent,
         InputTextModule,
         UsuariosSelectComponent
-        
     ],
     templateUrl: './rutas.component.html',
     styleUrl: './rutas.component.scss',
@@ -61,11 +60,11 @@ export class RutasComponent {
     filtro: RutaFiltro = new RutaFiltro();
 
     campos: any[] = [
-      { etiqueta: 'Número', propiedad: 'id', tipo: 'texto' },
-      { etiqueta: 'Fecha', propiedad: 'fecha', tipo: 'fecha' },
-      { etiqueta: 'Chofer', propiedad: 'chofer.nombre', tipo: 'objeto' },
-      { etiqueta: 'Estado', propiedad: 'estado', tipo: 'text' },
-  ];
+        { etiqueta: 'Número', propiedad: 'id', tipo: 'texto' },
+        { etiqueta: 'Fecha', propiedad: 'fecha', tipo: 'fecha' },
+        { etiqueta: 'Chofer', propiedad: 'chofer.nombre', tipo: 'objeto' },
+        { etiqueta: 'Estado', propiedad: 'estado', tipo: 'text' }
+    ];
 
     acciones = [
         {
@@ -87,7 +86,7 @@ export class RutasComponent {
             deshabilitarSi: 'entregado',
             label: 'Eliminar',
             outlined: true
-        },
+        }
     ];
 
     constructor(
@@ -154,10 +153,10 @@ export class RutasComponent {
     }
 
     resolverAccion(event: { tipo: string; item: any }) {
-    switch (event.tipo) {
-        case 'eliminar':
-            this.confirmarEliminar(event.item);
-            break;
+        switch (event.tipo) {
+            case 'eliminar':
+                this.confirmarEliminar(event.item);
+                break;
+        }
     }
-  }
 }

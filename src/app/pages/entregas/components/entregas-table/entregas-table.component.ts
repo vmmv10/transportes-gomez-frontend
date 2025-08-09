@@ -24,7 +24,23 @@ import { EscuelasSelectComponent } from '../../../escuelas/components/escuelas-s
 @Component({
     standalone: true,
     selector: 'app-entregas-table',
-    imports: [CommonModule, ButtonModule, TableMobileComponent, PaginatorModule, SelectBooleanComponent, TableModule, TagModule, ButtonModule, FormsModule, InputTextModule, RouterModule, ToastModule, TooltipModule, ModalLoadingComponent, EscuelasSelectComponent],
+    imports: [
+        CommonModule,
+        ButtonModule,
+        TableMobileComponent,
+        PaginatorModule,
+        SelectBooleanComponent,
+        TableModule,
+        TagModule,
+        ButtonModule,
+        FormsModule,
+        InputTextModule,
+        RouterModule,
+        ToastModule,
+        TooltipModule,
+        ModalLoadingComponent,
+        EscuelasSelectComponent
+    ],
     templateUrl: './entregas-table.component.html',
     styleUrl: './entregas-table.component.scss',
     providers: [MessageService]
@@ -36,6 +52,8 @@ export class EntregasTableComponent {
     @Input() proveedor: boolean = false;
     @Input() documento: boolean = false;
     @Input() escuela: boolean = false;
+    @Input() orden: boolean = false;
+    @Input() estado: boolean = false;
     @Input() card: boolean = true;
     entregas!: Page<Entrega>;
     entrega: Entrega | undefined;
@@ -46,7 +64,7 @@ export class EntregasTableComponent {
         { etiqueta: 'Orden de Servicio', propiedad: 'ordenServicio.id', tipo: 'objeto' },
         { etiqueta: 'Escuela', propiedad: 'ordenServicio.escuela.nombre', tipo: 'objeto' },
         { etiqueta: 'Comuna', propiedad: 'ordenServicio.escuela.comuna', tipo: 'objeto' },
-        { etiqueta: 'Estado', propiedad: 'entregado', tipo: 'tag' },
+        { etiqueta: 'Estado', propiedad: 'entregado', tipo: 'tag' }
     ];
 
     acciones = [
@@ -59,7 +77,7 @@ export class EntregasTableComponent {
             rutaConId: true,
             label: 'Ver Ruta',
             outlined: true
-        },
+        }
     ];
 
     constructor(
