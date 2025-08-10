@@ -1,4 +1,4 @@
-<div class="flex flex-column gap-4">
+<div class="flex flex-column">
     <div class="{{ card ? 'card' : '' }} flex flex-column md:flex-row gap-1" *ngIf="filtros">
         <div class="flex flex-column md:flex-row gap-1 w-12" *ngIf="orden">
             <input pInputText id="ordenServicioId" (keydown.enter)="getData()" [(ngModel)]="filtro.ordenServicioId" placeholder="Buscar por Orden" class="w-12" />
@@ -15,6 +15,7 @@
         <ng-template #header>
             <tr>
                 <th class="text-center">Orden Servicio</th>
+                <th class="text-center">Fecha</th>
                 <th *ngIf="escuela" class="text-center">Escuela</th>
                 <th *ngIf="escuela" class="text-center">Comuna</th>
                 <th class="text-center">Estado</th>
@@ -24,6 +25,7 @@
         <ng-template #body let-item>
             <tr>
                 <td class="text-center">{{ item.ordenServicio.id }}</td>
+                <td class="text-center">{{ item.fecha | date: 'dd/MM/yyyy' }}</td>
                 <td class="text-center" *ngIf="escuela">{{ item.ordenServicio.escuela.nombre }}</td>
                 <td class="text-center" *ngIf="escuela">{{ item.ordenServicio.escuela.comuna }}</td>
                 <td class="text-center">
@@ -40,7 +42,7 @@
         </ng-template>
         <ng-template #emptymessage>
             <tr>
-                <td colspan="5" class="text-center">No se encontraron entregas</td>
+                <td colspan="6" class="text-center">No se encontraron entregas</td>
             </tr>
         </ng-template>
     </p-table>

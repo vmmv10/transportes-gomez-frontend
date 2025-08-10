@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { Page } from '../../uikit/models/page.model';
 import { Entrega } from '../models/entrega.models';
 import { EntregaFiltro } from '../models/entrega-filtro.models';
-import { ReporteMes } from '../../uikit/models/reporte-mes.model';
+import { Reporte } from '../../uikit/models/reporte.model';
 
 @Injectable({
     providedIn: 'root'
@@ -37,21 +37,27 @@ export class EntregasService {
         return this.authHttp.delete<void>(`${this.url}/${id}`);
     }
 
-    getEntregasMes(filtro: EntregaFiltro): Observable<ReporteMes[]> {
+    getEntregasMes(filtro: EntregaFiltro): Observable<Reporte[]> {
         let link = `${this.url}/reporte/mes`;
         if (filtro.escuela) {
             link += `?escuela=${filtro.escuela}`;
         }
-        return this.authHttp.get<ReporteMes[]>(link);
+        return this.authHttp.get<Reporte[]>(link);
     }
 
+    entregaRecepcionada(id: string, files: any[]): Observable<void> {
+        const formData = new FormData();
+        files.forEach((file, index) => {
+            formData.append('files', file);
+        });
+        return this.authHttp.put<void>(`${this.url}/${id}/recepcionado`, formData);
+    }
 
-    entregaRecepcionada(id: string , files: any[]): Observable<void> {
-            const formData = new FormData();
-            files.forEach((file, index) => {
-                formData.append('files', file);
-            });
-            return this.authHttp.put<void>(`${this.url}/${id}/recepcionado`, formData);
+    getTopEscuelas(filtro: EntregaFiltro): Observable<Reporte[]> {
+        let link = `${this.url}/reporte/top-escuelas` + `?size=${filtro.size}`;
+        if (filtro.escuela) {
+            link += `&escuela=${filtro.escuela.id}`;
         }
-    
+        return this.authHttp.get<Reporte[]>(link);
+    }
 }

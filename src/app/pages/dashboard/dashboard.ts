@@ -7,10 +7,11 @@ import { Observable } from 'rxjs';
 import { RutasActualComponent } from '../rutas/components/rutas-actual/rutas-actual.component';
 import { EntregasTableComponent } from '../entregas/components/entregas-table/entregas-table.component';
 import { EntregaFiltro } from '../entregas/models/entrega-filtro.models';
+import { EntregasTopEscuelasChartComponent } from '../entregas/components/entregas-top-escuelas-chart/entregas-top-escuelas-chart.component';
 
 @Component({
     selector: 'app-dashboard',
-    imports: [EntregasTableComponent, EntregasMesChartComponent, EntregasCountComponent, CommonModule, RutasActualComponent],
+    imports: [EntregasTableComponent, EntregasTopEscuelasChartComponent, EntregasMesChartComponent, EntregasCountComponent, CommonModule, RutasActualComponent],
     template: `
         <div class="flex flex-column gap-2" *ngIf="esAdmin$ | async">
             <div class="flex flex-column md:flex-row gap-5 md:gap-2 w-12 mb-5">
@@ -21,9 +22,12 @@ import { EntregaFiltro } from '../entregas/models/entrega-filtro.models';
                 <span class="text-xl font-bold">Ordenes de Servicio Entregadas</span>
                 <app-entregas-table class="w-12" [filtro]="filtroEntregasAdministrador" [escuela]="true" [card]="false"></app-entregas-table>
             </div>
-            <div class="flex flex-column w-12">
-                <div class="card">
-                    <app-entregas-mes-chart></app-entregas-mes-chart>
+            <div class="flex flex-column md:flex-row w-12 gap-4">
+                <div class="flex jusrify-content-center card w-12">
+                    <app-entregas-top-escuelas-chart class="p-fluid w-12"></app-entregas-top-escuelas-chart>
+                </div>
+                <div class="card w-12 p-fluid">
+                    <app-entregas-mes-chart class="p-fluid w-12"></app-entregas-mes-chart>
                 </div>
             </div>
         </div>

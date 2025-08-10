@@ -4,35 +4,34 @@ import { MessageService } from 'primeng/api';
 import { ChartModule } from 'primeng/chart';
 import { EntregaFiltro } from '../../models/entrega-filtro.models';
 import { Escuela } from '../../../escuelas/models/escuela.models';
-
 @Component({
-    standalone: true,
-    selector: 'app-entregas-mes-chart',
+    selector: 'app-entregas-top-escuelas-chart',
     imports: [ChartModule],
-    templateUrl: './entregas-mes-chart.component.html',
-    styleUrl: './entregas-mes-chart.component.scss',
-    providers: [MessageService]
+    templateUrl: './entregas-top-escuelas-chart.component.html',
+    styleUrl: './entregas-top-escuelas-chart.component.scss',
+    providers: [MessageService],
+    standalone: true
 })
-export class EntregasMesChartComponent {
+export class EntregasTopEscuelasChartComponent {
     @Input() escuela: string | undefined;
     filtro: EntregaFiltro = new EntregaFiltro();
     basicData: any;
     basicOptions: any;
     constructor(
         private entregasService: EntregasService,
-        private MessageService: MessageService
+        private messageService: MessageService
     ) {}
 
     ngOnInit() {
-        this.getEntregasMes();
+        this.getData();
     }
 
-    getEntregasMes() {
+    getData() {
         if (this.escuela) {
             this.filtro.escuela = new Escuela();
             this.filtro.escuela.id = Number(this.escuela);
         }
-        this.entregasService.getEntregasMes(this.filtro).subscribe({
+        this.entregasService.getTopEscuelas(this.filtro).subscribe({
             next: (data) => {
                 const labels = data.map((d) => d.titulo);
                 const values = data.map((d) => d.total);
@@ -41,7 +40,7 @@ export class EntregasMesChartComponent {
                     datasets: [
                         {
                             label: 'Entregas por mes',
-                            backgroundColor: '#42A5F5',
+                            backgroundColor: '#50E3C2',
                             data: values
                         }
                     ]
@@ -104,7 +103,7 @@ export class EntregasMesChartComponent {
                 };
             },
             error: (error) => {
-                this.MessageService.add({
+                this.messageService.add({
                     severity: 'error',
                     summary: 'Error al cargar datos',
                     detail: 'No se pudieron cargar los datos de entregas por mes.'
