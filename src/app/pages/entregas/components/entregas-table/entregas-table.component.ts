@@ -89,6 +89,10 @@ export class EntregasTableComponent {
         this.getData();
     }
 
+    ngOnChanges(): void {
+        this.getData();
+    }
+
     getData() {
         this.loading = true;
         this.entregasService.getAll(this.filtro).subscribe({

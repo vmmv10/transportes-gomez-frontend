@@ -1,0 +1,31 @@
+<div class="flex flex-column gap-4">
+    <div class="card flex flex-row w-12 justify-content-between align-items-center mb-0">
+        <h1 class="text-xl">Dashboard</h1>
+        <th><app-escuelas-select (escuelaChange)="escuelaChange($event)" [(escuela)]="escuelaSeleccionada" [showClear]="true" [showFilter]="true" class="w-12 p-fluid"></app-escuelas-select></th>
+    </div>
+    <div class="flex flex-column gap-2" *ngIf="(esAdmin$ | async) || (esCliente$ | async)">
+        <div class="flex flex-column md:flex-row gap-5 md:gap-2 w-12 mb-5">
+            <app-entregas-card class="w-12"></app-entregas-card>
+            <app-entregas-count [filtro]="filtroEntregasAdministrador" tipo="No Realizadas" class="w-12" />
+            <app-entregas-count [filtro]="filtroEntregasAdministrador" tipo="Realizadas" class="w-12" />
+        </div>
+        <div class="card w-12 flex flex-column gap-4">
+            <span class="text-xl font-bold">Entregas</span>
+            <app-entregas-table class="w-12" [filtro]="filtroEntregasAdministrador" [filtros]="false" [card]="false"></app-entregas-table>
+        </div>
+        <div class="flex flex-column w-12 gap-4">
+            <div class="flex justify-content-center card w-12">
+                <app-entregas-top-escuelas-chart class="p-fluid w-12"></app-entregas-top-escuelas-chart>
+            </div>
+            <div class="card w-12 p-fluid">
+                <app-entregas-mes-chart class="p-fluid w-12"></app-entregas-mes-chart>
+            </div>
+            <div class="card w-12 p-fluid">
+                <app-ordenes-servicios-items-despachados-chart [filtro]="filtroOs" class="p-fluid w-12"></app-ordenes-servicios-items-despachados-chart>
+            </div>
+        </div>
+    </div>
+    <div class="flex flex-column gap-2" *ngIf="esConductor$ | async">
+        <app-rutas-actual class="w-12" />
+    </div>
+</div>

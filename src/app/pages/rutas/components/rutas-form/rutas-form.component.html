@@ -2,7 +2,7 @@
 <div class="card flex flex-column gap-2 py-1">
     <p-breadcrumb class="max-w-full" [model]="breadcrumb" />
 </div>
-<div class="card flex flex-column gap-3">
+<div class="card flex flex-column gap-3" *ngIf="ruta && ruta.estado != 'FINALIZADA'">
     <app-ordenes-servicios-modal-select [enRuta]="false" (ordenesServiciosSeleccionadosChange)="ordenesServiciosSeleccionadosChange($event)" [(ordenesServiciosSeleccionados)]="ruta.ordenes" class="w-12"></app-ordenes-servicios-modal-select>
 </div>
 <div *ngIf="ruta.ordenes.length > 0" class="card flex flex-column gap-3">
@@ -18,7 +18,7 @@
         </ng-template>
         <ng-template #body let-rowData let-columns="columns" let-index="rowIndex">
             <tr [pReorderableRow]="index">
-                <td>
+                <td *ngIf="ruta && ruta.estado != 'FINALIZADA'">
                     <span class="pi pi-bars" pReorderableRowHandle></span>
                 </td>
                 <td class="text-center">
@@ -31,7 +31,7 @@
                     {{ rowData.escuela.comuna }}
                 </td>
                 <td class="text-center">
-                    <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="warn" (click)="confirmarEliminar(rowData)" />
+                    <p-button [disabled]="ruta.estado == 'FINALIZADA'" pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="warn" (click)="confirmarEliminar(rowData)" />
                 </td>
             </tr>
         </ng-template>
@@ -43,20 +43,16 @@
 <div *ngIf="ruta.ordenes.length > 0" class="card flex flex-column md:flex-row gap-3 w-12">
     <div class="flex flex-column gap-1 w-12">
         <label for="chofer">Chofer</label>
-        <app-usuarios-select [rol]="'repartidor'" [validar]="validar" [(usuario)]="ruta.chofer" [showClear]="true" [showFilter]="true" class="w-12"></app-usuarios-select>
+        <app-usuarios-select [disabled]="ruta.estado == 'FINALIZADA'" [rol]="'repartidor'" [validar]="validar" [(usuario)]="ruta.chofer" [showClear]="true" [showFilter]="true" class="w-12"></app-usuarios-select>
     </div>
     <div class="flex flex-column gap-1 w-12">
         <label for="chofer">Fecha</label>
-        <p-datepicker dateFormat="dd/mm/yy"  [minDate]="minFecha" [fluid]="true"
-            [showIcon]="true"
-            [ngClass]="{ 'ng-invalid ng-dirty': validar && !ruta.fechaJS }"
-            class="w-12"
-            [(ngModel)]="ruta.fechaJS" />
+        <p-datepicker dateFormat="dd/mm/yy" [disabled]="ruta.estado == 'FINALIZADA'" [minDate]="minFecha" [fluid]="true" [showIcon]="true" [ngClass]="{ 'ng-invalid ng-dirty': validar && !ruta.fechaJS }" class="w-12" [(ngModel)]="ruta.fechaJS" />
     </div>
 </div>
 <div *ngIf="ruta.ordenes.length > 0" class="card flex flex-row gap-1">
     <p-button label="Cancelar" severity="secondary" [text]="true" [routerLink]="['/rutas']" [fluid]="true" class="w-12" />
-    <p-button [label]="ruta.id > 0 ? 'Actualizar' : 'Guardar'" severity="success" (click)="guardarRuta()" [fluid]="true" class="w-12" />
+    <p-button [disabled]="ruta.estado == 'FINALIZADA'" [label]="ruta.id > 0 ? 'Actualizar' : 'Guardar'" severity="success" (click)="guardarRuta()" [fluid]="true" class="w-12" />
 </div>
 <app-modal-loading [visible]="loading" />
 <p-confirmdialog #eliminarEntrega key="eliminarEntrega">

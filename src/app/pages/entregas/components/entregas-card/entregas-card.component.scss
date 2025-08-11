@@ -1,0 +1,14 @@
+.kpi-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+
+    .kpi {
+        text-align: center;
+        h2 {
+            margin: 0;
+            font-size: 2rem;
+            color: #007ad9;
+        }
+    }
+}

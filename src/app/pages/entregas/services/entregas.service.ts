@@ -60,4 +60,8 @@ export class EntregasService {
         }
         return this.authHttp.get<Reporte[]>(link);
     }
+
+    countEntregasParaHoyPorEscuela(): Observable<number> {
+        return this.authHttp.get<number>(`${this.url}/reporte/entregas-por-dia/count`);
+    }
 }

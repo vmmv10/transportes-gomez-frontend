@@ -15,12 +15,13 @@ export class EntregasCountComponent {
     @Input() filtro: EntregaFiltro = new EntregaFiltro();
     cantidad: number = 0;
     loading: boolean = false;
+    entregasHoy: number = 0;
 
     constructor(private entregaService: EntregasService) {}
 
     ngOnInit() {
         switch (this.tipo) {
-            case 'Activas':
+            case 'No Realizadas':
                 this.filtro.entregado = false;
                 break;
             case 'Realizadas':
@@ -33,8 +34,23 @@ export class EntregasCountComponent {
         this.getCount();
     }
 
+    ngOnChanges() {
+        switch (this.tipo) {
+            case 'No Realizadas':
+                this.filtro.entregado = false;
+                break;
+            case 'Realizadas':
+                this.filtro.entregado = true;
+                break;
+            default:
+                this.filtro.entregado = undefined;
+                break;
+        }
+        this.getCount();
+        this.getEntregasHoy();
+    }
+
     getCount() {
-        this.loading = true;
         this.entregaService.getAll(this.filtro).subscribe({
             next: (data) => {
                 this.cantidad = data.totalElements;
@@ -43,6 +59,17 @@ export class EntregasCountComponent {
             error: (error) => {
                 console.error('Error al obtener el conteo de entregas:', error);
                 this.loading = false;
+            }
+        });
+    }
+
+    getEntregasHoy() {
+        this.entregaService.countEntregasParaHoyPorEscuela().subscribe({
+            next: (data) => {
+                this.entregasHoy = data;
+            },
+            error: (err) => {
+                console.log(err);
             }
         });
     }

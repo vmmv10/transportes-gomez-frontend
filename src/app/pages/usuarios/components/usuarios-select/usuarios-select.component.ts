@@ -21,6 +21,7 @@ export class UsuariosSelectComponent {
     @Input() showClear: boolean = false;
     @Input() validar: boolean = false;
     @Input() showFilter: boolean = false;
+    @Input() disabled: boolean = false;
     filtro: Usuario = new Usuario();
 
     usuarios: Usuario[] = [];

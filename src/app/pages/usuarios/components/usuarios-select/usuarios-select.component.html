@@ -11,6 +11,7 @@
     [ngClass]="{ 'ng-dirty ng-invalid': validar && !usuario }"
     appendTo="body"
     (ngModelChange)="onChangeSelect($event)"
+    [disabled]="disabled"
 >
 </p-select>
 <p-skeleton *ngIf="loading" class="w-12" height="2rem" />

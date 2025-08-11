@@ -4,6 +4,7 @@ import { OrdenServicio } from '../models/orden-servicio.model';
 import { Observable } from 'rxjs';
 import { Page } from '../../uikit/models/page.model';
 import { OrdenServicioFiltro } from '../models/orden-servicio-filtro.model';
+import { Reporte } from '../../uikit/models/reporte.model';
 
 @Injectable({
     providedIn: 'root'
@@ -77,5 +78,13 @@ export class OrdenesServiciosService {
 
     deleteDetalle(detalleId: number): Observable<void> {
         return this.authHttp.delete<void>(`${this.url}/detalles/${detalleId}`);
+    }
+
+    getTopItems(filtro: OrdenServicioFiltro): Observable<Reporte[]> {
+        let link = `${this.url}/reporte/items-mas-despachados`;
+        if (filtro.escuela) {
+            link += `&escuela=${filtro.escuela.id}`;
+        }
+        return this.authHttp.get<Reporte[]>(link);
     }
 }

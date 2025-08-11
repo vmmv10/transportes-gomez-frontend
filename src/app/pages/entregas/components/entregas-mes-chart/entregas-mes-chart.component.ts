@@ -40,16 +40,15 @@ export class EntregasMesChartComponent {
                     labels: labels,
                     datasets: [
                         {
-                            label: 'Entregas por mes',
                             backgroundColor: '#42A5F5',
-                            data: values
+                            data: values,
+                            label: 'Entregas por Mes'
                         }
                     ]
                 };
 
                 this.basicOptions = {
                     responsive: true,
-                    indexAxis: 'y',
                     animation: {
                         duration: 1000,
                         easing: 'easeOutQuart'
@@ -58,17 +57,13 @@ export class EntregasMesChartComponent {
                         x: {
                             title: {
                                 display: true,
-                                text: 'Cantidad de Entregas',
                                 color: '#333',
                                 font: { size: 14, weight: 'bold' }
                             },
                             ticks: {
                                 stepSize: 1,
                                 color: '#555',
-                                font: { size: 12 },
-                                callback: function (value: any) {
-                                    return Number.isInteger(value) ? value : '';
-                                }
+                                font: { size: 12 }
                             },
                             grid: { color: '#eee' }
                         },
@@ -88,7 +83,7 @@ export class EntregasMesChartComponent {
                         },
                         title: {
                             display: true,
-                            text: 'Entregas por Escuela',
+                            text: 'Entregas por Mes',
                             color: '#222',
                             font: { size: 18, weight: 'bold' },
                             padding: { bottom: 20 }

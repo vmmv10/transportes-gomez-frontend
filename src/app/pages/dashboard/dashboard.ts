@@ -9,41 +9,48 @@ import { EntregasTableComponent } from '../entregas/components/entregas-table/en
 import { EntregaFiltro } from '../entregas/models/entrega-filtro.models';
 import { EntregasTopEscuelasChartComponent } from '../entregas/components/entregas-top-escuelas-chart/entregas-top-escuelas-chart.component';
 
+// PrimeNG
+import { CardModule } from 'primeng/card';
+import { CalendarModule } from 'primeng/calendar';
+import { DropdownModule } from 'primeng/dropdown';
+import { TableModule } from 'primeng/table';
+import { ChartModule } from 'primeng/chart';
+import { FormsModule } from '@angular/forms';
+import { ToolbarModule } from 'primeng/toolbar';
+import { ButtonModule } from 'primeng/button';
+import { InputIconModule } from 'primeng/inputicon';
+import { EscuelasSelectComponent } from '../escuelas/components/escuelas-select/escuelas-select.component';
+import { MessageService } from 'primeng/api';
+import { EntregasCardComponent } from '../entregas/components/entregas-card/entregas-card.component';
+import { OrdenesServiciosItemsDespachadosChartComponent } from '../ordenes-servicios/components/ordenes-servicios-items-despachados-chart/ordenes-servicios-items-despachados-chart.component';
+import { OrdenServicioFiltro } from '../ordenes-servicios/models/orden-servicio-filtro.model';
+
 @Component({
     selector: 'app-dashboard',
-    imports: [EntregasTableComponent, EntregasTopEscuelasChartComponent, EntregasMesChartComponent, EntregasCountComponent, CommonModule, RutasActualComponent],
-    template: `
-        <div class="flex flex-column gap-2" *ngIf="esAdmin$ | async">
-            <div class="flex flex-column md:flex-row gap-5 md:gap-2 w-12 mb-5">
-                <app-entregas-count tipo="Activas" class="w-12" />
-                <app-entregas-count tipo="Realizadas" class="w-12" />
-            </div>
-            <div class="card w-12 flex flex-column gap-4">
-                <span class="text-xl font-bold">Ordenes de Servicio Entregadas</span>
-                <app-entregas-table class="w-12" [filtro]="filtroEntregasAdministrador" [escuela]="true" [card]="false"></app-entregas-table>
-            </div>
-            <div class="flex flex-column md:flex-row w-12 gap-4">
-                <div class="flex jusrify-content-center card w-12">
-                    <app-entregas-top-escuelas-chart class="p-fluid w-12"></app-entregas-top-escuelas-chart>
-                </div>
-                <div class="card w-12 p-fluid">
-                    <app-entregas-mes-chart class="p-fluid w-12"></app-entregas-mes-chart>
-                </div>
-            </div>
-        </div>
-        <div class="flex flex-column gap-2" *ngIf="esConductor$ | async">
-            <app-rutas-actual class="w-12" />
-        </div>
-        <div class="flex flex-column gap-2" *ngIf="esCliente$ | async">
-            <div class="card flex flex-column gap-4 w-12">
-                <span class="text-xl font-bold">Ordenes de Servicio Entregadas</span>
-                <app-entregas-table [filtro]="filtroEntregasCliente" [escuela]="true" [card]="false"></app-entregas-table>
-            </div>
-            <div class="card">
-                <app-entregas-mes-chart></app-entregas-mes-chart>
-            </div>
-        </div>
-    `
+    imports: [
+        ToolbarModule,
+        EntregasTableComponent,
+        FormsModule,
+        EntregasTopEscuelasChartComponent,
+        EntregasMesChartComponent,
+        EntregasCountComponent,
+        CommonModule,
+        RutasActualComponent,
+        CardModule,
+        CalendarModule,
+        DropdownModule,
+        TableModule,
+        ChartModule,
+        ButtonModule,
+        InputIconModule,
+        EscuelasSelectComponent,
+        EntregasCardComponent,
+        OrdenesServiciosItemsDespachadosChartComponent
+    ],
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.scss'],
+    standalone: true,
+    providers: [MessageService]
 })
 export class Dashboard {
     esAdmin$!: Observable<boolean>;
@@ -52,6 +59,28 @@ export class Dashboard {
 
     filtroEntregasCliente: EntregaFiltro = new EntregaFiltro();
     filtroEntregasAdministrador: EntregaFiltro = new EntregaFiltro();
+    filtroOs: OrdenServicioFiltro = new OrdenServicioFiltro();
+
+    fechaFiltro: Date | null = null;
+    escuelaSeleccionada: any = null;
+    escuelas = [
+        { label: 'Escuela A', value: 'A' },
+        { label: 'Escuela B', value: 'B' }
+    ];
+
+    entregasHoy = 12;
+    entregasPendientes = 3;
+    escuelasActivas = 15;
+
+    topEscuelasData: any;
+    entregasMensualesData: any;
+    estadoEntregasData: any;
+
+    chartOptions: any;
+    ultimasEntregas = [
+        { fecha: new Date(), escuela: 'Escuela A', estado: 'Completada', cantidad: 5 },
+        { fecha: new Date(), escuela: 'Escuela B', estado: 'Pendiente', cantidad: 3 }
+    ];
 
     constructor(private rolService: RolService) {}
 
@@ -61,11 +90,46 @@ export class Dashboard {
         this.esCliente$ = this.rolService.tieneRol('Cliente');
 
         if (this.esCliente$) {
-            this.filtroEntregasCliente.entregado = true;
+            this.filtroEntregasCliente.entregado = false;
+            this.filtroEntregasCliente.size = 5;
         }
 
         if (this.esAdmin$) {
-            this.filtroEntregasAdministrador.entregado = true;
+            this.filtroEntregasAdministrador.size = 5;
+            this.filtroEntregasAdministrador.entregado = false;
         }
+
+        this.chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false
+        };
+
+        this.topEscuelasData = {
+            labels: ['Escuela A', 'Escuela B', 'Escuela C'],
+            datasets: [{ label: 'Entregas', data: [12, 8, 5], backgroundColor: ['#50E3C2', '#4A90E2', '#F5A623'] }]
+        };
+
+        this.entregasMensualesData = {
+            labels: ['Enero', 'Febrero', 'Marzo'],
+            datasets: [{ label: 'Entregas', data: [15, 10, 20], borderColor: '#4A90E2', fill: false }]
+        };
+
+        this.estadoEntregasData = {
+            labels: ['Completadas', 'Pendientes', 'Rechazadas'],
+            datasets: [{ data: [70, 20, 10], backgroundColor: ['#2ecc71', '#f39c12', '#e74c3c'] }]
+        };
+    }
+
+    escuelaChange(event: any) {
+        console.log('Escuela seleccionada:', event);
+        this.escuelaSeleccionada = event;
+        this.filtroEntregasAdministrador = {
+            ...this.filtroEntregasAdministrador,
+            escuela: event
+        };
+        this.filtroOs = {
+            ...this.filtroOs,
+            escuela: event
+        };
     }
 }

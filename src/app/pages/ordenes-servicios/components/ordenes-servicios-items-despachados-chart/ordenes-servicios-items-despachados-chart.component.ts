@@ -1,26 +1,22 @@
 import { Component, Input } from '@angular/core';
-import { EntregasService } from '../../services/entregas.service';
-import { MessageService } from 'primeng/api';
 import { ChartModule } from 'primeng/chart';
-import { EntregaFiltro } from '../../models/entrega-filtro.models';
+import { OrdenesServiciosService } from '../../services/ordenes-servicios.service';
 import { Escuela } from '../../../escuelas/models/escuela.models';
+import { OrdenServicioFiltro } from '../../models/orden-servicio-filtro.model';
+import { FormsModule } from '@angular/forms';
+
 @Component({
-    selector: 'app-entregas-top-escuelas-chart',
-    imports: [ChartModule],
-    templateUrl: './entregas-top-escuelas-chart.component.html',
-    styleUrl: './entregas-top-escuelas-chart.component.scss',
-    providers: [MessageService],
-    standalone: true
+    selector: 'app-ordenes-servicios-items-despachados-chart',
+    imports: [ChartModule, FormsModule],
+    templateUrl: './ordenes-servicios-items-despachados-chart.component.html',
+    styleUrl: './ordenes-servicios-items-despachados-chart.component.scss'
 })
-export class EntregasTopEscuelasChartComponent {
+export class OrdenesServiciosItemsDespachadosChartComponent {
     @Input() escuela: string | undefined;
-    filtro: EntregaFiltro = new EntregaFiltro();
+    @Input() filtro: OrdenServicioFiltro = new OrdenServicioFiltro();
     basicData: any;
     basicOptions: any;
-    constructor(
-        private entregasService: EntregasService,
-        private messageService: MessageService
-    ) {}
+    constructor(private ordenesServiciosService: OrdenesServiciosService) {}
 
     ngOnInit() {
         this.getData();
@@ -31,7 +27,7 @@ export class EntregasTopEscuelasChartComponent {
             this.filtro.escuela = new Escuela();
             this.filtro.escuela.id = Number(this.escuela);
         }
-        this.entregasService.getTopEscuelas(this.filtro).subscribe({
+        this.ordenesServiciosService.getTopItems(this.filtro).subscribe({
             next: (data) => {
                 const labels = data.map((d) => d.titulo);
                 const values = data.map((d) => d.total);
@@ -39,7 +35,7 @@ export class EntregasTopEscuelasChartComponent {
                     labels: labels,
                     datasets: [
                         {
-                            label: 'Top Entregas por Escuela',
+                            label: 'Top Artículos Despachados',
                             backgroundColor: '#50E3C2',
                             data: values
                         }
@@ -57,7 +53,7 @@ export class EntregasTopEscuelasChartComponent {
                         x: {
                             title: {
                                 display: true,
-                                text: 'Cantidad de Entregas',
+                                text: 'Cantidad de Artículos Despachados',
                                 color: '#333',
                                 font: { size: 14, weight: 'bold' }
                             },
@@ -87,7 +83,7 @@ export class EntregasTopEscuelasChartComponent {
                         },
                         title: {
                             display: true,
-                            text: 'Top Entregas por Escuela',
+                            text: 'Cantidad de Artículos Despachados',
                             color: '#222',
                             font: { size: 18, weight: 'bold' },
                             padding: { bottom: 20 }
@@ -102,13 +98,7 @@ export class EntregasTopEscuelasChartComponent {
                     }
                 };
             },
-            error: (error) => {
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error al cargar datos',
-                    detail: 'No se pudieron cargar los datos de entregas por mes.'
-                });
-            }
+            error: (error) => {}
         });
     }
 }

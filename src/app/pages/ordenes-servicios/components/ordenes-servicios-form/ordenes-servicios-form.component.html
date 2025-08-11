@@ -7,12 +7,12 @@
         <div class="flex md:flex-row flex-column gap-1">
             <div class="flex flex-column gap-2 w-12">
                 <label class="text-md font-semibold">Bodega origen</label>
-                <app-bodegas-select [validar]="validar" [(bodega)]="orden.bodega" [showClear]="true" [showFilter]="true" class="w-12"></app-bodegas-select>
+                <app-bodegas-select [validar]="validar" [disabled]="orden.entregado || orden.id > 0" [(bodega)]="orden.bodega" [showClear]="true" [showFilter]="true" class="w-12"></app-bodegas-select>
             </div>
             <div class="flex flex-col gap-2 w-12">
                 <div class="flex flex-col gap-2 w-12">
                     <label for="escuela">Establecimiento Destino</label>
-                    <app-escuelas-select [validar]="validar" [(escuela)]="orden.escuela" [showClear]="true" [showFilter]="true" class="w-12"></app-escuelas-select>
+                    <app-escuelas-select [validar]="validar" [disabled]="orden.entregado" [(escuela)]="orden.escuela" [showClear]="true" [showFilter]="true" class="w-12"></app-escuelas-select>
                 </div>
             </div>
         </div>
@@ -54,7 +54,7 @@
                 <tr>
                     <th class="text-center">Insumo</th>
                     <th class="text-center">Cantidad</th>
-                    <th class="text-center"><p-button pTooltip="Agregar Item" icon="pi pi-plus" [rounded]="true" [text]="true" severity="success" (click)="agregarFila()" /></th>
+                    <th class="text-center"><p-button [disabled]="orden.entregado" pTooltip="Agregar Item" icon="pi pi-plus" [rounded]="true" [text]="true" severity="success" (click)="agregarFila()" /></th>
                 </tr>
             </ng-template>
             <ng-template #body let-producto let-index="rowIndex">
@@ -62,8 +62,8 @@
                     <td class="text-center">{{ producto.nombre }}</td>
                     <td class="text-center">{{ producto.cantidad }}</td>
                     <td class="text-center">
-                        <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminarDetalle(producto)" />
-                        <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" (click)="editarDetalle(index)" />
+                        <p-button pTooltip="Eliminar" icon="pi pi-trash" [disabled]="orden.entregado" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminarDetalle(producto)" />
+                        <p-button pTooltip="Editar" icon="pi pi-pencil" [disabled]="orden.entregado" [rounded]="true" [text]="true" severity="help" (click)="editarDetalle(index)" />
                     </td>
                 </tr>
             </ng-template>
@@ -73,7 +73,7 @@
         </p-table>
     </div>
     <div class="flex flex-column gap-3 card" *ngIf="(orden.bodega && orden.bodega.id != 4 && orden.escuela) || (orden.bodega && orden.bodega.id == 4 && orden.documento.id > 0 && orden.escuela)">
-        <textarea [(ngModel)]="orden.observaciones" class="w-12 p-inputtext p-component" rows="5" placeholder="Ingrese observaciones"></textarea>
+        <textarea [disabled]="orden.entregado" [(ngModel)]="orden.observaciones" class="w-12 p-inputtext p-component" rows="5" placeholder="Ingrese observaciones"></textarea>
     </div>
     <!--<div class="flex flex-column gap-2 card w-12" *ngIf="orden.id > 0 && imagenes && imagenes.length > 0">
         <span class="text-lg font-semibold">PDF</span>
