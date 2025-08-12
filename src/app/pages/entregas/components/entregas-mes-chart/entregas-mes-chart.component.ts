@@ -14,8 +14,7 @@ import { Escuela } from '../../../escuelas/models/escuela.models';
     providers: [MessageService]
 })
 export class EntregasMesChartComponent {
-    @Input() escuela: string | undefined;
-    filtro: EntregaFiltro = new EntregaFiltro();
+     @Input() filtro: EntregaFiltro = new EntregaFiltro();
     basicData: any;
     basicOptions: any;
     constructor(
@@ -27,11 +26,11 @@ export class EntregasMesChartComponent {
         this.getEntregasMes();
     }
 
+    ngOnChanges() {
+        this.getEntregasMes();
+    }
+
     getEntregasMes() {
-        if (this.escuela) {
-            this.filtro.escuela = new Escuela();
-            this.filtro.escuela.id = Number(this.escuela);
-        }
         this.entregasService.getEntregasMes(this.filtro).subscribe({
             next: (data) => {
                 const labels = data.map((d) => d.titulo);

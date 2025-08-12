@@ -33,6 +33,9 @@
                 <td class="text-center" *ngIf="item.estado == 'FINALIZADA'">
                     <p-tag severity="success" value="Finalizada" />
                 </td>
+                <td class="text-center" *ngIf="item.estado != 'FINALIZADA'">
+                    <p-tag severity="warn" value="Pendiente" />
+                </td>
                 <td class="text-center">
                     <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" [routerLink]="['/rutas/formulario/' + item.id]" />
                     <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminar(item)" />

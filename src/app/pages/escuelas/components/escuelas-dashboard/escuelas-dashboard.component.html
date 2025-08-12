@@ -40,7 +40,7 @@
         <app-entregas-count [filtro]="filtroEntegas" tipo="Activas" class="w-12" />
         <app-entregas-count [filtro]="filtroEntegas" tipo="Realizadas" class="w-12" />
     </div>
-    <app-entregas-mes-chart [escuela]="filtroEntegas.escuela?.id?.toString()" class="w-12" />
+    <app-entregas-mes-chart [filtro]="filtroEntegas" class="w-12" />
     <h2 class="text-xl">Detalles</h2>
     <app-entregas-table [card]="false" [proveedor]="true" [documento]="true" [filtro]="filtroEntegas" [filtros]="true"></app-entregas-table>
 </div>

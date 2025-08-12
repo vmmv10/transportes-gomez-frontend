@@ -22,6 +22,10 @@ export class OrdenesServiciosItemsDespachadosChartComponent {
         this.getData();
     }
 
+    ngOnChanges() {
+        this.getData();
+    }
+
     getData() {
         if (this.escuela) {
             this.filtro.escuela = new Escuela();

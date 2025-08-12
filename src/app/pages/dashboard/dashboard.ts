@@ -121,7 +121,6 @@ export class Dashboard {
     }
 
     escuelaChange(event: any) {
-        console.log('Escuela seleccionada:', event);
         this.escuelaSeleccionada = event;
         this.filtroEntregasAdministrador = {
             ...this.filtroEntregasAdministrador,

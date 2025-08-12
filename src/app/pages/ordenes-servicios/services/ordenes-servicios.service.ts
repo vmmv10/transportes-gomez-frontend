@@ -83,7 +83,7 @@ export class OrdenesServiciosService {
     getTopItems(filtro: OrdenServicioFiltro): Observable<Reporte[]> {
         let link = `${this.url}/reporte/items-mas-despachados`;
         if (filtro.escuela) {
-            link += `&escuela=${filtro.escuela.id}`;
+            link += `?escuelaId=${filtro.escuela.id}`;
         }
         return this.authHttp.get<Reporte[]>(link);
     }

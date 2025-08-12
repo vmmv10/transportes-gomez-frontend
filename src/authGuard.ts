@@ -11,7 +11,7 @@ export const authGuard = (
   const router = inject(Router);
 
   const expectedRoles: string[] = route.data['roles'] || [];
-  const namespace = 'https://transportes-gomez.cl/roles'; // 👈 tu namespace exacto
+  const namespace = 'https://transportes-gomez.cl/roles';
 
   return combineLatest([auth.isAuthenticated$, auth.idTokenClaims$]).pipe(
     tap(([isAuthenticated, claims]) => {
@@ -24,7 +24,7 @@ export const authGuard = (
       const hasAccess = expectedRoles.length === 0 || expectedRoles.some(role => userRoles.includes(role));
 
       if (!hasAccess) {
-        router.navigate(['/notfound']); // 👈 página de acceso denegado (puedes personalizar)
+        router.navigate(['/notfound']);
       }
     }),
     map(([isAuthenticated, claims]) => {

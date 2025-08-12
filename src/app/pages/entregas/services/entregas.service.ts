@@ -40,7 +40,7 @@ export class EntregasService {
     getEntregasMes(filtro: EntregaFiltro): Observable<Reporte[]> {
         let link = `${this.url}/reporte/mes`;
         if (filtro.escuela) {
-            link += `?escuela=${filtro.escuela}`;
+            link += `?escuela=${filtro.escuela.id}`;
         }
         return this.authHttp.get<Reporte[]>(link);
     }
