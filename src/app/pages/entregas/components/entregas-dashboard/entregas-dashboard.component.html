@@ -1,0 +1,28 @@
+<div class="flex w-12 flex-column gap-4">
+    <div class="flex w-12 flex-row gap-4">
+        <div class="card flex w-12 flex-column text-center gap-2 mb-0 justify-content-between cursor-pointer" (click)="changeFiltro('hoy')" [ngClass]="{ 'shadow-2': hoySeleccionado }">
+            <ng-container *ngIf="!loading">
+                <span class="text-lg font-semibold">Entregas Hoy</span>
+                <span class="text-6xl font-bold text-center text-blue-500">{{ data.entregasHoy }}</span>
+            </ng-container>
+            <i *ngIf="loading" class="pi pi-spin pi-cog" style="font-size: 4rem"></i>
+        </div>
+        <div class="card flex w-12 flex-column mb-0 text-center gap-2 justify-content-between cursor-pointer" (click)="changeFiltro('Pendientes')" [ngClass]="{ 'shadow-2': pendientesSeleccionado }">
+            <ng-container *ngIf="!loading">
+                <span class="text-lg font-semibold">Entregas Pendientes</span>
+                <span class="text-6xl font-bold text-center text-red-500">{{ data.entregasPendientes }}</span>
+            </ng-container>
+            <i *ngIf="loading" class="pi pi-spin pi-cog" style="font-size: 4rem"></i>
+        </div>
+        <div class="card flex w-12 flex-column text-center gap-2 justify-content-between cursor-pointer" (click)="changeFiltro('Realizadas')" [ngClass]="{ 'shadow-2': realizadasSeleccionado }">
+            <ng-container *ngIf="!loading">
+                <span class="text-lg font-semibold">Entregas Realizadas</span>
+                <span class="text-6xl font-bold text-center text-green-500">{{ data.entregasRealizadas }}</span>
+            </ng-container>
+            <i *ngIf="loading" class="pi pi-spin pi-cog" style="font-size: 4rem"></i>
+        </div>
+    </div>
+    <div class="card flex w-12 flex-column text-center gap-2 justify-content-between">
+        <app-entregas-table class="w-12" [filtro]="filtro" [filtros]="false" [card]="false"></app-entregas-table>
+    </div>
+</div>

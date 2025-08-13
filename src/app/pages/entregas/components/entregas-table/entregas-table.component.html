@@ -14,7 +14,7 @@
     <p-table class="hidden md:block {{ card ? 'card' : '' }}" [value]="entregas && entregas.content ? entregas.content : []" id="entregas-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
         <ng-template #header>
             <tr>
-                <th class="text-center" colspan="2">Orden Servicio</th>
+                <th class="text-center">Orden Servicio</th>
                 <th class="text-center">Fecha</th>
                 <th *ngIf="escuela" class="text-center">Escuela</th>
                 <th *ngIf="escuela" class="text-center">Comuna</th>
@@ -24,9 +24,9 @@
         </ng-template>
         <ng-template #body let-item>
             <tr>
-                <td class="text-center">{{ item.ordenServicio.id }}</td>
-                <td class="text-center">
-                    <p-button pTooltip="Ver Imagen" icon="pi pi-images" [rounded]="true" [text]="true" severity="success" (click)="abrirModalImagen(item.id)" />
+                <td class="text-center">{{ item.ordenServicio.id }}
+                    <p-button *ngIf="item.ordenServicio.entregado" Tooltip="Ver Imagen" icon="pi pi-images" [rounded]="true" [text]="true" severity="success" (click)="abrirModalImagen(item.ordenServicio.id)" />
+                    <p-button pTooltip="PDF" icon="pi pi-file-pdf" [rounded]="true" [text]="true" severity="danger" (click)="obtenerPdf(item.ordenServicio.id)" />
                 </td>
                 <td class="text-center">{{ item.fecha | date: 'dd/MM/yyyy' }}</td>
                 <td class="text-center" *ngIf="escuela">{{ item.ordenServicio.escuela.nombre }}</td>

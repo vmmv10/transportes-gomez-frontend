@@ -6,12 +6,15 @@ import { ImagenesService } from '../../../uikit/services/imagenes.service';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
+import { MessageService } from 'primeng/api';
 
 @Component({
     selector: 'app-ordenes-servicios-imagen',
     imports: [CommonModule, GalleriaModule, ProgressSpinnerModule, DialogModule, ButtonModule],
     templateUrl: './ordenes-servicios-imagen.component.html',
-    styleUrl: './ordenes-servicios-imagen.component.scss'
+    styleUrl: './ordenes-servicios-imagen.component.scss',
+    standalone: true,
+    providers: [MessageService]
 })
 export class OrdenesServiciosImagenComponent {
     @Input() id: string = '';
@@ -32,7 +35,7 @@ export class OrdenesServiciosImagenComponent {
         }
     ];
 
-    constructor(private imagenesService: ImagenesService) {}
+    constructor(private imagenesService: ImagenesService, private messageService: MessageService) {}
 
     getData(): void {
         if (this.id) {
@@ -51,11 +54,17 @@ export class OrdenesServiciosImagenComponent {
             }
         } catch (error) {
             console.error('Error fetching images:', error);
+            this.imagenes = [];
+            this.imagenSeleccionada = undefined;
+            this.hideDialog();
+            this.messageService.add({ severity: 'warn', summary: 'Sin Imagenes', detail: 'No se encontraron imágenes para esta orden de servicio.' });
         }
     }
 
     hideDialog(): void {
         this.visible = false;
+        this.onVisible.emit(this.visible);
+        this.imagenSeleccionada = undefined;
     }
 
     onImagenChange(event: any) {

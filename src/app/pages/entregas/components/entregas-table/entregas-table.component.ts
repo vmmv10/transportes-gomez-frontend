@@ -19,6 +19,7 @@ import { PaginatorModule } from 'primeng/paginator';
 import { TableMobileComponent } from '../../../uikit/components/table-mobile/table-mobile.component';
 import { EscuelasSelectComponent } from '../../../escuelas/components/escuelas-select/escuelas-select.component';
 import { OrdenesServiciosImagenComponent } from '../../../ordenes-servicios/components/ordenes-servicios-imagen/ordenes-servicios-imagen.component';
+import { OrdenesServiciosService } from '../../../ordenes-servicios/services/ordenes-servicios.service';
 
 @Component({
     standalone: true,
@@ -84,7 +85,8 @@ export class EntregasTableComponent {
 
     constructor(
         private entregasService: EntregasService,
-        private MessageService: MessageService
+        private MessageService: MessageService,
+        private ordenesServiciosService: OrdenesServiciosService
     ) {}
 
     ngOnInit() {
@@ -124,4 +126,27 @@ export class EntregasTableComponent {
         this.mostrarImagenes = true;
         this.ordenId = id;
     }
+
+    obtenerPdf(id: string) {
+            this.loading = true;
+            this.ordenesServiciosService.generarPdf(id).subscribe({
+                next: (data) => {
+                    const blob = new Blob([data], { type: 'application/pdf' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `OrdenServicio_${id}.pdf`;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    this.loading = false;
+                },
+                error: (error) => {
+                    this.MessageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener el PDF' });
+                    console.error('Error fetching PDF:', error);
+                    this.loading = false;
+                }
+            });
+        }
+
+
 }

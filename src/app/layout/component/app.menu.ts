@@ -40,18 +40,18 @@ export class AppMenu {
                     { label: 'Entregas', icon: 'pi pi-fw pi-envelope', routerLink: ['/entregas'] },
                     { label: 'Rutas', icon: 'pi pi-fw pi-map', routerLink: ['/rutas'] },
                     {
-                        label: 'Inventario',
+                        label: 'Articulos',
                         icon: 'pi pi-fw pi-warehouse',
                         items: [
-                            { label: 'Articulos', routerLink: ['/items'] },
-                            { label: 'Saldo Bodega', routerLink: ['/inventario'] },
+                            { label: 'Lista de Artículos', routerLink: ['/items'] },
                             { label: 'Marcas', routerLink: ['/marcas'] },
                             { label: 'Categorías', routerLink: ['/categorias'] }
                         ]
                     },
+                    { label: 'Inventario', icon: 'pi pi-fw pi-warehouse', routerLink: ['/inventario'] },
                     { label: 'Ingresos a Bodega', icon: 'pi pi-fw pi-cart-minus', routerLink: ['/ingresos'] },
                     { label: 'Proveedores', icon: 'pi pi-fw pi-user', routerLink: ['/proveedores'] },
-                    { label: 'Transportes', icon: 'pi pi-fw pi-truck', routerLink: ['/transportes'] }
+                    { label: 'Transportes', icon: 'pi pi-fw pi-truck', routerLink: ['/transportes'] },
                 ].filter((item) => this.canAccess(item.label))
             }
         ];
@@ -67,7 +67,7 @@ export class AppMenu {
         }
 
         if (this.roles.includes('Cliente')) {
-            return ['Establecimientos', 'Documentos'].includes(menuLabel);
+            return ['Establecimientos', 'Inventario'].includes(menuLabel);
         }
 
         return false;

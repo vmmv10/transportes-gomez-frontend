@@ -41,11 +41,11 @@ export default [
     { path: 'proveedores/formulario', component: ProveedorFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'proveedores/formulario/:id', component: ProveedorFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'items', component: ItemsListaComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
-    { path: 'inventario', component: InventarioComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
+    { path: 'inventario', component: InventarioComponent, canActivate: [authGuard], data: { roles: ['Administrador', 'Cliente'] } },
     { path: 'ordenes-servicios', component: OrdenesServiciosComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
-    { path: 'ordenes-servicios/formulario', component: OrdenesServiciosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador', 'Cliente'] } },
-    { path: 'ordenes-servicios/formulario/:id', component: OrdenesServiciosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador', 'Cliente'] } },
-    { path: 'ordenes-servicios/formulario/documento/:documento/:tipo', component: OrdenesServiciosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador', 'Cliente'] } },
+    { path: 'ordenes-servicios/formulario', component: OrdenesServiciosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
+    { path: 'ordenes-servicios/formulario/:id', component: OrdenesServiciosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
+    { path: 'ordenes-servicios/formulario/documento/:documento/:tipo', component: OrdenesServiciosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'usuarios/perfil', component: UsuariosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador', 'Conductor', 'Cliente'] } },
     { path: 'marcas', component: MarcasComponent, canActivate: [authGuard], data: { roles: ['Administrador', 'Conductor', 'Cliente'] } }
 ] as Routes;

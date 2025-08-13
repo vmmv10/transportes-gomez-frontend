@@ -8,15 +8,16 @@ import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { FormsModule } from '@angular/forms';
 import * as L from 'leaflet';
-import { EntregasTableComponent } from '../../../entregas/components/entregas-table/entregas-table.component';
 import { EntregaFiltro } from '../../../entregas/models/entrega-filtro.models';
 import { EntregasMesChartComponent } from '../../../entregas/components/entregas-mes-chart/entregas-mes-chart.component';
-import { EntregasCountComponent } from '../../../entregas/components/entregas-count/entregas-count.component';
+import { EntregasDashboardComponent } from '../../../entregas/components/entregas-dashboard/entregas-dashboard.component';
+import { OrdenServicioFiltro } from '../../../ordenes-servicios/models/orden-servicio-filtro.model';
+import { OrdenesServiciosItemsDespachadosChartComponent } from '../../../ordenes-servicios/components/ordenes-servicios-items-despachados-chart/ordenes-servicios-items-despachados-chart.component';
 
 @Component({
     standalone: true,
     selector: 'app-escuelas-dashboard',
-    imports: [BreadcrumbModule, EntregasCountComponent, CommonModule, ButtonModule, FormsModule, RouterModule, EntregasTableComponent, EntregasMesChartComponent],
+    imports: [OrdenesServiciosItemsDespachadosChartComponent, BreadcrumbModule, EntregasDashboardComponent, CommonModule, ButtonModule, FormsModule, RouterModule, EntregasMesChartComponent],
     templateUrl: './escuelas-dashboard.component.html',
     styleUrl: './escuelas-dashboard.component.scss'
 })
@@ -24,7 +25,8 @@ export class EscuelasDashboardComponent {
     @Input() escuela: Escuela | undefined;
     items: MenuItem[] = [];
     private map!: L.Map;
-    filtroEntegas: EntregaFiltro = new EntregaFiltro();
+    filtroEntregas: EntregaFiltro = new EntregaFiltro();
+    filtroOs: OrdenServicioFiltro = new OrdenServicioFiltro();
 
     constructor(
         private route: ActivatedRoute,
@@ -47,7 +49,8 @@ export class EscuelasDashboardComponent {
     async getEscuela(id: string) {
         try {
             this.escuela = await this.escuelasService.getEscuela(id).toPromise();
-            this.filtroEntegas.escuela = this.escuela;
+            this.filtroEntregas.escuela = this.escuela;
+            this.filtroOs.escuela = this.escuela;
             this.initMap();
         } catch (error) {
             console.error('Error al obtener la escuela:', error);

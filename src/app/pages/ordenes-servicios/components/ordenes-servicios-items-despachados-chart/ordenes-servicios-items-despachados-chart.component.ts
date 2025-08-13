@@ -57,7 +57,7 @@ export class OrdenesServiciosItemsDespachadosChartComponent {
                         x: {
                             title: {
                                 display: true,
-                                text: 'Cantidad de Artículos Despachados',
+                                text: 'Top de Artículos Despachados',
                                 color: '#333',
                                 font: { size: 14, weight: 'bold' }
                             },
@@ -87,7 +87,7 @@ export class OrdenesServiciosItemsDespachadosChartComponent {
                         },
                         title: {
                             display: true,
-                            text: 'Cantidad de Artículos Despachados',
+                            text: 'Top de Artículos Despachados',
                             color: '#222',
                             font: { size: 18, weight: 'bold' },
                             padding: { bottom: 20 }
@@ -95,7 +95,7 @@ export class OrdenesServiciosItemsDespachadosChartComponent {
                         tooltip: {
                             callbacks: {
                                 label: function (context: any) {
-                                    return `${context.formattedValue} entregas`;
+                                    return `${context.formattedValue} despachados`;
                                 }
                             }
                         }

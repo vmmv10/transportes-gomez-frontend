@@ -25,6 +25,8 @@ import { SaldoBodegaFiltro } from '../../models/saldo-bodega-filtro.model';
 import { SaldoBodegaService } from '../../services/saldo-bodega.service';
 import { BodegasSelectComponent } from '../../../bodegas/components/bodegas-select/bodegas-select.component';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { RolService } from '../../../uikit/services/rol.service';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-inventario',
@@ -65,6 +67,7 @@ export class InventarioComponent {
     loading: boolean = false;
     ajustarDisplay: boolean = false;
     seleccionado!: SaldoBodega | undefined;
+    esAdmin$!: Observable<boolean>;
 
     campos: any[] = [
         { etiqueta: 'id', propiedad: 'id', tipo: 'texto' },
@@ -90,12 +93,18 @@ export class InventarioComponent {
     constructor(
         private MessageService: MessageService,
         private confirmationService: ConfirmationService,
-        private saldoBodegaService: SaldoBodegaService
+        private saldoBodegaService: SaldoBodegaService,
+        private rolService: RolService
     ) {
         this.breadcrumb = [
             { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
             { label: 'Inventario', routerLink: '/inventario' }
         ];
+    }
+
+    ngOnInit() {
+        this.esAdmin$ = this.rolService.tieneRol('Administrador');
+        console.log('InventarioComponent initialized', this.esAdmin$);
     }
 
     getData() {

@@ -30,6 +30,9 @@ export class EntregasService {
         if (filtro.entregado != undefined) {
             link += `&entregado=${filtro.entregado}`;
         }
+        if (filtro.fecha) {
+            link += `&fecha=${filtro.fecha}`;
+        }
         return this.authHttp.get<Page<Entrega>>(link);
     }
 
@@ -63,5 +66,13 @@ export class EntregasService {
 
     countEntregasParaHoyPorEscuela(): Observable<number> {
         return this.authHttp.get<number>(`${this.url}/reporte/entregas-por-dia/count`);
+    }
+
+    getDashboardData(filtro: EntregaFiltro): Observable<any> {
+        let link = `${this.url}/reporte/stats`
+        if (filtro.escuela) {
+            link += `?escuela=${filtro.escuela.id}`;
+        }
+        return this.authHttp.get<any>(link);
     }
 }

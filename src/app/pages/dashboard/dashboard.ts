@@ -24,16 +24,15 @@ import { MessageService } from 'primeng/api';
 import { EntregasCardComponent } from '../entregas/components/entregas-card/entregas-card.component';
 import { OrdenesServiciosItemsDespachadosChartComponent } from '../ordenes-servicios/components/ordenes-servicios-items-despachados-chart/ordenes-servicios-items-despachados-chart.component';
 import { OrdenServicioFiltro } from '../ordenes-servicios/models/orden-servicio-filtro.model';
+import { EntregasDashboardComponent } from '../entregas/components/entregas-dashboard/entregas-dashboard.component';
 
 @Component({
     selector: 'app-dashboard',
     imports: [
         ToolbarModule,
-        EntregasTableComponent,
         FormsModule,
         EntregasTopEscuelasChartComponent,
         EntregasMesChartComponent,
-        EntregasCountComponent,
         CommonModule,
         RutasActualComponent,
         CardModule,
@@ -44,8 +43,8 @@ import { OrdenServicioFiltro } from '../ordenes-servicios/models/orden-servicio-
         ButtonModule,
         InputIconModule,
         EscuelasSelectComponent,
-        EntregasCardComponent,
-        OrdenesServiciosItemsDespachadosChartComponent
+        OrdenesServiciosItemsDespachadosChartComponent,
+        EntregasDashboardComponent
     ],
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.scss'],

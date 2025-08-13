@@ -39,7 +39,7 @@
                 <th class="text-center">Marca</th>
                 <th class="text-center">Unidad Medida</th>
                 <th class="text-center">Saldo</th>
-                <th class="text-center"></th>
+                <th *ngIf="(esAdmin$ | async)" class="text-center"></th>
             </tr>
         </ng-template>
         <ng-template #body let-producto>
@@ -50,7 +50,7 @@
                 <td class="text-center">{{ producto.item.marca?.nombre }}</td>
                 <td class="text-center">{{ producto.item.unidadMedida.nombre }}</td>
                 <td class="text-center">{{ producto.saldo }}</td>
-                <td class="text-center">
+                <td *ngIf="(esAdmin$ | async)" class="text-center">
                     <p-button label="Ajustar Saldo" class="p-button-rounded p-button-text" (click)="ajustarDisplayChange(producto)" />
                 </td>
             </tr>

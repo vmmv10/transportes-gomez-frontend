@@ -13,6 +13,7 @@ export class EntregaFiltro {
     proveedor: Proveedor | undefined;
     size: number = 10;
     page: number = 0;
+    fecha: string | undefined;
 
     constructor() {
         this.id = '';

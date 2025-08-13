@@ -23,29 +23,17 @@
         <span class="text-black">{{ escuela.email }}</span>
     </div>
 </div>
-<div class="card flex flex-column gap-2" *ngIf="escuela && escuela.id > 0">
-    <h2 class="text-xl">Entregas</h2>
-    <!-- <div class="flex flex-column md:flex-row gap-1">
-        <div class="flex flex-column md:flex-row gap-1 w-12">
-            <input pInputText id="ordenServicioId" (keydown.enter)="filtrar()" [(ngModel)]="filtroEntegas.ordenServicioId" placeholder="Buscar por Orden" class="w-12" />
-            <input pInputText id="documento" (keydown.enter)="filtrar()" [(ngModel)]="filtroEntegas.documento" placeholder="Buscar por Documento" class="w-12" />
+<div class="flex flex-column gap-2" *ngIf="escuela && escuela.id > 0">
+    <h2 class="card text-xl">Entregas</h2>
+    <app-entregas-dashboard class="w-12" [filtro]="filtroEntregas"></app-entregas-dashboard>
+    <div class="flex flex-column w-12 gap-4">
+        <div class="card w-12 p-fluid">
+            <app-ordenes-servicios-items-despachados-chart [filtro]="filtroOs" class="p-fluid w-12"></app-ordenes-servicios-items-despachados-chart>
         </div>
-        <div class="flex flex-column md:flex-row gap-1 w-12">
-            <app-proveedor-select class="w-12" [(proveedor)]="filtroEntegas.proveedor" [showClear]="true" [showFilter]="true" [validar]="false" ></app-proveedor-select>
-            <select-boolean class="w-12" [(variable)]="filtroEntegas.entregado" [showClear]="true" [showFilter]="true" [validar]="false" ></select-boolean>
+        <div class="card w-12 p-fluid">
+            <app-entregas-mes-chart [filtro]="filtroEntregas" class="p-fluid w-12"></app-entregas-mes-chart>
         </div>
-        <button pButton icon="pi pi-search" label="Buscar" class="md:w-4 w-12" (click)="filtrar()" ></button>
-    </div> -->
-    <div class="flex flex-column md:flex-row gap-5 md:gap-2 w-12 mb-5">
-        <app-entregas-count [filtro]="filtroEntegas" tipo="Activas" class="w-12" />
-        <app-entregas-count [filtro]="filtroEntegas" tipo="Realizadas" class="w-12" />
     </div>
-    <app-entregas-mes-chart [filtro]="filtroEntegas" class="w-12" />
-    <h2 class="text-xl">Detalles</h2>
-    <app-entregas-table [card]="false" [proveedor]="true" [documento]="true" [filtro]="filtroEntegas" [filtros]="true"></app-entregas-table>
-</div>
-<div class="card flex flex-column gap-2">
-    <h2 class="text-xl">Devoluciones</h2>
 </div>
 <div class="card flex flex-column gap-2">
     <h2 class="text-xl">Mapa</h2>
