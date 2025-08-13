@@ -9,11 +9,12 @@ import { Ruta } from '../../models/ruta.model';
 import { TableModule } from 'primeng/table';
 import { ModalLoadingComponent } from '../../../uikit/components/modal-loading/modal-loading.component';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
     standalone: true,
     selector: 'app-rutas-actual',
-    imports: [CommonModule, ButtonModule, EntregasButtonRecepcionComponent, TableModule, ModalLoadingComponent, ConfirmDialogModule],
+    imports: [CommonModule, ButtonModule, EntregasButtonRecepcionComponent, TableModule, ModalLoadingComponent, ConfirmDialogModule, ToastModule],
     templateUrl: './rutas-actual.component.html',
     styleUrl: './rutas-actual.component.scss',
     providers: [ConfirmationService, MessageService]
@@ -42,8 +43,7 @@ export class RutasActualComponent {
                     for (const entrega of data.entregas) {
                         if (!entrega.entregado) {
                             this.entrega = entrega;
-                            break; // Solo necesitamos la primera entrega pendiente
-                            
+                            break;
                         }
                     }
                 } else {
@@ -70,18 +70,19 @@ export class RutasActualComponent {
             key: 'cInicioRuta',
             accept: () => {
                 if (this.ruta) {
-            this.loading = true;
-            this.rutasService.comenzarRuta(this.ruta.id).subscribe({
-                next: (data) => {
-                    this.ruta = data;
-                    this.loading = false;
-                },
-                error: (error) => {
-                    console.error('Error al comenzar la ruta:', error);
-                    this.loading = false;
+                    this.loading = true;
+                    this.rutasService.comenzarRuta(this.ruta.id).subscribe({
+                        next: (data) => {
+                            this.ruta = data;
+                            this.loading = false;
+                        },
+                        error: (error) => {
+                            console.error('Error al comenzar la ruta:', error);
+                            this.loading = false;
+                        }
+                    });
                 }
-                });
             }
-        }});
+        });
     }
 }

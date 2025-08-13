@@ -101,10 +101,8 @@ export class RutasFormComponent {
                 return;
             }
             this.ruta = data;
-            console.log('Ruta obtenida:', this.ruta);
             const [anio, mes, dia] = data.fecha.split('-').map(Number);
             this.ruta.fechaJS = new Date(Date.UTC(anio, mes - 1, dia));
-            this.ruta.fechaJS.setHours(this.ruta.fechaJS.getHours() + (new Date().getTimezoneOffset() / -60) - 4);
             await this.cargarMapa();
             await this.actualizarPuntos();
         } catch (error) {
@@ -115,7 +113,7 @@ export class RutasFormComponent {
 
     guardarRuta() {
         this.validar = true;
-        if (!this.ruta.chofer){
+        if (!this.ruta.chofer) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Debe seleccionar un chofer.' });
             return;
         }

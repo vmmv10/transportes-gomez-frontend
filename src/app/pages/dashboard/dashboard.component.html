@@ -6,7 +6,7 @@
     <div class="flex flex-column gap-2" *ngIf="(esAdmin$ | async) || (esCliente$ | async)">
         <div class="flex flex-column md:flex-row gap-5 md:gap-2 w-12 mb-5">
             <app-entregas-card class="w-12"></app-entregas-card>
-            <app-entregas-count [filtro]="filtroEntregasAdministrador" tipo="No Realizadas" class="w-12" />
+            <app-entregas-count [filtro]="filtroEntregasAdministrador" tipo="Pendientes" class="w-12" />
             <app-entregas-count [filtro]="filtroEntregasAdministrador" tipo="Realizadas" class="w-12" />
         </div>
         <div class="card w-12 flex flex-column gap-4">

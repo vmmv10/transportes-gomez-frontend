@@ -29,7 +29,7 @@
                     <p-tag severity="success" value="Entregado" />
                 </td>
                 <td class="text-center" *ngIf="!producto.entregado">
-                    <p-tag severity="warn" value="No entregado" />
+                    <p-tag severity="warn" value="Pendiente" />
                 </td>
                 <td class="text-center">
                     <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" [routerLink]="['/ordenes-servicios/formulario/' + producto.id]" />

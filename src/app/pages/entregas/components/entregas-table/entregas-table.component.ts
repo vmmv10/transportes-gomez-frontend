@@ -16,10 +16,9 @@ import { EntregaFiltro } from '../../models/entrega-filtro.models';
 import { EntregasService } from '../../services/entregas.service';
 import { SelectBooleanComponent } from '../../../uikit/components/select-boolean/select-boolean.component';
 import { PaginatorModule } from 'primeng/paginator';
-import { ProveedorSelectComponent } from '../../../proveedor/components/proveedor-select/proveedor-select.component';
 import { TableMobileComponent } from '../../../uikit/components/table-mobile/table-mobile.component';
-import e from 'cors';
 import { EscuelasSelectComponent } from '../../../escuelas/components/escuelas-select/escuelas-select.component';
+import { OrdenesServiciosImagenComponent } from '../../../ordenes-servicios/components/ordenes-servicios-imagen/ordenes-servicios-imagen.component';
 
 @Component({
     standalone: true,
@@ -39,7 +38,8 @@ import { EscuelasSelectComponent } from '../../../escuelas/components/escuelas-s
         ToastModule,
         TooltipModule,
         ModalLoadingComponent,
-        EscuelasSelectComponent
+        EscuelasSelectComponent,
+        OrdenesServiciosImagenComponent
     ],
     templateUrl: './entregas-table.component.html',
     styleUrl: './entregas-table.component.scss',
@@ -59,6 +59,8 @@ export class EntregasTableComponent {
     entrega: Entrega | undefined;
     tok: string = '';
     loading: boolean = false;
+    mostrarImagenes: boolean = false;
+    ordenId: string = '';
 
     campos: any[] = [
         { etiqueta: 'Orden de Servicio', propiedad: 'ordenServicio.id', tipo: 'objeto' },
@@ -112,5 +114,14 @@ export class EntregasTableComponent {
         this.filtro.page = event.page;
         this.filtro.size = event.rows;
         this.getData();
+    }
+
+    cerrarModalImagen() {
+        this.mostrarImagenes = false;
+    }
+
+    abrirModalImagen(id: string) {
+        this.mostrarImagenes = true;
+        this.ordenId = id;
     }
 }

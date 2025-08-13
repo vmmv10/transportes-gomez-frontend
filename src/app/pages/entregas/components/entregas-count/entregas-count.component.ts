@@ -21,7 +21,7 @@ export class EntregasCountComponent {
 
     ngOnInit() {
         switch (this.tipo) {
-            case 'No Realizadas':
+            case 'Pendientes':
                 this.filtro.entregado = false;
                 break;
             case 'Realizadas':
@@ -36,10 +36,10 @@ export class EntregasCountComponent {
 
     ngOnChanges() {
         switch (this.tipo) {
-            case 'No Realizadas':
+            case 'Pendientes':
                 this.filtro.entregado = false;
                 break;
-            case 'Realizadas':
+            case 'No Realizadas':
                 this.filtro.entregado = true;
                 break;
             default:

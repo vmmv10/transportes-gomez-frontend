@@ -1,0 +1,16 @@
+<p-dialog (onShow)="getData()" [closable]="false" [header]="'Orden n°' + id" [modal]="true" [(visible)]="visible" [style]="{ width: '89vw' }" [breakpoints]="{ '1199px': '89vw', '575px': '90vw' }">
+    <p-galleria *ngIf="!loading && imagenes && imagenes.length > 0" [value]="imagenes" (onItemChange)="onImagenChange($event)" [responsiveOptions]="responsiveOptions" [numVisible]="5">
+        <ng-template #item let-item>
+            <img [src]="item.itemImageSrc" style="width: 100%" />
+        </ng-template>
+        <ng-template #thumbnail let-item>
+            <img [src]="item.thumbnailImageSrc" style="width: 50px; height: 50px; object-fit: cover" />
+        </ng-template>
+    </p-galleria>
+    <p-progress-spinner ariaLabel="loading" *ngIf="loading" />
+    <ng-template #footer>
+        <div class="flex flex-row gap-2 w-12">
+            <button pButton label="Cerrar" [fluid]="true" class="w-12 p-button-secondary" [text]="true" (click)="hideDialog()"></button>
+        </div>
+    </ng-template>
+</p-dialog>

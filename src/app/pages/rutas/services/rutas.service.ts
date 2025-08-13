@@ -16,21 +16,21 @@ export class RutasService {
     }
 
     getAll(filtro: RutaFiltro): Observable<Page<Ruta>> {
-        let link = this.url + '?' + `page=${filtro.page}&size=${filtro.size}&`;
+        let link = this.url + '?' + `page=${filtro.page}&size=${filtro.size}`;
         if (filtro.id) {
-            link += `id=${filtro.id}&`;
+            link += `&id=${filtro.id}`;
         }
         if (filtro.fechaDesde) {
-            link += `fechaDesde=${filtro.fechaDesde.toISOString()}&`;
+            link += `&fechaDesde=${filtro.fechaDesde.toISOString()}`;
         }
         if (filtro.fechaHasta) {
-            link += `fechaHasta=${filtro.fechaHasta.toISOString()}&`;
+            link += `&fechaHasta=${filtro.fechaHasta.toISOString()}`;
         }
         if (filtro.chofer) {
-            link += `choferId=${filtro.chofer.id}&`;
+            link += `&chofer=${filtro.chofer.id}`;
         }
         if (filtro.estado) {
-            link += `estado=${filtro.estado}&`;
+            link += `&estado=${filtro.estado}`;
         }
         return this.authHttp.get<Page<Ruta>>(link);
     }

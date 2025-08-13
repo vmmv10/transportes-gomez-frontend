@@ -1,7 +1,7 @@
 <div class="card flex w-12 flex-column text-center gap-2 justify-content-between">
     <ng-container *ngIf="!loading">
         <span class="text-lg font-semibold">Entregas {{ tipo }}</span>
-        <span class="text-6xl font-bold text-center" [ngClass]="tipo == 'No Realizadas' ? 'text-yellow-700' : tipo == 'Realizadas' ? 'text-green-600' : ''">{{ cantidad }}</span>
+        <span class="text-6xl font-bold text-center" [ngClass]="tipo == 'Pendientes' ? 'text-yellow-700' : tipo == 'Realizadas' ? 'text-green-600' : ''">{{ cantidad }}</span>
     </ng-container>
     <i *ngIf="loading" class="pi pi-spin pi-cog" style="font-size: 4rem"></i>
 </div>

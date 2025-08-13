@@ -516,4 +516,27 @@ export class OrdenesServiciosFormComponent {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al eliminar el detalle' });
         }
     }
+
+    uploadImagenes() {
+        if (this.files.length == 0) {
+            this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Debe seleccionar al menos una imagen para subir' });
+            return;
+        }
+        if (this.orden.id) {
+            this.loading = true;
+            this.ordenesServiciosService.uploadImagenes(this.orden.id, this.files).subscribe({
+                next: () => {
+                    this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Imágenes subidas correctamente' });
+                    this.loading = false;
+                    this.files = [];
+                    this.getImagenes(this.orden.id.toString());
+                },
+                error: (error) => {
+                    console.error('Error uploading images:', error);
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al subir las imágenes' });
+                    this.loading = false;
+                }
+            });
+        }
+    }
 }

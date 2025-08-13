@@ -47,7 +47,7 @@
     </div>
     <div class="flex flex-column gap-1 w-12">
         <label for="chofer">Fecha</label>
-        <p-datepicker dateFormat="dd/mm/yy" [disabled]="ruta.estado == 'FINALIZADA'" [minDate]="minFecha" [fluid]="true" [showIcon]="true" [ngClass]="{ 'ng-invalid ng-dirty': validar && !ruta.fechaJS }" class="w-12" [(ngModel)]="ruta.fechaJS" />
+        <p-datepicker dateFormat="dd/mm/yy" [disabled]="ruta.estado == 'FINALIZADA'" [fluid]="true" [showIcon]="true" [ngClass]="{ 'ng-invalid ng-dirty': validar && !ruta.fechaJS }" class="w-12" [(ngModel)]="ruta.fechaJS" />
     </div>
 </div>
 <div *ngIf="ruta.ordenes.length > 0" class="card flex flex-row gap-1">

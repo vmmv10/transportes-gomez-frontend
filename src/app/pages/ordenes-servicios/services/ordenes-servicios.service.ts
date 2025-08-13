@@ -87,4 +87,12 @@ export class OrdenesServiciosService {
         }
         return this.authHttp.get<Reporte[]>(link);
     }
+
+    uploadImagenes(ordenId: number, files: File[]): Observable<void> {
+        const formData = new FormData();
+        files.forEach((file) => {
+            formData.append('files', file);
+        });
+        return this.authHttp.post<void>(`${this.url}/${ordenId}/imagenes`, formData);
+    }
 }

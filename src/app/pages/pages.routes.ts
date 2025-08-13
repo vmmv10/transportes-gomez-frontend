@@ -34,7 +34,7 @@ export default [
     { path: 'devoluciones', component: DevolucionesComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'devoluciones/formulario', component: DevolucionesFormularioComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'devoluciones/formulario/:id', component: DevolucionesFormularioComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
-    { path: 'documents', component: DocumentosComponent, canActivate: [authGuard], data: { roles: ['Cliente', 'Administrador'] } },
+    { path: 'documents', component: DocumentosComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'documents/formulario', component: DocumentosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'documents/formulario/:id', component: DocumentosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'proveedores', component: ProveedorListComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
@@ -43,9 +43,9 @@ export default [
     { path: 'items', component: ItemsListaComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'inventario', component: InventarioComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'ordenes-servicios', component: OrdenesServiciosComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
-    { path: 'ordenes-servicios/formulario', component: OrdenesServiciosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
-    { path: 'ordenes-servicios/formulario/:id', component: OrdenesServiciosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
-    { path: 'ordenes-servicios/formulario/documento/:documento/:tipo', component: OrdenesServiciosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
+    { path: 'ordenes-servicios/formulario', component: OrdenesServiciosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador', 'Cliente'] } },
+    { path: 'ordenes-servicios/formulario/:id', component: OrdenesServiciosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador', 'Cliente'] } },
+    { path: 'ordenes-servicios/formulario/documento/:documento/:tipo', component: OrdenesServiciosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador', 'Cliente'] } },
     { path: 'usuarios/perfil', component: UsuariosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador', 'Conductor', 'Cliente'] } },
     { path: 'marcas', component: MarcasComponent, canActivate: [authGuard], data: { roles: ['Administrador', 'Conductor', 'Cliente'] } }
 ] as Routes;

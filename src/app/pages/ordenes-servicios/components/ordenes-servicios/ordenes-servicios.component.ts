@@ -6,18 +6,14 @@ import { OrdenServicioFiltro } from '../../models/orden-servicio-filtro.model';
 import { OrdenesServiciosTableComponent } from '../ordenes-servicios-table/ordenes-servicios-table.component';
 import { ButtonModule } from 'primeng/button';
 import { RouterLink } from '@angular/router';
+import { RolService } from '../../../uikit/services/rol.service';
 
 @Component({
     standalone: true,
     selector: 'app-ordenes-servicios',
-    imports: [
-        BreadcrumbModule,
-        OrdenesServiciosTableComponent,
-        ButtonModule,
-        RouterLink
-    ],
+    imports: [BreadcrumbModule, OrdenesServiciosTableComponent, ButtonModule, RouterLink],
     templateUrl: './ordenes-servicios.component.html',
-    styleUrl: './ordenes-servicios.component.scss',
+    styleUrl: './ordenes-servicios.component.scss'
 })
 export class OrdenesServiciosComponent {
     filtro: OrdenServicioFiltro = new OrdenServicioFiltro();

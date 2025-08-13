@@ -153,6 +153,7 @@
     <p-button class="w-12" size="large" [fluid]="true" label="Volver" severity="secondary" icon="pi pi-times" [routerLink]="['/ordenes-servicios']" />
     <p-button *ngIf="orden.id == 0" class="w-12" size="large" [fluid]="true" [label]="'Guardar'" severity="success" icon="pi pi-save" (click)="confirmarGuardar()" />
     <p-button *ngIf="orden.id != 0" class="w-12" size="large" [fluid]="true" [label]="'Actualizar'" severity="success" icon="pi pi-save" (click)="guardar()" />
+    <p-button *ngIf="orden.id != 0" class="w-12" size="large" [fluid]="true" [outlined]="true" [label]="'Subir Imagenes'" severity="success" icon="pi pi-file" (click)="uploadImagenes()" />
     <p-button *ngIf="orden.id > 0" class="w-12" size="large" [fluid]="true" label="Descargar PDF" severity="danger" icon="pi pi-file-pdf" (click)="obtenerPdf()" />
 </div>
 <p-confirmdialog #eliminarImage>
