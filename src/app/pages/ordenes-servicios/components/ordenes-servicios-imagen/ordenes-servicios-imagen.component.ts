@@ -35,7 +35,10 @@ export class OrdenesServiciosImagenComponent {
         }
     ];
 
-    constructor(private imagenesService: ImagenesService, private messageService: MessageService) {}
+    constructor(
+        private imagenesService: ImagenesService,
+        private messageService: MessageService
+    ) {}
 
     getData(): void {
         if (this.id) {
@@ -70,5 +73,20 @@ export class OrdenesServiciosImagenComponent {
     onImagenChange(event: any) {
         const index = event.index;
         this.imagenSeleccionada = this.imagenes[index];
+    }
+
+    downloadImagen(): void {
+        if (!this.imagenSeleccionada) {
+            this.messageService.add({ severity: 'warn', summary: 'Descarga', detail: 'No hay imagen seleccionada para descargar.' });
+            return;
+        }
+
+        const imageUrl = this.imagenSeleccionada.itemImageSrc;
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = `imagen_${this.id}.jpg`; // Puedes ajustar la extensión si es png
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 }

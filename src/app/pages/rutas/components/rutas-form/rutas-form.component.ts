@@ -117,6 +117,14 @@ export class RutasFormComponent {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Debe seleccionar un chofer.' });
             return;
         }
+        if (this.ruta.ordenes.length === 0) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Debe seleccionar al menos una orden de servicio.' });
+            return;
+        }
+        if (!this.ruta.fechaJS) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Debe seleccionar una fecha.' });
+            return;
+        }
         this.validar = false;
         this.loading = true;
         this.ruta.fecha = this.ruta.fechaJS.toISOString().split('T')[0];

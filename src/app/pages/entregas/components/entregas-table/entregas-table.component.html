@@ -1,11 +1,10 @@
-<div class="flex flex-column">
+<div class="flex flex-column gap-3">
     <div class="{{ card ? 'card' : '' }} flex flex-column md:flex-row gap-1" *ngIf="filtros">
-        <div class="flex flex-column md:flex-row gap-1 w-12" *ngIf="orden">
-            <input pInputText id="ordenServicioId" (keydown.enter)="getData()" [(ngModel)]="filtro.ordenServicioId" placeholder="Buscar por Orden" class="w-12" />
-            <!-- <input pInputText id="documento" (keydown.enter)="getData()" [(ngModel)]="filtro.documento" placeholder="Buscar por Documento" class="w-12" /> -->
+        <div class="flex flex-column md:flex-row gap-1 w-12 p-fluid" *ngIf="orden">
+            <input pInputText id="ordenServicioId" (keydown.enter)="getData()" [(ngModel)]="filtro.ordenServicioId" placeholder="Buscar por Orden" class="w-12 p-fluid" />
         </div>
-        <div class="flex flex-column md:flex-row gap-1 w-12">
-            <app-escuelas-select class="w-12" [(escuela)]="filtro.escuela" [showClear]="true" [showFilter]="true" [validar]="false" (ngModelChange)="getData()"></app-escuelas-select>
+        <div *ngIf="escuelaFiltro || estado" class="flex flex-column md:flex-row gap-1 w-12">
+            <app-escuelas-select *ngIf="escuelaFiltro" class="w-12" [(escuela)]="filtro.escuela" [showClear]="true" [showFilter]="true" [validar]="false" (ngModelChange)="getData()"></app-escuelas-select>
             <!-- <app-proveedor-select class="w-12" [(proveedor)]="filtro.proveedor" [showClear]="true" [showFilter]="true" [validar]="false" (ngModelChange)="getData()" ></app-proveedor-select> -->
             <select-boolean *ngIf="estado" class="w-12" [(variable)]="filtro.entregado" [showClear]="true" [showFilter]="true" [validar]="false" (ngModelChange)="getData()"></select-boolean>
         </div>
@@ -24,7 +23,8 @@
         </ng-template>
         <ng-template #body let-item>
             <tr>
-                <td class="text-center">{{ item.ordenServicio.id }}
+                <td class="text-center">
+                    {{ item.ordenServicio.id }}
                     <p-button *ngIf="item.ordenServicio.entregado" Tooltip="Ver Imagen" icon="pi pi-images" [rounded]="true" [text]="true" severity="success" (click)="abrirModalImagen(item.ordenServicio.id)" />
                     <p-button pTooltip="PDF" icon="pi pi-file-pdf" [rounded]="true" [text]="true" severity="danger" (click)="obtenerPdf(item.ordenServicio.id)" />
                 </td>

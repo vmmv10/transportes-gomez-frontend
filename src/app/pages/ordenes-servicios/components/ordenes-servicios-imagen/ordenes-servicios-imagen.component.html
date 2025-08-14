@@ -3,6 +3,11 @@
         <ng-template #item let-item>
             <img [src]="item.itemImageSrc" style="width: 100%" />
         </ng-template>
+        <ng-template #caption let-item>
+            <div class="flex flex-row justify-content-between items-center w-12 p-fluid">
+                <p-button variant="text" label="Descargar Imagen" severity="success" icon="pi pi-download" size="large" (click)="downloadImagen()" class="w-12 p-fluid" [fluid]="true" [disabled]="!imagenSeleccionada" />
+            </div>
+        </ng-template>
         <ng-template #thumbnail let-item>
             <img [src]="item.thumbnailImageSrc" style="width: 50px; height: 50px; object-fit: cover" />
         </ng-template>

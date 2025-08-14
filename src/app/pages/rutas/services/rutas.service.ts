@@ -16,7 +16,7 @@ export class RutasService {
     }
 
     getAll(filtro: RutaFiltro): Observable<Page<Ruta>> {
-        let link = this.url + '?' + `page=${filtro.page}&size=${filtro.size}`;
+        let link = this.url + '?' + `page=${filtro.page}&size=${filtro.size}&sort=${filtro.key},${filtro.sort}`;
         if (filtro.id) {
             link += `&id=${filtro.id}`;
         }

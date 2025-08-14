@@ -53,6 +53,7 @@ export class EntregasTableComponent {
     @Input() proveedor: boolean = false;
     @Input() documento: boolean = false;
     @Input() escuela: boolean = false;
+    @Input() escuelaFiltro: boolean = false;
     @Input() orden: boolean = false;
     @Input() estado: boolean = false;
     @Input() card: boolean = true;
@@ -128,25 +129,23 @@ export class EntregasTableComponent {
     }
 
     obtenerPdf(id: string) {
-            this.loading = true;
-            this.ordenesServiciosService.generarPdf(id).subscribe({
-                next: (data) => {
-                    const blob = new Blob([data], { type: 'application/pdf' });
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `OrdenServicio_${id}.pdf`;
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    this.loading = false;
-                },
-                error: (error) => {
-                    this.MessageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener el PDF' });
-                    console.error('Error fetching PDF:', error);
-                    this.loading = false;
-                }
-            });
-        }
-
-
+        this.loading = true;
+        this.ordenesServiciosService.generarPdf(id).subscribe({
+            next: (data) => {
+                const blob = new Blob([data], { type: 'application/pdf' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `OrdenServicio_${id}.pdf`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+                this.loading = false;
+            },
+            error: (error) => {
+                this.MessageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener el PDF' });
+                console.error('Error fetching PDF:', error);
+                this.loading = false;
+            }
+        });
+    }
 }
