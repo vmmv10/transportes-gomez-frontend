@@ -29,6 +29,7 @@ import { PaginatorModule } from 'primeng/paginator';
 })
 export class OrdenesServiciosModalSelectComponent {
     @Input() enRuta: boolean = false;
+    @Input() entregado: boolean | undefined = false;
     @Input() single: boolean = false;
     @Input() ordenServicio: OrdenServicio | undefined;
     @Input() ordenesServiciosSeleccionados: OrdenServicio[] = [];
@@ -46,6 +47,9 @@ export class OrdenesServiciosModalSelectComponent {
 
     ngOnInit() {
         this.filtro.enRuta = this.enRuta;
+        if (this.entregado !== undefined) {
+            this.filtro.entregado = this.entregado;
+        }
     }
 
     getData() {

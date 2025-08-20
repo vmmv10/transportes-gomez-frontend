@@ -3,7 +3,13 @@
     <p-breadcrumb class="max-w-full" [model]="breadcrumb" />
 </div>
 <div class="card flex flex-column gap-3" *ngIf="ruta && ruta.estado != 'FINALIZADA'">
-    <app-ordenes-servicios-modal-select [enRuta]="false" (ordenesServiciosSeleccionadosChange)="ordenesServiciosSeleccionadosChange($event)" [(ordenesServiciosSeleccionados)]="ruta.ordenes" class="w-12"></app-ordenes-servicios-modal-select>
+    <app-ordenes-servicios-modal-select
+        [entregado]="false"
+        [enRuta]="false"
+        (ordenesServiciosSeleccionadosChange)="ordenesServiciosSeleccionadosChange($event)"
+        [(ordenesServiciosSeleccionados)]="ruta.ordenes"
+        class="w-12"
+    ></app-ordenes-servicios-modal-select>
 </div>
 <div *ngIf="ruta.ordenes.length > 0" class="card flex flex-column gap-3">
     <p-table [value]="ruta.ordenes" (onRowReorder)="onRowReorder()" [reorderableColumns]="true" [tableStyle]="{ 'min-width': '50rem' }">

@@ -1,5 +1,5 @@
 <div class="flex w-12 flex-column gap-4">
-    <div class="flex w-12 flex-row gap-4">
+    <div class="flex w-12 flex-column md:flex-row gap-4">
         <div class="card flex w-12 flex-column text-center gap-2 mb-0 justify-content-between cursor-pointer" (click)="changeFiltro('hoy')" [ngClass]="{ 'shadow-2': hoySeleccionado }">
             <ng-container *ngIf="!loading">
                 <span class="text-lg font-semibold">Entregas Hoy</span>
@@ -23,6 +23,6 @@
         </div>
     </div>
     <div class="card flex w-12 flex-column text-center gap-2 justify-content-between">
-        <app-entregas-table [filtros]="true" [orden]="true" [escuela]="true" class="w-12" [filtro]="filtro" [card]="false"></app-entregas-table>
+        <app-entregas-table [dashboard]="true" [filtros]="true" [orden]="true" [escuela]="true" class="w-12" [filtro]="filtro" [card]="false"></app-entregas-table>
     </div>
 </div>

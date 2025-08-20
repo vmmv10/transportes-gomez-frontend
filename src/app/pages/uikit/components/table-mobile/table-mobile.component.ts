@@ -20,7 +20,7 @@ export class TableMobileComponent {
     @Input() campos: {
         etiqueta: string;
         propiedad: string;
-        tipo?: 'texto' | 'moneda' | 'fecha' | 'badge' | 'objeto' | 'tag',
+        tipo?: 'texto' | 'moneda' | 'fecha' | 'badge' | 'objeto' | 'tag';
         profundidad?: number;
     }[] = [];
     @Input() totalElements: number = 0;
@@ -29,6 +29,7 @@ export class TableMobileComponent {
     @Output() pageChange = new EventEmitter<any>();
     @Output() accion = new EventEmitter<{ tipo: string; item: any }>();
     @Input() mostrarAcciones: boolean = true;
+    @Input() admin: boolean | null = false;
     @Input() card: boolean = true;
 
     onPageChange(event: any) {
@@ -38,5 +39,4 @@ export class TableMobileComponent {
     getValor(obj: any, path: string): any {
         return path.split('.').reduce((acc, part) => acc?.[part], obj);
     }
-
 }

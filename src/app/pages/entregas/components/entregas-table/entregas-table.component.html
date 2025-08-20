@@ -4,9 +4,9 @@
             <input pInputText id="ordenServicioId" (keydown.enter)="getData()" [(ngModel)]="filtro.ordenServicioId" placeholder="Buscar por Orden" class="w-12 p-fluid" />
         </div>
         <div *ngIf="escuelaFiltro || estado" class="flex flex-column md:flex-row gap-1 w-12">
-            <app-escuelas-select *ngIf="escuelaFiltro" class="w-12" [(escuela)]="filtro.escuela" [showClear]="true" [showFilter]="true" [validar]="false" (ngModelChange)="getData()"></app-escuelas-select>
+            <app-escuelas-select *ngIf="escuelaFiltro" class="w-12 p-fluid" [(escuela)]="filtro.escuela" [showClear]="true" [showFilter]="true" [validar]="false" (ngModelChange)="getData()"></app-escuelas-select>
             <!-- <app-proveedor-select class="w-12" [(proveedor)]="filtro.proveedor" [showClear]="true" [showFilter]="true" [validar]="false" (ngModelChange)="getData()" ></app-proveedor-select> -->
-            <select-boolean *ngIf="estado" class="w-12" [(variable)]="filtro.entregado" [showClear]="true" [showFilter]="true" [validar]="false" (ngModelChange)="getData()"></select-boolean>
+            <select-boolean [opciones]="opcionesSelectBoolean" *ngIf="estado" class="w-12" [(variable)]="filtro.entregado" [showClear]="true" [showFilter]="true" [validar]="false" (ngModelChange)="getData()"></select-boolean>
         </div>
         <button pButton icon="pi pi-search" label="Buscar" class="md:w-4 w-12" [loading]="loading" (click)="getData()"></button>
     </div>
@@ -18,10 +18,10 @@
                 <th *ngIf="escuela" class="text-center">Escuela</th>
                 <th *ngIf="escuela" class="text-center">Comuna</th>
                 <th class="text-center">Estado</th>
-                <th *ngIf="ruta" class="text-center">Ruta</th>
+                <th class="text-center"></th>
             </tr>
         </ng-template>
-        <ng-template #body let-item>
+        <ng-template #body let-item let-index="rowIndex">
             <tr>
                 <td class="text-center">
                     {{ item.ordenServicio.id }}
@@ -35,8 +35,9 @@
                     <p-tag *ngIf="item.entregado" severity="success" value="Entregado" />
                     <p-tag *ngIf="!item.entregado" severity="warn" value="En Ruta" />
                 </td>
-                <td class="text-center" *ngIf="ruta">
-                    <p-button pTooltip="Ver Ruta" icon="pi pi-eye" [rounded]="true" [text]="true" severity="success" [routerLink]="['/rutas/formulario/' + item.ruta]" routerLinkActive="router-link-active" />
+                <td class="text-center">
+                    <p-button *ngIf="(esAdmin$ | async) && !item.entregado" pTooltip="Entregar" icon="pi pi-check" [rounded]="true" [text]="true" severity="success" (click)="openModalEntrega(index)" />
+                    <p-button *ngIf="ruta" pTooltip="Ver Ruta" icon="pi pi-eye" [rounded]="true" [text]="true" severity="secondary" [routerLink]="['/rutas/formulario/' + item.ruta]" routerLinkActive="router-link-active" />
                 </td>
             </tr>
         </ng-template>
@@ -54,3 +55,18 @@
 <app-ordenes-servicios-imagen [id]="ordenId" [visible]="mostrarImagenes" (onVisible)="cerrarModalImagen()"></app-ordenes-servicios-imagen>
 <app-modal-loading [visible]="loading" />
 <p-toast />
+<p-dialog [(visible)]="displayEntregas" [modal]="true" [closable]="false">
+    <ng-template pTemplate="content">
+        <div *ngIf="entrega" class="flex flex-column">
+            <i class="pi pi-truck text-center" style="font-size: 2rem"></i>
+            <p class="text-center text-2xl text-green-500">{{ entrega.ordenServicio.escuela?.nombre }}</p>
+            <p class="text-center">Comuna: {{ entrega.ordenServicio.escuela?.comuna }}</p>
+            <p class="text-center">Dirección: {{ entrega.ordenServicio.escuela?.direccion }}</p>
+            <app-entregas-button-recepcion (onRecepcionada)="closeModalEntrega()" *ngIf="entrega && !entrega.entregado" [entregaId]="entrega.id"></app-entregas-button-recepcion>
+            <span *ngIf="entrega && entrega.entregado" class="text-center text-2xl text-green-500">Entregado</span>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button pButton severity="secondary" [text]="true" label="Cerrar" class="w-12" [fluid]="true" icon="pi pi-times" (click)="displayEntregas = false"></button>
+    </ng-template>
+</p-dialog>

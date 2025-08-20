@@ -1,23 +1,43 @@
-<div class="card">
-    <div *ngIf="!loading" class="flex flex-column">
-        <ng-container *ngIf="entrega">
-            <p class="text-center text-2xl">{{ ruta?.enTransito ? 'Destino Actual' : 'Primer Destino' }}</p>
-            <i class="pi pi-truck text-center" style="font-size: 2rem"></i>
-            <p class="text-center text-2xl text-green-500">{{ entrega.ordenServicio.escuela?.nombre }}</p>
-            <p class="text-center">Comuna: {{ entrega.ordenServicio.escuela?.comuna }}</p>
-            <p class="text-center">Dirección: {{ entrega.ordenServicio.escuela?.direccion }}</p>
-            <app-entregas-button-recepcion *ngIf="ruta && ruta?.enTransito && !entrega.entregado" [entregaId]="entrega.id" (onRecepcionada)="recepcionado()"></app-entregas-button-recepcion>
-            <button *ngIf="ruta && !ruta.enTransito" [fluid]="true" pButton label="Conenzar Ruta" icon="pi pi-check" severity="success" (click)="comenzarRuta()" class="w-12" size="large"></button>
-        </ng-container>
-        <ng-container *ngIf="!entrega">
-            <p class="text-center">No hay una Ruta asignada para hoy.</p>
-        </ng-container>
-    </div>
-    <i *ngIf="loading" class="pi pi-spin pi-cog text-center w-12" style="font-size: 4rem"></i>
-</div>
 <div *ngIf="!loading && ruta" class="card flex flex-column gap-2">
-    <h2 class="text-center text-xl">Entregas de la Ruta</h2>
-    <p-table showGridlines *ngIf="ruta" [value]="ruta.entregas" class="w-12">
+    <ng-container *ngIf="!entrega">
+        <p class="text-center">No hay una Ruta asignada para hoy.</p>
+    </ng-container>
+    <div *ngIf="entrega" class="card flex flex-column gap-2">
+        <h2 class="text-center text-3xl">Entregas de la Ruta</h2>
+        <p-accordion value="0" *ngIf="entrega">
+            <ng-container *ngFor="let entrega of ruta.entregas; let i = index">
+                <p-accordion-panel [value]="i">
+                    <p-accordion-header>
+                        <ng-template #toggleicon let-active="active">
+                            @if (active) {
+                                <i class="pi pi-minus"></i>
+                            } @else {
+                                <i class="pi pi-plus"></i>
+                            }
+                        </ng-template>
+                        <span class="flex items-center gap-2 w-12 pr-4">
+                            <span class="font-bold w-12">{{ entrega.ordenServicio.escuela?.nombre }}</span>
+                            <span *ngIf="entrega.entregado" class="pi pi-truck text-xl text-green-500"></span>
+                            <span *ngIf="!entrega.entregado" class="pi pi-truck text-xl text-red-500"></span>
+                        </span>
+                    </p-accordion-header>
+                    <p-accordion-content>
+                        <div *ngIf="!loading" class="flex flex-column gap-3">
+                            <ng-container *ngIf="entrega">
+                                <div class="flex flex-column gap-1">
+                                    <p class="text-left font-bold w-12 mb-0">Comuna: {{ entrega.ordenServicio.escuela?.comuna }}</p>
+                                    <p *ngIf="entrega.ordenServicio.escuela?.direccion" class="text-left font-bold w-12 mb-0">Dirección: {{ entrega.ordenServicio.escuela?.direccion }}</p>
+                                </div>
+                                <app-entregas-button-recepcion *ngIf="ruta && !entrega.entregado" [entregaId]="entrega.id" (onRecepcionada)="recepcionado()"></app-entregas-button-recepcion>
+                                <span *ngIf="entrega.entregado" class="text-center text-2xl text-green-500">Entregado</span>
+                            </ng-container>
+                        </div>
+                    </p-accordion-content>
+                </p-accordion-panel>
+            </ng-container>
+        </p-accordion>
+
+        <!-- <p-table showGridlines *ngIf="ruta" [value]="ruta.entregas" class="w-12">
         <ng-template pTemplate="header">
             <tr>
                 <th class="text-center">Estado</th>
@@ -35,7 +55,8 @@
                 <td class="text-center">{{ rowData.ordenServicio.escuela.comuna }}</td>
             </tr>
         </ng-template>
-    </p-table>
+    </p-table> -->
+    </div>
 </div>
 <app-modal-loading [visible]="loading"></app-modal-loading>
 <p-confirmdialog #cInicioRuta key="cInicioRuta">

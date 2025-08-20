@@ -10,6 +10,7 @@ export class RutaFiltro {
     page: number = 0;
     sort: string = 'desc';
     key: string = 'fecha';
+    conductor: boolean = false;
 
     constructor() {
         this.fechaDesde = null;

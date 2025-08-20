@@ -17,7 +17,7 @@ export class EntregasService {
     }
 
     getAll(filtro: EntregaFiltro): Observable<Page<Entrega>> {
-        let link = this.url + '?size=' + filtro.size + '&page=' + filtro.page;
+        let link = this.url + '?size=' + filtro.size + '&page=' + filtro.page + '&sort=' + filtro.key + ',' + filtro.sort;
         if (filtro.id) {
             link += `&id=${filtro.id}`;
         }
@@ -32,6 +32,9 @@ export class EntregasService {
         }
         if (filtro.fecha) {
             link += `&fecha=${filtro.fecha}`;
+        }
+        if (filtro.conductor) {
+            link += `&conductor=${filtro.conductor}`;
         }
         return this.authHttp.get<Page<Entrega>>(link);
     }
@@ -69,7 +72,7 @@ export class EntregasService {
     }
 
     getDashboardData(filtro: EntregaFiltro): Observable<any> {
-        let link = `${this.url}/reporte/stats`
+        let link = `${this.url}/reporte/stats`;
         if (filtro.escuela) {
             link += `?escuela=${filtro.escuela.id}`;
         }

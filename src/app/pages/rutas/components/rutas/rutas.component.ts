@@ -23,6 +23,9 @@ import { FechaPipe } from '../../../uikit/pipe/fecha';
 import { TableMobileComponent } from '../../../uikit/components/table-mobile/table-mobile.component';
 import { InputTextModule } from 'primeng/inputtext';
 import { UsuariosSelectComponent } from '../../../usuarios/components/usuarios-select/usuarios-select.component';
+import { Observable } from 'rxjs';
+import { RolService } from '../../../uikit/services/rol.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
     standalone: true,
@@ -58,6 +61,9 @@ export class RutasComponent {
     loading: boolean = false;
     data!: Page<Ruta>;
     filtro: RutaFiltro = new RutaFiltro();
+    esAdmin$!: Observable<boolean>;
+    esConductor$!: Observable<boolean>;
+    esConductor: boolean = false;
 
     campos: any[] = [
         { etiqueta: 'Número', propiedad: 'id', tipo: 'texto' },
@@ -65,43 +71,45 @@ export class RutasComponent {
         { etiqueta: 'Chofer', propiedad: 'chofer.nombre', tipo: 'objeto' },
         { etiqueta: 'Estado', propiedad: 'estado', tipo: 'text' }
     ];
-
-    acciones = [
-        {
-            tooltip: 'Editar',
-            icono: 'pi pi-pencil',
-            color: 'info',
-            tipo: 'link',
-            ruta: '/rutas/formulario/',
-            rutaConId: true,
-            label: 'Editar',
-            outlined: true
-        },
-        {
-            tooltip: 'Eliminar',
-            icono: 'pi pi-trash',
-            color: 'warn',
-            tipo: 'accion',
-            accion: 'eliminar',
-            deshabilitarSi: 'entregado',
-            label: 'Eliminar',
-            outlined: true
-        }
-    ];
+    acciones: any[] = [];
 
     constructor(
         private confirmationService: ConfirmationService,
         private messageService: MessageService,
-        private rutasService: RutasService
+        private rutasService: RutasService,
+        private rolService: RolService
     ) {
+        this.esAdmin$ = this.rolService.tieneRol('Administrador');
         this.breadcrumb = [
             { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
             { label: 'Rutas', routerLink: '/rutas' }
         ];
+        this.acciones = [
+            {
+                tooltip: 'Editar',
+                icono: 'pi pi-pencil',
+                color: 'info',
+                tipo: 'link',
+                ruta: '/rutas/formulario/',
+                rutaConId: true,
+                label: 'Editar',
+                outlined: true
+            },
+            {
+                tooltip: 'Eliminar',
+                icono: 'pi pi-trash',
+                color: 'warn',
+                tipo: 'accion',
+                accion: 'eliminar',
+                deshabilitarSi: 'entregado',
+                label: 'Eliminar',
+                outlined: true
+            }
+        ];
     }
 
-    ngOnInit() {
-        this.getData();
+    async ngOnInit() {
+        this.getData(); // se carga solo después de saber si es conductor
     }
 
     getData() {

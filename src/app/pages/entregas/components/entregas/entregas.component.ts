@@ -4,6 +4,8 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { MenuItem } from 'primeng/api';
 import { EntregaFiltro } from '../../models/entrega-filtro.models';
 import { EntregasTableComponent } from '../entregas-table/entregas-table.component';
+import { Observable } from 'rxjs';
+import { RolService } from '../../../uikit/services/rol.service';
 
 @Component({
     standalone: true,
@@ -16,7 +18,7 @@ export class EntregasComponent {
     filtro: EntregaFiltro = new EntregaFiltro();
     breadcrumb: MenuItem[] = [];
 
-    constructor() {
+    constructor(private rolService: RolService) {
         this.breadcrumb = [
             { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
             { label: 'Entregas', routerLink: '/entregas' }

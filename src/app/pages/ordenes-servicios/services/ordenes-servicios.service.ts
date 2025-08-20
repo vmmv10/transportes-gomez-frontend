@@ -42,7 +42,6 @@ export class OrdenesServiciosService {
         if (filtro.entregado !== undefined && filtro.entregado !== null) {
             link += '&entregado=' + filtro.entregado;
         }
-        console.log(filtro);
         if (filtro.id !== undefined && filtro.id !== null) {
             link += '&id=' + filtro.id;
         }

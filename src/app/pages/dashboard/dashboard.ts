@@ -25,6 +25,7 @@ import { EntregasCardComponent } from '../entregas/components/entregas-card/entr
 import { OrdenesServiciosItemsDespachadosChartComponent } from '../ordenes-servicios/components/ordenes-servicios-items-despachados-chart/ordenes-servicios-items-despachados-chart.component';
 import { OrdenServicioFiltro } from '../ordenes-servicios/models/orden-servicio-filtro.model';
 import { EntregasDashboardComponent } from '../entregas/components/entregas-dashboard/entregas-dashboard.component';
+import { DatePickerModule } from 'primeng/datepicker';
 
 @Component({
     selector: 'app-dashboard',
@@ -44,7 +45,8 @@ import { EntregasDashboardComponent } from '../entregas/components/entregas-dash
         InputIconModule,
         EscuelasSelectComponent,
         OrdenesServiciosItemsDespachadosChartComponent,
-        EntregasDashboardComponent
+        EntregasDashboardComponent,
+        DatePickerModule
     ],
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.scss'],

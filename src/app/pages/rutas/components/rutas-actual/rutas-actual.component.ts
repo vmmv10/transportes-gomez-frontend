@@ -10,11 +10,12 @@ import { TableModule } from 'primeng/table';
 import { ModalLoadingComponent } from '../../../uikit/components/modal-loading/modal-loading.component';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
+import { AccordionModule } from 'primeng/accordion';
 
 @Component({
     standalone: true,
     selector: 'app-rutas-actual',
-    imports: [CommonModule, ButtonModule, EntregasButtonRecepcionComponent, TableModule, ModalLoadingComponent, ConfirmDialogModule, ToastModule],
+    imports: [CommonModule, ButtonModule, EntregasButtonRecepcionComponent, TableModule, ModalLoadingComponent, ConfirmDialogModule, ToastModule, AccordionModule],
     templateUrl: './rutas-actual.component.html',
     styleUrl: './rutas-actual.component.scss',
     providers: [ConfirmationService, MessageService]

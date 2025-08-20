@@ -1,5 +1,5 @@
-import { Escuela } from "../../escuelas/models/escuela.models";
-import { Proveedor } from "../../proveedor/models/proveedor.model";
+import { Escuela } from '../../escuelas/models/escuela.models';
+import { Proveedor } from '../../proveedor/models/proveedor.model';
 
 export class EntregaFiltro {
     id: string;
@@ -14,6 +14,9 @@ export class EntregaFiltro {
     size: number = 10;
     page: number = 0;
     fecha: string | undefined;
+    conductor: boolean = false;
+    sort: string = 'asc';
+    key: string = 'id';
 
     constructor() {
         this.id = '';

@@ -20,6 +20,10 @@ import { TableMobileComponent } from '../../../uikit/components/table-mobile/tab
 import { EscuelasSelectComponent } from '../../../escuelas/components/escuelas-select/escuelas-select.component';
 import { OrdenesServiciosImagenComponent } from '../../../ordenes-servicios/components/ordenes-servicios-imagen/ordenes-servicios-imagen.component';
 import { OrdenesServiciosService } from '../../../ordenes-servicios/services/ordenes-servicios.service';
+import { DialogModule } from 'primeng/dialog';
+import { EntregasButtonRecepcionComponent } from '../entregas-button-recepcion/entregas-button-recepcion.component';
+import { RolService } from '../../../uikit/services/rol.service';
+import { Observable } from 'rxjs';
 
 @Component({
     standalone: true,
@@ -40,7 +44,9 @@ import { OrdenesServiciosService } from '../../../ordenes-servicios/services/ord
         TooltipModule,
         ModalLoadingComponent,
         EscuelasSelectComponent,
-        OrdenesServiciosImagenComponent
+        OrdenesServiciosImagenComponent,
+        DialogModule,
+        EntregasButtonRecepcionComponent
     ],
     templateUrl: './entregas-table.component.html',
     styleUrl: './entregas-table.component.scss',
@@ -57,12 +63,21 @@ export class EntregasTableComponent {
     @Input() orden: boolean = false;
     @Input() estado: boolean = false;
     @Input() card: boolean = true;
+    @Input() dashboard: boolean = false;
     entregas!: Page<Entrega>;
     entrega: Entrega | undefined;
     tok: string = '';
     loading: boolean = false;
     mostrarImagenes: boolean = false;
     ordenId: string = '';
+    displayEntregas: boolean = false;
+    esAdmin$!: Observable<boolean>;
+    esConductor$!: Observable<boolean>;
+
+    opcionesSelectBoolean: { label: string; value: boolean }[] = [
+        { label: 'Entregado', value: true },
+        { label: 'No Entregado', value: false }
+    ];
 
     campos: any[] = [
         { etiqueta: 'Orden de Servicio', propiedad: 'ordenServicio.id', tipo: 'objeto' },
@@ -87,15 +102,19 @@ export class EntregasTableComponent {
     constructor(
         private entregasService: EntregasService,
         private MessageService: MessageService,
-        private ordenesServiciosService: OrdenesServiciosService
+        private ordenesServiciosService: OrdenesServiciosService,
+        private rolService: RolService
     ) {}
 
     ngOnInit() {
+        this.esAdmin$ = this.rolService.tieneRol('Administrador');
         this.getData();
     }
 
     ngOnChanges(): void {
-        this.getData();
+        if (this.dashboard) {
+            this.getData();
+        }
     }
 
     getData() {
@@ -106,7 +125,7 @@ export class EntregasTableComponent {
                 this.loading = false;
             },
             error: (error) => {
-                this.MessageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener los Documentos' });
+                this.MessageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener las Entregas' });
                 this.loading = false;
                 console.error('Error fetching entregas:', error);
             }
@@ -147,5 +166,18 @@ export class EntregasTableComponent {
                 this.loading = false;
             }
         });
+    }
+
+    openModalEntrega(index: number) {
+        this.displayEntregas = true;
+        this.entrega = this.entregas.content[index];
+    }
+
+    closeModalEntrega() {
+        this.displayEntregas = false;
+        this.entrega = undefined;
+        this.MessageService.add({ severity: 'info', summary: 'Entrega Realizada', detail: 'La entrega ha sido marcada como realizada.' });
+        this.filtro.page = 0;
+        this.getData();
     }
 }
