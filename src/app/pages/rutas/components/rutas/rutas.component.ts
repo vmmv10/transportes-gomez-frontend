@@ -25,7 +25,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { UsuariosSelectComponent } from '../../../usuarios/components/usuarios-select/usuarios-select.component';
 import { Observable } from 'rxjs';
 import { RolService } from '../../../uikit/services/rol.service';
-import { firstValueFrom } from 'rxjs';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { SelectBooleanComponent } from '../../../uikit/components/select-boolean/select-boolean.component';
 
 @Component({
     standalone: true,
@@ -50,7 +51,9 @@ import { firstValueFrom } from 'rxjs';
         FechaPipe,
         TableMobileComponent,
         InputTextModule,
-        UsuariosSelectComponent
+        UsuariosSelectComponent,
+        InputNumberModule,
+        SelectBooleanComponent
     ],
     templateUrl: './rutas.component.html',
     styleUrl: './rutas.component.scss',
@@ -64,6 +67,8 @@ export class RutasComponent {
     esAdmin$!: Observable<boolean>;
     esConductor$!: Observable<boolean>;
     esConductor: boolean = false;
+    ruta: Ruta = new Ruta();
+    displayAsignarKilometros: boolean = false;
 
     campos: any[] = [
         { etiqueta: 'Número', propiedad: 'id', tipo: 'texto' },
@@ -72,6 +77,11 @@ export class RutasComponent {
         { etiqueta: 'Estado', propiedad: 'estado', tipo: 'text' }
     ];
     acciones: any[] = [];
+
+    opcionesSelectBoolean: { label: string; value: boolean }[] = [
+        { label: 'Finalizada', value: true },
+        { label: 'Pendiente', value: false }
+    ];
 
     constructor(
         private confirmationService: ConfirmationService,
@@ -93,7 +103,8 @@ export class RutasComponent {
                 ruta: '/rutas/formulario/',
                 rutaConId: true,
                 label: 'Editar',
-                outlined: true
+                outlined: true,
+                mostrar: this.esAdmin$
             },
             {
                 tooltip: 'Eliminar',
@@ -103,7 +114,19 @@ export class RutasComponent {
                 accion: 'eliminar',
                 deshabilitarSi: 'entregado',
                 label: 'Eliminar',
-                outlined: true
+                outlined: true,
+                mostrar: this.esAdmin$
+            },
+            {
+                tooltip: 'Asignar Kilómetros',
+                icono: 'pi pi-truck',
+                color: 'warn',
+                tipo: 'accion',
+                accion: 'asignarKilometros',
+                deshabilitarSi: 'entregado',
+                label: 'Asignar Kilómetros',
+                outlined: true,
+                mostrar: this.esAdmin$ || this.esConductor
             }
         ];
     }
@@ -122,7 +145,6 @@ export class RutasComponent {
             error: (error) => {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener las Rutas' });
                 this.loading = false;
-                console.error('Error fetching rutas:', error);
             }
         });
     }
@@ -165,6 +187,41 @@ export class RutasComponent {
             case 'eliminar':
                 this.confirmarEliminar(event.item);
                 break;
+            case 'asignarKilometros':
+                this.openModalAsignarKilometros(event.item);
+                break;
         }
+    }
+
+    openModalAsignarKilometros(item: Ruta) {
+        this.ruta = item;
+        this.displayAsignarKilometros = true;
+    }
+
+    closeModalAsignarKilometros() {
+        this.displayAsignarKilometros = false;
+        this.ruta.kilometros = 0;
+    }
+
+    asignarKilometros() {
+        if (this.ruta.kilometros <= 0) {
+            this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Debe ingresar un valor de kilómetros mayor a 0' });
+            return;
+        }
+        this.loading = true;
+        this.rutasService.asignarKilometros(this.ruta).subscribe({
+            next: () => {
+                this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Kilómetros asignados correctamente' });
+                this.closeModalAsignarKilometros();
+                this.getData();
+            },
+            error: (error) => {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al asignar kilómetros' });
+                console.error('Error assigning kilometers:', error);
+            },
+            complete: () => {
+                this.loading = false;
+            }
+        });
     }
 }

@@ -4,7 +4,7 @@ export class RutaFiltro {
     fechaDesde: Date | null;
     fechaHasta: Date | null;
     chofer: Usuario | undefined;
-    estado: string | null;
+    estado: boolean | undefined;
     id: number | null;
     size: number = 10;
     page: number = 0;
@@ -15,7 +15,7 @@ export class RutaFiltro {
     constructor() {
         this.fechaDesde = null;
         this.fechaHasta = null;
-        this.estado = null;
+        this.estado = undefined;
         this.id = null;
     }
 }

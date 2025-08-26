@@ -95,7 +95,8 @@ export class EntregasTableComponent {
             ruta: '/rutas/formulario/',
             rutaConId: true,
             label: 'Ver Ruta',
-            outlined: true
+            outlined: true,
+            mostrar: true
         }
     ];
 

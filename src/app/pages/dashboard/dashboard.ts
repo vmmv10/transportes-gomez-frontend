@@ -132,4 +132,16 @@ export class Dashboard {
             escuela: event
         };
     }
+
+    changeDate(event: Date) {
+        console.log('Fecha seleccionada:', event);
+        this.filtroEntregasAdministrador = {
+            ...this.filtroEntregasAdministrador,
+            fecha: event ? event.toISOString().split('T')[0] : undefined
+        };
+        this.filtroOs = {
+            ...this.filtroOs,
+            fecha: event ? event : undefined
+        };
+    }
 }

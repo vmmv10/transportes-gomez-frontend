@@ -11,11 +11,13 @@ export class Ruta {
     ordenes: OrdenServicio[];
     entregas: Entrega[];
     enTransito: boolean = false;
+    kilometros: number;
 
     constructor() {
         this.fechaJS = new Date();
         this.estado = 'Pendiente'; // Default state
         this.ordenes = [];
         this.entregas = [];
+        this.kilometros = 0; // Default kilometers
     }
 }

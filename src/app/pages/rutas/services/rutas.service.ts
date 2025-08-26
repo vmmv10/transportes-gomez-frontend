@@ -29,8 +29,12 @@ export class RutasService {
         if (filtro.chofer) {
             link += `&chofer=${filtro.chofer.id}`;
         }
-        if (filtro.estado) {
-            link += `&estado=${filtro.estado}`;
+        if (filtro.estado !== undefined) {
+            if (filtro.estado === true) {
+                link += `&estado=FINALIZADA`;
+            } else {
+                link += `&estado=PENDIENTE`;
+            }
         }
         return this.authHttp.get<Page<Ruta>>(link);
     }
@@ -61,5 +65,9 @@ export class RutasService {
 
     comenzarRuta(ruta: number): Observable<Ruta> {
         return this.authHttp.put<Ruta>(`${this.url}/${ruta}/comenzar`, {});
+    }
+
+    asignarKilometros(ruta: Ruta): Observable<Ruta> {
+        return this.authHttp.put<Ruta>(`${this.url}/${ruta.id}/kilometros`, ruta);
     }
 }

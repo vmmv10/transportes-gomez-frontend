@@ -76,6 +76,9 @@ export class EntregasService {
         if (filtro.escuela) {
             link += `?escuela=${filtro.escuela.id}`;
         }
+        if (filtro.fecha) {
+            link += filtro.escuela ? `&fecha=${filtro.fecha}` : `?fecha=${filtro.fecha}`;
+        }
         return this.authHttp.get<any>(link);
     }
 }

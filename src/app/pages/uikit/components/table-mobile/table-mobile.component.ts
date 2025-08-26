@@ -29,7 +29,7 @@ export class TableMobileComponent {
     @Output() pageChange = new EventEmitter<any>();
     @Output() accion = new EventEmitter<{ tipo: string; item: any }>();
     @Input() mostrarAcciones: boolean = true;
-    @Input() admin: boolean | null = false;
+    @Input() mostrarBoton: boolean | null = false;
     @Input() card: boolean = true;
 
     onPageChange(event: any) {

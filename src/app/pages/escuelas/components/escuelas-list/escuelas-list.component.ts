@@ -50,7 +50,8 @@ export class EscuelasListComponent {
             ruta: '/establecimientos/dashboard/',
             rutaConId: true,
             label: 'Ver',
-            outlined: true
+            outlined: true,
+            mostrar: true
         },
     ];
 

@@ -10,6 +10,7 @@
     <div class="flex flex-column md:flex-row gap-2 w-12 card">
         <input pInputText id="filtro" (keydown.enter)="getData()" [(ngModel)]="filtro.id" placeholder="Buscar por id" class="w-12" />
         <app-usuarios-select [rol]="'repartidor'" [(usuario)]="filtro.chofer" [showClear]="true" [showFilter]="true" class="w-12"></app-usuarios-select>
+        <select-boolean [opciones]="opcionesSelectBoolean" class="w-12" [(variable)]="filtro.estado" [showClear]="true" [showFilter]="true" [validar]="false" (ngModelChange)="getData()"></select-boolean>
         <button pButton icon="pi pi-search" label="Buscar" class="md:w-4 w-12" [loading]="loading" (click)="getData()"></button>
     </div>
     <p-table class="hidden md:block" [value]="data && data.content ? data.content : []" id="ordenes-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
@@ -22,7 +23,7 @@
                 <th *ngIf="esAdmin$ | async"></th>
             </tr>
         </ng-template>
-        <ng-template #body let-item>
+        <ng-template #body let-item let-index="rowIndex">
             <tr>
                 <td class="text-center">{{ item.id }}</td>
                 <td class="text-center">{{ item.fecha | fecha }}</td>
@@ -36,9 +37,10 @@
                 <td class="text-center" *ngIf="item.estado != 'FINALIZADA'">
                     <p-tag severity="warn" value="Pendiente" />
                 </td>
-                <td class="text-center" *ngIf="esAdmin$ | async">
-                    <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" [routerLink]="['/rutas/formulario/' + item.id]" />
-                    <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminar(item)" />
+                <td class="text-center">
+                    <p-button *ngIf="esAdmin$ | async" pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" [routerLink]="['/rutas/formulario/' + item.id]" />
+                    <p-button *ngIf="esAdmin$ | async" pTooltip="Asignar Kilometros" icon="pi pi-truck" [rounded]="true" [text]="true" severity="secondary" (click)="openModalAsignarKilometros(item)" />
+                    <p-button *ngIf="esAdmin$ | async" pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminar(item)" />
                 </td>
             </tr>
         </ng-template>
@@ -70,3 +72,15 @@
         <p-button label="Eliminar" icon="pi pi-check" class="w-12" [fluid]="true" severity="danger" (click)="eliminarRuta.onAccept()" />
     </ng-template>
 </p-confirmdialog>
+<p-dialog header="Asignar Kilómetros" *ngIf="ruta" [modal]="true" [(visible)]="displayAsignarKilometros" [style]="{ width: '45rem' }">
+    <div class="flex flex-col gap-2 w-12">
+        <div class="flex flex-col gap-2 w-12">
+            <label for="cantidad">Cantidad</label>
+            <p-inputnumber suffix=" Km" class="w-12 {{ ruta && ruta.kilometros >= 0 ? '' : 'ng-dirty ng-invalid' }}" inputId="cantidad" [(ngModel)]="ruta.kilometros" />
+        </div>
+    </div>
+    <ng-template #footer>
+        <p-button label="Cancelar" [text]="true" severity="secondary" class="w-12" [fluid]="true" (click)="closeModalAsignarKilometros()" />
+        <p-button label="Guardar" severity="success" class="w-12" [fluid]="true" (click)="asignarKilometros()" />
+    </ng-template>
+</p-dialog>

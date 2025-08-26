@@ -49,7 +49,8 @@ export class ProveedorListComponent {
             ruta: '/proveedores/formulario/',
             rutaConId: true,
             label: 'Editar Proveedor',
-            outlined: true
+            outlined: true,
+            mostrar: true
         },
         {
             tooltip: 'Eliminar',
@@ -58,8 +59,9 @@ export class ProveedorListComponent {
             tipo: 'accion',
             accion: 'eliminar',
             rutaConId: true,
-            label: 'Elimimar',
-            outlined: true
+            label: 'Eliminar',
+            outlined: true,
+            mostrar: true
         }
     ];
 

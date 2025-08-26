@@ -73,7 +73,8 @@ export class OrdenesServiciosTableComponent {
             ruta: '/ordenes-servicios/formulario/',
             rutaConId: true,
             label: 'Editar',
-            outlined: true
+            outlined: true,
+            mostrar: true
         },
         {
             tooltip: 'Eliminar',
@@ -83,7 +84,8 @@ export class OrdenesServiciosTableComponent {
             accion: 'eliminar',
             deshabilitarSi: 'entregado',
             label: 'Eliminar',
-            outlined: true
+            outlined: true,
+            mostrar: true
         },
         {
             tooltip: 'Ver PDF',
@@ -92,7 +94,8 @@ export class OrdenesServiciosTableComponent {
             tipo: 'accion',
             accion: 'verPdf',
             label: ' PDF',
-            outlined: true
+            outlined: true,
+            mostrar: true
         }
     ];
 

@@ -77,9 +77,9 @@ export class EntregasDashboardComponent {
                 this.pendientesSeleccionado = false;
                 this.realizadasSeleccionado = false;
                 this.hoySeleccionado = true;
-                this.filtro.entregado = undefined;
+                this.filtro.entregado = false;
                 const fechaFormateada = new Date().toISOString().split('T')[0];
-                this.filtro = { ...this.filtro, entregado: undefined, page: 0, size: 5, fecha: fechaFormateada };
+                this.filtro = { ...this.filtro, entregado: false, page: 0, size: 5, fecha: fechaFormateada };
                 break;
         }
     }
