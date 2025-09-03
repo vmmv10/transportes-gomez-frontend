@@ -20,6 +20,7 @@
                 <th class="text-center">Fecha</th>
                 <th class="text-center">Chofer</th>
                 <th class="text-center">Estado</th>
+                <th class="text-center">Km</th>
                 <th *ngIf="esAdmin$ | async"></th>
             </tr>
         </ng-template>
@@ -37,6 +38,7 @@
                 <td class="text-center" *ngIf="item.estado != 'FINALIZADA'">
                     <p-tag severity="warn" value="Pendiente" />
                 </td>
+                <td class="text-center">{{ item.kilometros ? item.kilometros : 0 }} Km.</td>
                 <td class="text-center">
                     <p-button *ngIf="esAdmin$ | async" pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" [routerLink]="['/rutas/formulario/' + item.id]" />
                     <p-button *ngIf="esAdmin$ | async" pTooltip="Asignar Kilometros" icon="pi pi-truck" [rounded]="true" [text]="true" severity="secondary" (click)="openModalAsignarKilometros(item)" />

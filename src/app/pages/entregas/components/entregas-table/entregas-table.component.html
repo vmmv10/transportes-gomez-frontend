@@ -28,7 +28,7 @@
                 <td class="text-center" *ngIf="escuela">{{ item.ordenServicio.escuela.comuna }}</td>
                 <td class="text-center">
                     <p-tag *ngIf="item.entregado" severity="success" value="Entregado" />
-                    <p-tag *ngIf="!item.entregado" severity="warn" value="En Ruta" />
+                    <p-tag *ngIf="!item.entregado" severity="warn" value="Pendiente" />
                 </td>
                 <td class="text-center">
                     <p-button *ngIf="(esAdmin$ | async) && !item.entregado" pTooltip="Entregar" icon="pi pi-check" [rounded]="true" [text]="true" severity="success" (click)="openModalEntrega(index)" />

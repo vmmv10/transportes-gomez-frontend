@@ -134,7 +134,6 @@ export class Dashboard {
     }
 
     changeDate(event: Date) {
-        console.log('Fecha seleccionada:', event);
         this.filtroEntregasAdministrador = {
             ...this.filtroEntregasAdministrador,
             fecha: event ? event.toISOString().split('T')[0] : undefined
