@@ -19,6 +19,7 @@ import { DevolucionesComponent } from './devoluciones/components/devoluciones/de
 import { DevolucionesFormularioComponent } from './devoluciones/components/devoluciones-formulario/devoluciones-formulario.component';
 import { InventarioComponent } from './inventario/components/inventario/inventario.component';
 import { MarcasComponent } from './marcas/components/marcas/marcas.component';
+import { EntregadosComponent } from './items/components/entregados/entregados.component';
 
 export default [
     { path: 'documentation', component: Documentation },
@@ -41,6 +42,7 @@ export default [
     { path: 'proveedores/formulario', component: ProveedorFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'proveedores/formulario/:id', component: ProveedorFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'items', component: ItemsListaComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
+    { path: 'items/entregados', component: EntregadosComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'inventario', component: InventarioComponent, canActivate: [authGuard], data: { roles: ['Administrador', 'Cliente'] } },
     { path: 'ordenes-servicios', component: OrdenesServiciosComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'ordenes-servicios/formulario', component: OrdenesServiciosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },

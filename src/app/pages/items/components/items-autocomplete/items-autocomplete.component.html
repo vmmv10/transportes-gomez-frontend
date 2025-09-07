@@ -1,0 +1,2 @@
+<p-autocomplete [showClear]="true" (onClear)="limpiar()" optionLabel="nombre" (onSelect)="seleccionado($event)" appendTo="body" [(ngModel)]="item" [fluid]="true" class="w-12" placeholder="Buscar por Artículo por Nombre" [suggestions]="data" (completeMethod)="search($event)">
+</p-autocomplete>

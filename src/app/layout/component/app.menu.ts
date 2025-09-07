@@ -44,6 +44,7 @@ export class AppMenu {
                         icon: 'pi pi-fw pi-warehouse',
                         items: [
                             { label: 'Lista de Artículos', routerLink: ['/items'] },
+                            { label: 'Entregados', routerLink: ['/items/entregados'] },
                             { label: 'Marcas', routerLink: ['/marcas'] },
                             { label: 'Categorías', routerLink: ['/categorias'] }
                         ]
