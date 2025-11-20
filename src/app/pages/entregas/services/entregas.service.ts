@@ -5,6 +5,7 @@ import { Page } from '../../uikit/models/page.model';
 import { Entrega } from '../models/entrega.models';
 import { EntregaFiltro } from '../models/entrega-filtro.models';
 import { Reporte } from '../../uikit/models/reporte.model';
+import { HttpParams } from '@angular/common/http';
 
 @Injectable({
     providedIn: 'root'
@@ -80,5 +81,18 @@ export class EntregasService {
             link += filtro.escuela ? `&fecha=${filtro.fecha}` : `?fecha=${filtro.fecha}`;
         }
         return this.authHttp.get<any>(link);
+    }
+
+    descargarExcel(filtro: EntregaFiltro): Observable<Blob> {
+        let params = new HttpParams().set('size', filtro.size).set('page', filtro.page).set('sort', `${filtro.key},${filtro.sort}`);
+
+        if (filtro.id) params = params.set('id', filtro.id);
+        if (filtro.ordenServicioId) params = params.set('ordenServicio', filtro.ordenServicioId);
+        if (filtro.escuela) params = params.set('escuela', filtro.escuela.id);
+        if (filtro.entregado !== undefined) params = params.set('entregado', filtro.entregado);
+        if (filtro.fecha) params = params.set('fecha', filtro.fecha);
+        if (filtro.conductor) params = params.set('conductor', filtro.conductor);
+
+        return this.authHttp.postBlob(this.url + '/excel', { params, responseType: 'blob' as 'json' });
     }
 }

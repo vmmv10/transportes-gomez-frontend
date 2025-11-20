@@ -4,6 +4,7 @@
         <app-escuelas-select *ngIf="escuelaFiltro" class="w-12 p-fluid" [(escuela)]="filtro.escuela" [showClear]="true" [showFilter]="true" [validar]="false" (ngModelChange)="getData()"></app-escuelas-select>
         <select-boolean [opciones]="opcionesSelectBoolean" *ngIf="estado" class="w-12" [(variable)]="filtro.entregado" [showClear]="true" [showFilter]="true" [validar]="false" (ngModelChange)="getData()"></select-boolean>
         <button pButton icon="pi pi-search" label="Buscar" class="md:w-4 w-12" [loading]="loading" (click)="getData()"></button>
+        <button pButton icon="pi pi-file" label="Excel" class="md:w-4 w-12 p-button-success" (click)="descargarExcel()"></button>
     </div>
     <p-table class="hidden md:block {{ card ? 'card' : '' }}" [value]="entregas && entregas.content ? entregas.content : []" id="entregas-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
         <ng-template #header>

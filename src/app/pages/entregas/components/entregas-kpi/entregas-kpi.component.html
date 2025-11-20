@@ -1,0 +1,7 @@
+<div class="card flex w-12 flex-column text-center gap-2 justify-content-between">
+    <ng-container *ngIf="!loading">
+        <span class="text-lg font-semibold">Entregas Hoy</span>
+        <span class="text-6xl font-bold text-center text-blue-500">kpi</span>
+    </ng-container>
+    <i *ngIf="loading" class="pi pi-spin pi-cog" style="font-size: 4rem"></i>
+</div>
