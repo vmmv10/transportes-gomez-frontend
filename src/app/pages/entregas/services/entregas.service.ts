@@ -5,6 +5,7 @@ import { Page } from '../../uikit/models/page.model';
 import { Entrega } from '../models/entrega.models';
 import { EntregaFiltro } from '../models/entrega-filtro.models';
 import { Reporte } from '../../uikit/models/reporte.model';
+import { Kpi } from '../../uikit/models/Kpi.model';
 
 @Injectable({
     providedIn: 'root'
@@ -35,6 +36,12 @@ export class EntregasService {
         }
         if (filtro.conductor) {
             link += `&conductor=${filtro.conductor}`;
+        }
+        if (filtro.oc && filtro.oc.trim() !== '') {
+            link += `&oc=${filtro.oc}`;
+        }
+        if (filtro.categoria != undefined) {
+            link += `&categoria=${filtro.categoria.id}`;
         }
         return this.authHttp.get<Page<Entrega>>(link);
     }
@@ -79,6 +86,26 @@ export class EntregasService {
         if (filtro.fecha) {
             link += filtro.escuela ? `&fecha=${filtro.fecha}` : `?fecha=${filtro.fecha}`;
         }
+        if (filtro.categoria != undefined) {
+            link += filtro.escuela || filtro.fecha ? `&categoria=${filtro.categoria.id}` : `?categoria=${filtro.categoria.id}`;
+        }
+        if (filtro.oc && filtro.oc.trim() !== '') {
+            link += filtro.escuela || filtro.fecha || filtro.categoria ? `&oc=${filtro.oc}` : `?oc=${filtro.oc}`;
+        }
         return this.authHttp.get<any>(link);
+    }
+
+    getKpis(filtro: EntregaFiltro): Observable<Kpi[]> {
+        let link = `${this.url}/reporte/kpis`;
+        if (filtro.escuela) {
+            link += `?escuela=${filtro.escuela.id}`;
+        }
+        if (filtro.fecha) {
+            link += filtro.escuela ? `&fecha=${filtro.fecha}` : `?fecha=${filtro.fecha}`;
+        }
+        if (filtro.categoria != undefined) {
+            link += filtro.escuela || filtro.fecha ? `&categoria=${filtro.categoria.id}` : `?categoria=${filtro.categoria.id}`;
+        }
+        return this.authHttp.get<Kpi[]>(link);
     }
 }

@@ -1,6 +1,7 @@
 <div class="flex flex-column gap-3">
     <div class="{{ card ? 'card' : '' }} flex flex-column md:flex-row gap-1" *ngIf="filtros">
-        <input *ngIf="orden" pInputText id="ordenServicioId" (keydown.enter)="getData()" [(ngModel)]="filtro.ordenServicioId" placeholder="Buscar por Orden" class="w-12 p-fluid" />
+        <input *ngIf="orden" pInputText id="ordenServicioId" (keydown.enter)="getData()" [(ngModel)]="filtro.ordenServicioId" placeholder="Buscar por Orden Servicio" class="w-12 p-fluid" />
+        <input *ngIf="ocFiltro" pInputText id="ordenCompraId" (keydown.enter)="getData()" [(ngModel)]="filtro.oc" placeholder="Buscar por Orden Compra" class="w-12 p-fluid" />
         <app-escuelas-select *ngIf="escuelaFiltro" class="w-12 p-fluid" [(escuela)]="filtro.escuela" [showClear]="true" [showFilter]="true" [validar]="false" (ngModelChange)="getData()"></app-escuelas-select>
         <select-boolean [opciones]="opcionesSelectBoolean" *ngIf="estado" class="w-12" [(variable)]="filtro.entregado" [showClear]="true" [showFilter]="true" [validar]="false" (ngModelChange)="getData()"></select-boolean>
         <button pButton icon="pi pi-search" label="Buscar" class="md:w-4 w-12" [loading]="loading" (click)="getData()"></button>
@@ -9,6 +10,8 @@
         <ng-template #header>
             <tr>
                 <th class="text-center">Orden Servicio</th>
+                <th *ngIf="oc" class="text-center">Orden Compra</th>
+                <th *ngIf="categoria" class="text-center">Categoría</th>
                 <th class="text-center">Fecha</th>
                 <th *ngIf="escuela" class="text-center">Escuela</th>
                 <th *ngIf="escuela" class="text-center">Comuna</th>
@@ -23,6 +26,8 @@
                     <p-button *ngIf="item.ordenServicio.entregado" Tooltip="Ver Imagen" icon="pi pi-images" [rounded]="true" [text]="true" severity="success" (click)="abrirModalImagen(item.ordenServicio.id)" />
                     <p-button pTooltip="PDF" icon="pi pi-file-pdf" [rounded]="true" [text]="true" severity="danger" (click)="obtenerPdf(item.ordenServicio.id)" />
                 </td>
+                <td *ngIf="oc" class="text-center">{{ item.ordenServicio.documentoReferencia }}</td>
+                <td *ngIf="categoria" class="text-center">{{ item.ordenServicio.categoria?.nombre }}</td>
                 <td class="text-center">{{ item.fecha | date: 'dd/MM/yyyy' }}</td>
                 <td class="text-center" *ngIf="escuela">{{ item.ordenServicio.escuela.nombre }}</td>
                 <td class="text-center" *ngIf="escuela">{{ item.ordenServicio.escuela.comuna }}</td>

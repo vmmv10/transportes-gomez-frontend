@@ -26,6 +26,9 @@ import { OrdenesServiciosItemsDespachadosChartComponent } from '../ordenes-servi
 import { OrdenServicioFiltro } from '../ordenes-servicios/models/orden-servicio-filtro.model';
 import { EntregasDashboardComponent } from '../entregas/components/entregas-dashboard/entregas-dashboard.component';
 import { DatePickerModule } from 'primeng/datepicker';
+import { Categoria } from '../categorias/models/categoria.model';
+import { CategoriasSelectComponent } from '../categorias/components/categorias-select/categorias-select.component';
+import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
     selector: 'app-dashboard',
@@ -46,7 +49,9 @@ import { DatePickerModule } from 'primeng/datepicker';
         EscuelasSelectComponent,
         OrdenesServiciosItemsDespachadosChartComponent,
         EntregasDashboardComponent,
-        DatePickerModule
+        DatePickerModule,
+        CategoriasSelectComponent,
+        InputTextModule
     ],
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.scss'],
@@ -64,6 +69,8 @@ export class Dashboard {
 
     fechaFiltro: Date | null = null;
     escuelaSeleccionada: any = null;
+    categoriaSeleccionada: Categoria | undefined = undefined;
+    oc: string | undefined = undefined;
     escuelas = [
         { label: 'Escuela A', value: 'A' },
         { label: 'Escuela B', value: 'B' }
@@ -121,6 +128,17 @@ export class Dashboard {
         };
     }
 
+    ocChange() {
+        this.filtroEntregasAdministrador = {
+            ...this.filtroEntregasAdministrador,
+            oc: this.oc
+        };
+        this.filtroOs = {
+            ...this.filtroOs,
+            documentoReferencia: this.oc
+        };
+    }
+
     escuelaChange(event: any) {
         this.escuelaSeleccionada = event;
         this.filtroEntregasAdministrador = {
@@ -141,6 +159,18 @@ export class Dashboard {
         this.filtroOs = {
             ...this.filtroOs,
             fecha: event ? event : undefined
+        };
+    }
+
+    categoriaSeleccionadaChange(event: Categoria) {
+        this.categoriaSeleccionada = event;
+        this.filtroEntregasAdministrador = {
+            ...this.filtroEntregasAdministrador,
+            categoria: event
+        };
+        this.filtroOs = {
+            ...this.filtroOs,
+            categoria: event
         };
     }
 }

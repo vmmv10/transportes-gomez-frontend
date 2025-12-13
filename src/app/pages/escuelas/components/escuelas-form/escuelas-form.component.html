@@ -42,3 +42,4 @@
     <p-button class="w-12" size="large" [fluid]="true" label="Volver" severity="secondary" icon="pi pi-times" [routerLink]="['/establecimientos']" />
     <p-button class="w-12" size="large" [fluid]="true" [label]="escuela.id == 0 ? 'Guardar' : 'Editar'" severity="success" icon="pi pi-check" (click)="guardar()" />
 </div>
+<app-modal-loading [visible]="loading"></app-modal-loading>

@@ -45,7 +45,9 @@ export default [
     { path: 'ordenes-servicios', component: OrdenesServiciosComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'ordenes-servicios/formulario', component: OrdenesServiciosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'ordenes-servicios/formulario/:id', component: OrdenesServiciosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
+    { path: 'ordenes-servicios/ingreso/:ingreso', component: OrdenesServiciosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'ordenes-servicios/formulario/documento/:documento/:tipo', component: OrdenesServiciosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'usuarios/perfil', component: UsuariosFormComponent, canActivate: [authGuard], data: { roles: ['Administrador', 'Conductor', 'Cliente'] } },
-    { path: 'marcas', component: MarcasComponent, canActivate: [authGuard], data: { roles: ['Administrador', 'Conductor', 'Cliente'] } }
+    { path: 'marcas', component: MarcasComponent, canActivate: [authGuard], data: { roles: ['Administrador', 'Conductor', 'Cliente'] } },
+    { path: 'mantencion/categorias-os', children: [{ path: '', loadChildren: () => import('./ordenes-servicios-categorias/pages.routes') }] }
 ] as Routes;

@@ -22,6 +22,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { environment } from '../../../../../environments';
 import 'leaflet-routing-machine';
 import { DatePickerModule } from 'primeng/datepicker';
+import { ChipModule } from 'primeng/chip';
 
 declare module 'leaflet' {
     namespace Routing {
@@ -51,7 +52,8 @@ declare module 'leaflet' {
         TableModule,
         DialogModule,
         ConfirmDialogModule,
-        DatePickerModule
+        DatePickerModule,
+        ChipModule
     ],
     templateUrl: './rutas-form.component.html',
     styleUrl: './rutas-form.component.scss',

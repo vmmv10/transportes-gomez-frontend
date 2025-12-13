@@ -1,8 +1,7 @@
 import { Bodega } from '../../bodegas/models/Bodega.model';
 import { Documento } from '../../documentos/models/documento.model';
 import { Escuela } from '../../escuelas/models/escuela.models';
-import { Insumo } from '../../insumos/models/insumo.model';
-import { Proveedor } from '../../proveedor/models/proveedor.model';
+import { OrdenServicioCategoria } from '../../ordenes-servicios-categorias/model/orden-servicio-categoria.model';
 import { OrdenServicioDetalle } from './orden-servicio-detalle.model';
 
 export class OrdenServicio {
@@ -16,6 +15,9 @@ export class OrdenServicio {
     entregado: boolean;
     documento: Documento;
     bodega: Bodega | undefined;
+    documentoReferencia: string | undefined;
+    categoria: OrdenServicioCategoria | undefined;
+    ingreso: number | undefined;
 
     constructor() {
         this.id = 0;

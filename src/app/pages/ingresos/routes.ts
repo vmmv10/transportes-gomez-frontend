@@ -5,6 +5,7 @@ import { IngresosFormularioComponent } from './components/ingresos-formulario/in
 
 export default [
     { path: '', component: IngresosComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
+    { path: 'ingreso/:ingreso', component: IngresosFormularioComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'formulario', component: IngresosFormularioComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } },
     { path: 'formulario/:id', component: IngresosFormularioComponent, canActivate: [authGuard], data: { roles: ['Administrador'] } }
 ] as Routes;

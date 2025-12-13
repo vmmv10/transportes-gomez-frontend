@@ -1,0 +1,12 @@
+<div class="flex w-12 flex-row text-center gap-2 justify-content-between">
+    <div *ngFor="let item of kpis" class="card mb-0 flex w-12 flex-column text-center gap-2 justify-content-between">
+        <ng-container *ngIf="!loading">
+            <span class="text-lg font-semibold">{{ item.nombre }}</span>
+            <div class="flex flex-row gap-2 justify-content-center align-items-center">
+                <span class="text-3xl font-medium">{{ item.valor }}</span>
+                <span class="text-2xl font-medium">{{ item.unidad }}</span>
+            </div>
+        </ng-container>
+        <i *ngIf="loading" class="pi pi-spin pi-cog" style="font-size: 4rem"></i>
+    </div>
+</div>

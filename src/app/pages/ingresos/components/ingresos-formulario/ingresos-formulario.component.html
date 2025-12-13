@@ -21,10 +21,14 @@
     </div>
     <div class="flex flex-column gap-2 justify-content-center" *ngIf="ingreso.id">
         <div class="flex flex-column gap-1">
-            <h2 class="text-2xl mb-0 w-12 text-center font-semibold">Ingreso n° {{ ingreso.id }}</h2>
-            <p-badge *ngIf="ingreso.estado == 0" severity="danger" value="Temporal"></p-badge>
-            <p-badge *ngIf="ingreso.estado == 1" severity="success" value="Abierto"></p-badge>
-            <p-badge *ngIf="ingreso.estado == 2" severity="warn" value="Cerrado"></p-badge>
+            <h2 class="text-2xl mb-0 w-12 text-center font-semibold">INGRESO N° {{ ingreso.id }}</h2>
+            <span class="text-lg text-gray-500 w-12 text-center">Documento: {{ ingreso.documento }}</span>
+            <span class="text-md text-gray-500 w-12 text-center">Fecha Cierre: {{ ingreso.fechaCierre | date: 'short' }}</span>
+        </div>
+        <div class="flex flex-column w-12 align-items-center gap-1 justify-content-center" [ngSwitch]="ingreso.estado">
+            <p-chip class="bg-orange-400 text-center text-gray-50 font-semibold" *ngSwitchCase="0" label="Temporal"></p-chip>
+            <p-chip class="bg-red-500 text-center text-gray-50 font-semibold" *ngSwitchCase="1" label="Abierto"></p-chip>
+            <p-chip class="bg-green-500 text-center text-gray-50 font-semibold" *ngSwitchCase="2" label="Cerrado"></p-chip>
         </div>
     </div>
 </div>
@@ -70,9 +74,14 @@
         </ng-template>
     </p-table>
 </div>
-<div class="flex flex-column gap-2 card" *ngIf="ingreso.id && ingreso.estado != 2">
-    <button *ngIf="ingreso.estado == 0" pButton [fluid]="true" label="Guardar" severity="success" class="w-12" (click)="abrir()"></button>
-    <button *ngIf="ingreso.estado == 1" pButton [fluid]="true" label="Cerrar" severity="success" class="w-12" (click)="cerrar()"></button>
+<div *ngIf="ingreso.id && ingreso.estado == 0" class="flex flex-column gap-2 card">
+    <button pButton [fluid]="true" label="Guardar" severity="success" class="w-12" (click)="abrir()"></button>
+</div>
+<div class="flex flex-column gap-2 card" *ngIf="ingreso.id && ingreso.estado == 1">
+    <button pButton [fluid]="true" label="Cerrar" severity="success" class="w-12" (click)="cerrar()"></button>
+</div>
+<div class="flex flex-column gap-2 card" *ngIf="ingreso.estado && tieneSaldo()">
+    <button pButton [fluid]="true" label="Crear Orden de Servicio" severity="primary" class="w-12" [routerLink]="['/ordenes-servicios/ingreso/' + ingreso.id]" routerLinkActive="router-link-active"></button>
 </div>
 <app-modal-loading [visible]="loading"></app-modal-loading>
 <p-toast />

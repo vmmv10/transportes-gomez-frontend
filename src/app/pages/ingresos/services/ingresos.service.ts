@@ -17,7 +17,7 @@ export class IngresosService {
     }
 
     getAll(filtro: IngresoFiltro): Observable<Page<Ingreso>> {
-        let link = this.url + '?size=' + filtro.size + '&page=' + filtro.page;
+        let link = this.url + '?size=' + filtro.size + '&page=' + filtro.page + '&sort=' + filtro.key + ',' + filtro.sort;
         if (filtro.documento) {
             link += '&documento=' + filtro.documento.id;
         }

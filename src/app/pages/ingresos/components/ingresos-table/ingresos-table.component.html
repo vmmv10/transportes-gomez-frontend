@@ -11,6 +11,7 @@
         <ng-template #header>
             <tr>
                 <th class="text-center">Folio</th>
+                <th class="text-center">Estado</th>
                 <th class="text-center">Fecha</th>
                 <th class="text-center">Documento</th>
                 <th class="text-center">Documento Tipo</th>
@@ -20,6 +21,13 @@
         <ng-template #body let-item>
             <tr>
                 <td class="text-center">{{ item.id }}</td>
+                <td class="text-center">
+                    <div class="flex flex-column w-12 align-items-center gap-1 justify-content-center" [ngSwitch]="item.estado">
+                        <p-chip class="bg-orange-400 text-center text-gray-50 font-semibold" *ngSwitchCase="0" label="Temporal"></p-chip>
+                        <p-chip class="bg-red-500 text-center text-gray-50 font-semibold" *ngSwitchCase="1" label="Abierto"></p-chip>
+                        <p-chip class="bg-green-500 text-center text-gray-50 font-semibold" *ngSwitchCase="2" label="Cerrado"></p-chip>
+                    </div>
+                </td>
                 <td class="text-center">{{ item.fecha | fecha }}</td>
                 <td class="text-center">{{ item.documento }}</td>
                 <td class="text-center">{{ item.documentoTipo.nombre }}</td>

@@ -6,10 +6,11 @@ import { EntregasTableComponent } from '../entregas-table/entregas-table.compone
 import { MessageService } from 'primeng/api';
 import { EntregasService } from '../../services/entregas.service';
 import { EntregaFiltro } from '../../models/entrega-filtro.models';
+import { EntregasKpiComponent } from '../entregas-kpi/entregas-kpi.component';
 
 @Component({
     selector: 'app-entregas-dashboard',
-    imports: [CommonModule, FormsModule, EntregasTableComponent],
+    imports: [CommonModule, FormsModule, EntregasTableComponent, EntregasKpiComponent],
     templateUrl: './entregas-dashboard.component.html',
     styleUrl: './entregas-dashboard.component.scss',
     standalone: true,

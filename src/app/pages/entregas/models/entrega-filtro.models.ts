@@ -1,3 +1,4 @@
+import { Categoria } from '../../categorias/models/categoria.model';
 import { Escuela } from '../../escuelas/models/escuela.models';
 import { Proveedor } from '../../proveedor/models/proveedor.model';
 
@@ -15,8 +16,10 @@ export class EntregaFiltro {
     page: number = 0;
     fecha: string | undefined;
     conductor: boolean = false;
-    sort: string = 'asc';
+    sort: string = 'desc';
     key: string = 'id';
+    oc: string | undefined;
+    categoria: Categoria | undefined;
 
     constructor() {
         this.id = '';

@@ -1,0 +1,84 @@
+<div class="card flex flex-column gap-2 py-1">
+    <p-breadcrumb class="max-w-full" [model]="breadcrumb" />
+</div>
+<div class="card flex flex-column gap-2 md:gap-4">
+    <div class="flex flex-column md:flex-row gap-1">
+        <input pInputText id="ordenServicioId" (keydown.enter)="getData()" [(ngModel)]="filtro.nombre" placeholder="Buscar por nombre" class="w-12" />
+        <button pButton icon="pi pi-search" [severity]="'info'" label="Buscar" class="md:w-4 w-12" [loading]="loading" (click)="getData()"></button>
+        <button pButton icon="pi pi-plus" label="Nuevo" class="md:w-4 w-12" (click)="nuevo()"></button>
+    </div>
+    <p-table class="w-12" [value]="data && data.content ? data.content : []" id="data-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
+        <ng-template #header>
+            <tr>
+                <th class="text-center">Nombre</th>
+                <th class="text-center">Estado</th>
+                <th></th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-item>
+            <tr>
+                <td class="text-center">{{ item.nombre }}</td>
+                <td class="text-center">
+                    <p-tag *ngIf="item.activo" severity="success" value="Activo" />
+                    <p-tag *ngIf="!item.activo" severity="danger" value="Inactivo" />
+                </td>
+                <td class="text-center">
+                    <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="success" (click)="editar(item)" />
+                    <p-button *ngIf="item.activo" pTooltip="Desactivar?" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="desactivateConfirm(item.id)" />
+                    <p-button *ngIf="!item.activo" pTooltip="Activar?" icon="pi pi-check" [rounded]="true" [text]="true" severity="success" (click)="activateConfirm(item.id)" />
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #summary>
+            <p-paginator (onPageChange)="onPageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="data ? data.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="5" class="text-center">No se encontraron datos</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<app-modal-loading [visible]="loading" />
+<p-toast />
+<p-confirmdialog #desactivate key="desactivate">
+    <ng-template #message let-message>
+        <div class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700">
+            <i class="pi pi-trash !text-6xl text-red-500"></i>
+            <p>¿Está seguro de Desactivar?</p>
+        </div>
+    </ng-template>
+    <ng-template #footer>
+        <p-button label="Cancelar" variant="text" icon="pi pi-times" class="w-12" [fluid]="true" severity="secondary" (click)="desactivate.onReject()" />
+        <p-button label="Desactivar?" icon="pi pi-check" class="w-12" [fluid]="true" severity="danger" (click)="desactivate.onAccept()" />
+    </ng-template>
+</p-confirmdialog>
+<p-confirmdialog #activate key="activate">
+    <ng-template #message let-message>
+        <div class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700">
+            <i class="pi pi-trash !text-6xl text-red-500"></i>
+            <p>¿Está seguro de activar?</p>
+        </div>
+    </ng-template>
+    <ng-template #footer>
+        <p-button label="Cancelar" variant="text" icon="pi pi-times" class="w-12" [fluid]="true" severity="secondary" (click)="activate.onReject()" />
+        <p-button label="Activar?" icon="pi pi-check" class="w-12" [fluid]="true" severity="success" (click)="activate.onAccept()" />
+    </ng-template>
+</p-confirmdialog>
+<p-dialog header="{{ categoria.id ? 'Editar' : 'Nueva' }} Categoría" [(visible)]="displayFormulario" [modal]="true" [closable]="false" [style]="{ width: '30vw' }">
+    <div class="flex flex-column gap-2 w-12">
+        <div class="field w-12">
+            <label for="nombre">Nombre</label>
+            <input pInputText id="nombre" [(ngModel)]="categoria.nombre" class="w-12" />
+        </div>
+        <div class="field w-12">
+            <p-checkbox id="activo" [(ngModel)]="categoria.activo" binary="true" label="Activo"></p-checkbox>
+        </div>
+    </div>
+    <ng-template #footer>
+        <div class="flex flex-row gap-2 w-12">
+            <button pButton label="Cancelar" icon="pi pi-times" class="w-12" [fluid]="true" severity="secondary" (click)="cerrarFormulario()"></button>
+            <button pButton label="Guardar" icon="pi pi-check" class="w-12" [fluid]="true" severity="success" (click)="guardar()"></button>
+        </div>
+    </ng-template>
+</p-dialog>

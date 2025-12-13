@@ -5,6 +5,7 @@ import { Bodega } from '../../bodegas/models/Bodega.model';
 export class Ingreso {
     id!: string;
     fechaCreacion: Date = new Date();
+    fechaCierre: Date = new Date();
     observaciones: string = '';
     detalles: IngresoDetalle[] = [];
     documento: number | undefined;

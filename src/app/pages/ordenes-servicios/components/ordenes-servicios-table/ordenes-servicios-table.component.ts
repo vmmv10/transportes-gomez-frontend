@@ -20,6 +20,7 @@ import { PaginatorModule } from 'primeng/paginator';
 import { TableMobileComponent } from '../../../uikit/components/table-mobile/table-mobile.component';
 import { EscuelasSelectComponent } from '../../../escuelas/components/escuelas-select/escuelas-select.component';
 import { SelectBooleanComponent } from '../../../uikit/components/select-boolean/select-boolean.component';
+import { CategoriasSelectComponent } from '../../../categorias/components/categorias-select/categorias-select.component';
 
 @Component({
     selector: 'app-ordenes-servicios-table',
@@ -39,7 +40,8 @@ import { SelectBooleanComponent } from '../../../uikit/components/select-boolean
         PaginatorModule,
         TableMobileComponent,
         EscuelasSelectComponent,
-        SelectBooleanComponent
+        SelectBooleanComponent,
+        CategoriasSelectComponent
     ],
     templateUrl: './ordenes-servicios-table.component.html',
     styleUrl: './ordenes-servicios-table.component.scss',

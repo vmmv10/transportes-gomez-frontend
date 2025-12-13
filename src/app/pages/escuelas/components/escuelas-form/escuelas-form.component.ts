@@ -9,83 +9,80 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { EscuelasService } from '../../services/escuelas.service';
 import { ToastModule } from 'primeng/toast';
+import { ModalLoadingComponent } from '../../../uikit/components/modal-loading/modal-loading.component';
 
 @Component({
-  selector: 'app-escuelas-form',
-  imports: [
-    CommonModule,
-    ButtonModule,
-    FormsModule,
-    InputTextModule,
-    BreadcrumbModule,
-    RouterModule,
-    ToastModule
-  ],
-  templateUrl: './escuelas-form.component.html',
-  styleUrl: './escuelas-form.component.scss',
-  providers: [
-    MessageService
-  ]
+    selector: 'app-escuelas-form',
+    imports: [CommonModule, ButtonModule, FormsModule, InputTextModule, BreadcrumbModule, RouterModule, ToastModule, ModalLoadingComponent],
+    templateUrl: './escuelas-form.component.html',
+    styleUrl: './escuelas-form.component.scss',
+    providers: [MessageService]
 })
 export class EscuelasFormComponent {
-  escuela: Escuela = new Escuela();
-  items: MenuItem[] = [];
+    escuela: Escuela = new Escuela();
+    items: MenuItem[] = [];
+    loading: boolean = false;
 
-  constructor(
-    private route: ActivatedRoute,
-    private escuelasService: EscuelasService,
-    private messageService: MessageService
-  ) {
-    this.items = [
-      { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
-      { label: 'Establecimientos', routerLink: '/establecimientos' },
-      { label: 'Formulario', routerLink: '/establecimientos/formulario' },
-    ];
-  }
-
-  ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.getEscuela(id);
+    constructor(
+        private route: ActivatedRoute,
+        private escuelasService: EscuelasService,
+        private messageService: MessageService
+    ) {
+        this.items = [
+            { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
+            { label: 'Establecimientos', routerLink: '/establecimientos' },
+            { label: 'Formulario', routerLink: '/establecimientos/formulario' }
+        ];
     }
-  }
 
-  getEscuela(id: string) {
-    this.escuelasService.getEscuela(id).subscribe({
-      next: (escuela: Escuela) => {
-        this.escuela = escuela;
-      },
-      error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener Escuela' });
-        console.error('Error fetching escuela:', error);
-      }
-    });
-  }
-
-  guardar() {
-    if (this.escuela.id) {
-      this.escuelasService.updateEscuela(this.escuela).subscribe({
-        next: (updatedEscuela: Escuela) => {
-          console.log('Escuela updated successfully:', updatedEscuela);
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Escuela actualizada' });
-        },
-        error: (error) => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al actualizar Escuela' });
-          console.error('Error updating escuela:', error);
+    ngOnInit() {
+        const id = this.route.snapshot.paramMap.get('id');
+        if (id) {
+            this.getEscuela(id);
         }
-      });
-    } else {
-      this.escuelasService.createEscuela(this.escuela).subscribe({
-        next: (newEscuela: Escuela) => {
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Escuela creada' });
-          console.log('Escuela created successfully:', newEscuela);
-        },
-        error: (error) => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al crear Escuela' });
-          console.error('Error creating escuela:', error);
-        }
-      });
     }
-  }
 
+    getEscuela(id: string) {
+        this.loading = true;
+        this.escuelasService.getEscuela(id).subscribe({
+            next: (escuela: Escuela) => {
+                this.escuela = escuela;
+                this.loading = false;
+            },
+            error: (error) => {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener Escuela' });
+                console.error('Error fetching escuela:', error);
+                this.loading = false;
+            }
+        });
+    }
+
+    guardar() {
+        this.loading = true;
+        if (this.escuela.id) {
+            this.escuelasService.updateEscuela(this.escuela).subscribe({
+                next: (updatedEscuela: Escuela) => {
+                    this.loading = false;
+                    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Escuela actualizada' });
+                },
+                error: (error) => {
+                    this.loading = false;
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al actualizar Escuela' });
+                }
+            });
+        } else {
+            this.escuelasService.createEscuela(this.escuela).subscribe({
+                next: (newEscuela: Escuela) => {
+                    this.loading = false;
+                    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Escuela creada' });
+                    console.log('Escuela created successfully:', newEscuela);
+                },
+                error: (error) => {
+                    this.loading = false;
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al crear Escuela' });
+                    console.error('Error creating escuela:', error);
+                }
+            });
+        }
+    }
 }

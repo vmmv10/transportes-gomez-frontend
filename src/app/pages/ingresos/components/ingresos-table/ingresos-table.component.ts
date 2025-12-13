@@ -17,10 +17,11 @@ import { FechaPipe } from '../../../uikit/pipe/fecha';
 import { IngresoFiltro } from '../../models/ingreso-filtro.model';
 import { Ingreso } from '../../models/ingreso.model';
 import { IngresosService } from '../../services/ingresos.service';
+import { ChipModule } from 'primeng/chip';
 
 @Component({
     selector: 'app-ingresos-table',
-    imports: [FormsModule, CommonModule, InputTextModule, RouterModule, PaginatorModule, TooltipModule, TableModule, ButtonModule, ModalLoadingComponent, TableMobileComponent, ToastModule, ConfirmDialogModule, FechaPipe],
+    imports: [FormsModule, CommonModule, InputTextModule, ChipModule, RouterModule, PaginatorModule, TooltipModule, TableModule, ButtonModule, ModalLoadingComponent, TableMobileComponent, ToastModule, ConfirmDialogModule, FechaPipe],
     templateUrl: './ingresos-table.component.html',
     styleUrl: './ingresos-table.component.scss',
     standalone: true,

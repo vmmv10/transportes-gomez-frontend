@@ -64,6 +64,10 @@ export class EntregasTableComponent {
     @Input() estado: boolean = false;
     @Input() card: boolean = true;
     @Input() dashboard: boolean = false;
+    @Input() categoria: boolean = false;
+    @Input() categoriaFiltro: boolean = false;
+    @Input() oc: boolean = false;
+    @Input() ocFiltro: boolean = false;
     entregas!: Page<Entrega>;
     entrega: Entrega | undefined;
     tok: string = '';

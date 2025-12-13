@@ -45,6 +45,12 @@ export class OrdenesServiciosService {
         if (filtro.id !== undefined && filtro.id !== null) {
             link += '&id=' + filtro.id;
         }
+        if (filtro.categoria && filtro.categoria.id) {
+            link += '&categoria=' + filtro.categoria.id;
+        }
+        if (filtro.documentoReferencia) {
+            link += '&documentoReferencia=' + filtro.documentoReferencia;
+        }
         return this.authHttp.get<Page<OrdenServicio>>(link);
     }
 
@@ -84,6 +90,12 @@ export class OrdenesServiciosService {
         if (filtro.escuela) {
             link += `?escuelaId=${filtro.escuela.id}`;
         }
+        if (filtro.categoria && filtro.categoria.id) {
+            link += filtro.escuela ? `&categoria=${filtro.categoria.id}` : `?categoria=${filtro.categoria.id}`;
+        }
+        if (filtro.documentoReferencia && filtro.documentoReferencia.trim() !== '') {
+            link += filtro.escuela || filtro.categoria ? `&documentoReferencia=${filtro.documentoReferencia}` : `?documentoReferencia=${filtro.documentoReferencia}`;
+        }
         return this.authHttp.get<Reporte[]>(link);
     }
 
@@ -93,5 +105,9 @@ export class OrdenesServiciosService {
             formData.append('files', file);
         });
         return this.authHttp.post<void>(`${this.url}/${ordenId}/imagenes`, formData);
+    }
+
+    getByIngreso(ingresoId: number): Observable<OrdenServicio> {
+        return this.authHttp.get<OrdenServicio>(`${this.url}/ingreso/${ingresoId}`);
     }
 }

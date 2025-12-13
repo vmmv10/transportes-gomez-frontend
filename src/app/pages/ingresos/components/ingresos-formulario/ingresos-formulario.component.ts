@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { OrdenServicio } from '../../../ordenes-servicios/models/orden-servicio.model';
@@ -22,6 +22,7 @@ import { Ingreso } from '../../models/ingreso.model';
 import { IngresoDetalle } from '../../models/ingreso-detalle.model';
 import { IngresosService } from '../../services/ingresos.service';
 import { BodegasSelectComponent } from '../../../bodegas/components/bodegas-select/bodegas-select.component';
+import { ChipModule } from 'primeng/chip';
 
 @Component({
     selector: 'app-ingresos-formulario',
@@ -42,7 +43,9 @@ import { BodegasSelectComponent } from '../../../bodegas/components/bodegas-sele
         InputTextModule,
         ModalLoadingComponent,
         ConfirmDialogModule,
-        BodegasSelectComponent
+        BodegasSelectComponent,
+        RouterLink,
+        ChipModule
     ],
     templateUrl: './ingresos-formulario.component.html',
     styleUrl: './ingresos-formulario.component.scss',
@@ -399,5 +402,9 @@ export class IngresosFormularioComponent {
                 });
             }
         }
+    }
+
+    tieneSaldo(): boolean {
+        return this.ingreso.detalles.some((det) => det.saldo > 0);
     }
 }

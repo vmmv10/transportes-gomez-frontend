@@ -16,6 +16,20 @@
                 </div>
             </div>
         </div>
+        <div *ngIf="orden.escuela" class="flex md:flex-row flex-column gap-1">
+            <div class="flex flex-column gap-2 w-12">
+                <label class="text-md font-semibold">Categoría</label>
+                <app-ordenes-servicio-categorias-select [(categoria)]="orden.categoria" [showClear]="true" [showFilter]="true" [validar]="false" />
+            </div>
+            <div class="flex flex-column gap-2 w-12">
+                <label class="text-md font-semibold">Orden de Compra</label>
+                <input pInputText id="nombre" type="text" [(ngModel)]="orden.documentoReferencia" class="w-12" />
+            </div>
+            <div class="flex flex-column gap-2 w-12">
+                <label class="text-md font-semibold">Ingreso</label>
+                <input pInputText id="nombre" type="text" [(ngModel)]="orden.ingreso" class="w-12" />
+            </div>
+        </div>
         <p-panel *ngIf="orden.escuela" header="Cliente" class="w-12">
             <table class="table-auto border-collapse w-12">
                 <tr>
@@ -151,10 +165,10 @@
 </div>
 <div class="flex flex-column md:flex-row gap-2 card w-12" *ngIf="(orden.bodega && orden.bodega.id != 4 && orden.escuela) || (orden.bodega && orden.bodega.id == 4 && orden.documento.id > 0 && orden.escuela)">
     <p-button class="w-12" size="large" [fluid]="true" label="Volver" severity="secondary" icon="pi pi-times" [routerLink]="['/ordenes-servicios']" />
-    <p-button *ngIf="orden.id == 0" class="w-12" size="large" [fluid]="true" [label]="'Guardar'" severity="success" icon="pi pi-save" (click)="confirmarGuardar()" />
-    <p-button *ngIf="orden.id != 0" class="w-12" size="large" [fluid]="true" [label]="'Actualizar'" severity="success" icon="pi pi-save" (click)="guardar()" />
-    <p-button *ngIf="orden.id != 0" class="w-12" size="large" [fluid]="true" [outlined]="true" [label]="'Subir Imagenes'" severity="success" icon="pi pi-file" (click)="uploadImagenes()" />
-    <p-button *ngIf="orden.id > 0" class="w-12" size="large" [fluid]="true" label="Descargar PDF" severity="danger" icon="pi pi-file-pdf" (click)="obtenerPdf()" />
+    <p-button *ngIf="orden.id == 0 || !orden.id" class="w-12" size="large" [fluid]="true" [label]="'Guardar'" severity="success" icon="pi pi-save" (click)="confirmarGuardar()" />
+    <p-button *ngIf="orden.id != 0 && orden.id" class="w-12" size="large" [fluid]="true" [label]="'Actualizar'" severity="success" icon="pi pi-save" (click)="guardar()" />
+    <p-button *ngIf="orden.id != 0 && orden.id" class="w-12" size="large" [fluid]="true" [outlined]="true" [label]="'Subir Imagenes'" severity="success" icon="pi pi-file" (click)="uploadImagenes()" />
+    <p-button *ngIf="orden.id && orden.id > 0" class="w-12" size="large" [fluid]="true" label="Descargar PDF" severity="danger" icon="pi pi-file-pdf" (click)="obtenerPdf()" />
 </div>
 <p-confirmdialog #eliminarImage>
     <ng-template #message let-message>

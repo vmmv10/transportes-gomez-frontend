@@ -19,6 +19,7 @@
                 <th class="text-center">N° Orden de Servicio</th>
                 <th class="text-center">Escuela</th>
                 <th class="text-center">Comuna</th>
+                <th *ngIf="ruta.enTransito" class="text-center">Estado</th>
                 <th></th>
             </tr>
         </ng-template>
@@ -35,6 +36,16 @@
                 </td>
                 <td class="text-center">
                     {{ rowData.escuela.comuna }}
+                </td>
+                <td *ngIf="ruta.enTransito" class="text-center">
+                    <p-chip
+                        class="text-center text-gray-50 font-semibold text-md"
+                        [label]="rowData.entregado ? 'ENTREGADO' : 'EN RUTA'"
+                        [ngClass]="{
+                            'bg-green-500': rowData.entregado == true,
+                            'bg-orange-400': rowData.entregado == false
+                        }"
+                    ></p-chip>
                 </td>
                 <td class="text-center">
                     <p-button [disabled]="ruta.estado == 'FINALIZADA'" pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="warn" (click)="confirmarEliminar(rowData)" />

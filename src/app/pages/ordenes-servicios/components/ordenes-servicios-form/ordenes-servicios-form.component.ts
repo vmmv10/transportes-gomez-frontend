@@ -36,6 +36,9 @@ import { BodegasSelectComponent } from '../../../bodegas/components/bodegas-sele
 import { AutocompleteSelectComponent } from '../../../inventario/components/autocomplete-select/autocomplete-select.component';
 import { SaldoBodegaFiltro } from '../../../inventario/models/saldo-bodega-filtro.model';
 import { SaldoBodegaService } from '../../../inventario/services/saldo-bodega.service';
+import { OrdenesServicioCategoriasSelectComponent } from '../../../ordenes-servicios-categorias/components/ordenes-servicio-categorias-select/ordenes-servicio-categorias-select.component';
+import e from 'cors';
+import { timeout } from 'rxjs';
 
 @Component({
     standalone: true,
@@ -66,7 +69,8 @@ import { SaldoBodegaService } from '../../../inventario/services/saldo-bodega.se
         DialogModule,
         DocumentosModalSelectComponent,
         BodegasSelectComponent,
-        AutocompleteSelectComponent
+        AutocompleteSelectComponent,
+        OrdenesServicioCategoriasSelectComponent
     ],
     templateUrl: './ordenes-servicios-form.component.html',
     styleUrl: './ordenes-servicios-form.component.scss',
@@ -89,6 +93,7 @@ export class OrdenesServiciosFormComponent {
     visibleItem: boolean = false;
     displayConfirmacion: boolean = false;
     indexDetalle: number = -1;
+    ingreso: number | undefined;
 
     responsiveOptions: any[] = [
         {
@@ -122,6 +127,7 @@ export class OrdenesServiciosFormComponent {
 
     async ngOnInit() {
         const id = this.route.snapshot.paramMap.get('id');
+        const ingreso = this.route.snapshot.paramMap.get('ingreso');
         const doc = this.route.snapshot.paramMap.get('documento');
         const tipo = this.route.snapshot.paramMap.get('tipo');
         if (id) {
@@ -130,24 +136,46 @@ export class OrdenesServiciosFormComponent {
             await this.getImagenes(id);
             this.loading = false;
         }
-        if (tipo !== null && doc !== null) {
-            this.documentosTiposService.getTipoDocumentoBySii(tipo).subscribe({
-                next: (tipoDoc) => {
-                    this.documento.tipo = tipoDoc;
-                    this.documento.numero = Number(doc);
-                    this.getDocumento();
-                    this.orden.bodega = {
-                        id: 1,
-                        nombre: 'Principal',
-                        direccion: 'Castro'
-                    };
-                },
-                error: (error) => {
-                    console.error('Error fetching document type:', error);
-                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener el tipo de documento' });
-                }
-            });
+        if (ingreso) {
+            this.getByIngreso(Number(ingreso));
         }
+        // if (tipo !== null && doc !== null) {
+        //     this.documentosTiposService.getTipoDocumentoBySii(tipo).subscribe({
+        //         next: (tipoDoc) => {
+        //             this.documento.tipo = tipoDoc;
+        //             this.documento.numero = Number(doc);
+        //             this.getDocumento();
+        //             this.orden.bodega = {
+        //                 id: 1,
+        //                 nombre: 'Principal',
+        //                 direccion: 'Castro'
+        //             };
+        //         },
+        //         error: (error) => {
+        //             console.error('Error fetching document type:', error);
+        //             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener el tipo de documento' });
+        //         }
+        //     });
+        // }
+    }
+
+    getByIngreso(ingreso: number) {
+        this.loading = true;
+        this.ordenesServiciosService.getByIngreso(ingreso).subscribe({
+            next: (data) => {
+                if (data) {
+                    this.orden = data;
+                }
+                this.loading = false;
+            },
+            error: (error) => {
+                console.error('Error fetching orden by ingreso:', error);
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message || 'Error al obtener la orden por ingreso' });
+                this.loading = false;
+                timeout(500);
+                this.router.navigate(['/ordenes-servicios']);
+            }
+        });
     }
 
     async getOrden(id: string) {
