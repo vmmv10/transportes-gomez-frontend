@@ -1,0 +1,36 @@
+<div class="flex flex-column gap-3">
+    <div class="card flex flex-column md:flex-row gap-1" *ngIf="filtros">
+        <div class="flex flex-column md:flex-row gap-1 w-12">
+            <app-items-autocomplete class="w-12" (selected)="selectedItem($event)"></app-items-autocomplete>
+            <app-escuelas-select class="w-12" [(escuela)]="filtro.escuela" (escuelaChange)="getData()" [showClear]="true" [showFilter]="true" [validar]="false"></app-escuelas-select>
+            <select-boolean [opciones]="opcionesSelectBoolean" class="w-12" [(variable)]="filtro.entregado" [showClear]="true" [showFilter]="true" [validar]="false"></select-boolean>
+        </div>
+        <button pButton icon="pi pi-search" label="Buscar" class="md:w-4 w-12" [loading]="loading" (click)="getData()"></button>
+    </div>
+    <p-table class="hidden md:block card" [value]="ordenes && ordenes.content ? ordenes.content : []" id="ordenes-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
+        <ng-template #header>
+            <tr>
+                <th class="text-center">Establecimiento</th>
+                <th class="text-center">Nombre</th>
+                <th class="text-center">Cantidad</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-producto>
+            <tr>
+                <td class="text-center">{{ producto.escuela }}</td>
+                <td class="text-center">{{ producto.nombre }}</td>
+                <td class="text-center">{{ producto.cantidad }}</td>
+            </tr>
+        </ng-template>
+        <ng-template #summary>
+            <p-paginator (onPageChange)="pageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="ordenes ? ordenes.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="5" class="text-center">No se encontraron ordenes de servicio</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<app-table-mobile [size]="filtro.size" [page]="filtro.page" (pageChange)="pageChange($event)" [data]="ordenes ? ordenes.content : []" [campos]="campos"></app-table-mobile>
+<app-modal-loading [visible]="loading" />

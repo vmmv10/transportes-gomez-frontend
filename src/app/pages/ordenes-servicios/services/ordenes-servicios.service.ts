@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { Page } from '../../uikit/models/page.model';
 import { OrdenServicioFiltro } from '../models/orden-servicio-filtro.model';
 import { Reporte } from '../../uikit/models/reporte.model';
+import { OrdenServicioDetalle } from '../models/orden-servicio-detalle.model';
 
 @Injectable({
     providedIn: 'root'
@@ -105,6 +106,20 @@ export class OrdenesServiciosService {
             formData.append('files', file);
         });
         return this.authHttp.post<void>(`${this.url}/${ordenId}/imagenes`, formData);
+    }
+
+    getItems(filtro: OrdenServicioFiltro): Observable<Page<OrdenServicioDetalle>> {
+        let link = `${this.url}/items?size=` + filtro.size + `&page=` + filtro.page;
+        if (filtro.escuela) {
+            link += `&escuela=${filtro.escuela.id}`;
+        }
+        if (filtro.item) {
+            link += `&item=${filtro.item.id}`;
+        }
+        if (filtro.entregado !== undefined && filtro.entregado !== null) {
+            link += '&entregado=' + filtro.entregado;
+        }
+        return this.authHttp.get<Page<OrdenServicioDetalle>>(link);
     }
 
     getByIngreso(ingresoId: number): Observable<OrdenServicio> {

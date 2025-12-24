@@ -185,4 +185,38 @@ export class EntregasTableComponent {
         this.filtro.page = 0;
         this.getData();
     }
+
+    descargarExcel() {
+        this.loading = true;
+
+        this.entregasService.descargarExcel(this.filtro).subscribe({
+            next: (data: Blob) => {
+                const blob = new Blob([data], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                });
+
+                const url = window.URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'Entregas.xlsx';
+                document.body.appendChild(a);
+                a.click();
+
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+
+                this.loading = false;
+            },
+            error: () => {
+                this.MessageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Error al descargar el Excel'
+                });
+                this.loading = false;
+            }
+        });
+    }
 }
