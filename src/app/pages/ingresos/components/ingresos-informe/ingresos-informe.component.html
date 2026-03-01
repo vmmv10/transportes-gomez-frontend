@@ -1,0 +1,55 @@
+<div class="card flex flex-column gap-2 py-1">
+    <p-breadcrumb class="max-w-full" [model]="breadcrumb" />
+</div>
+<div class="flex flex-column gap-4 h-full">
+    <!-- CHAT -->
+    <div #chatContainer class="flex flex-column gap-3 overflow-auto p-3 surface-50 border-round flex-1">
+        <div
+            *ngFor="let msg of conversacion.mensajes"
+            class="flex"
+            [ngClass]="{
+                'justify-content-end': msg.usuario.id === usuarioActualId,
+                'justify-content-start': msg.usuario.id !== usuarioActualId
+            }"
+        >
+            <div
+                class="flex gap-2 max-w-30rem animate-fadein"
+                [ngClass]="{
+                    'flex-row-reverse': msg.usuario.id === usuarioActualId
+                }"
+            >
+                <!-- avatar -->
+                <div class="flex align-items-center justify-content-center border-circle text-white font-bold" style="width: 35px; height: 35px; background: #2178bd">
+                    {{ msg.usuario.nombre.charAt(0) }}
+                </div>
+
+                <!-- burbuja -->
+                <div
+                    class="p-3 border-round shadow-1"
+                    [ngClass]="{
+                        'surface-200 text-900': msg.usuario.id !== usuarioActualId,
+                        'bg-primary text-white': msg.usuario.id === usuarioActualId
+                    }"
+                >
+                    <div class="text-xs opacity-70 mb-1">
+                        {{ msg.usuario.nombre }} {{ msg.usuario.apellidos }} •
+                        {{ msg.fecha | date: 'dd/MM/yyyy h:mm a' }}
+                    </div>
+
+                    <div>
+                        {{ msg.mensaje }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INPUT -->
+    <div class="card flex gap-2 p-3 border-top-1 surface-border">
+        <input pInputText [(ngModel)]="mensaje.mensaje" (keyup.enter)="crearMensaje()" placeholder="Escriba un mensaje..." class="flex-1" [class.ng-invalid]="validar && !mensaje.mensaje" />
+
+        <p-button icon="pi pi-send" [loading]="enviando" [disabled]="enviando" (click)="crearMensaje()" />
+    </div>
+</div>
+
+<app-modal-loading [visible]="loading"></app-modal-loading>

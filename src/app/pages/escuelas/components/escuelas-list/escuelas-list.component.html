@@ -3,8 +3,9 @@
 </div>
 <div class="flex flex-column gap-2">
     <div class="card flex w-12 flex-column md:flex-row gap-2">
-        <input type="text" class="w-12" pInputText placeholder="Nombre" [(ngModel)]="filtro.nombre" />
-        <input type="text" class="w-12" placeholder="Comuna" pInputText [(ngModel)]="filtro.comuna" />
+        <input type="text" class="w-12" pInputText placeholder="Nombre" (keydown.enter)="getEscuelas()" [(ngModel)]="filtro.nombre" />
+        <input type="text" class="w-12" placeholder="Comuna" (keydown.enter)="getEscuelas()" pInputText [(ngModel)]="filtro.comuna" />
+        <input type="text" class="w-12" placeholder="RBD" (keydown.enter)="getEscuelas()" pInputText [(ngModel)]="filtro.rbd" />
         <div class="flex w-12 flex-row gap-2">
             <p-button label="Buscar" [fluid]="true" class="w-12" severity="info" icon="pi pi-search" [outlined]="true" (onClick)="getEscuelas()" />
             <p-button label="Agregar" [fluid]="true" class="w-12" severity="info" icon="pi pi-plus" [routerLink]="['/establecimientos/formulario']" />

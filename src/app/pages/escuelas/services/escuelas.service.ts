@@ -32,6 +32,10 @@ export class EscuelasService {
             link += '&nombre=' + filtro.nombre;
         }
 
+        if (filtro.rbd) {
+            link += '&rbd=' + filtro.rbd;
+        }
+
         return this.authHttp.get<Page<Escuela>>(link);
     }
 

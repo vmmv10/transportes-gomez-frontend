@@ -76,8 +76,8 @@
                     <td class="text-center">{{ producto.nombre }}</td>
                     <td class="text-center">{{ producto.cantidad }}</td>
                     <td class="text-center">
-                        <p-button pTooltip="Eliminar" icon="pi pi-trash" [disabled]="orden.entregado" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminarDetalle(producto)" />
                         <p-button pTooltip="Editar" icon="pi pi-pencil" [disabled]="orden.entregado" [rounded]="true" [text]="true" severity="help" (click)="editarDetalle(index)" />
+                        <p-button pTooltip="Eliminar" icon="pi pi-trash" [disabled]="orden.entregado" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminarDetalle(producto)" />
                     </td>
                 </tr>
             </ng-template>
@@ -183,7 +183,7 @@
     </ng-template>
 </p-confirmdialog>
 <app-modal-loading [visible]="loading" />
-<p-dialog [header]="detalle.id > 0 ? 'Editar Item' : 'Agregar Item'" [modal]="true" [(visible)]="displayItem" [style]="{ width: '25rem' }">
+<p-dialog [header]="(detalle.id || (ingreso != undefined && ingreso  > 0)) ? 'Editar Item' : 'Agregar Item'" [modal]="true" [(visible)]="displayItem" [style]="{ width: '25rem' }">
     <div class="flex flex-col gap-2 w-12">
         <div class="flex flex-col gap-2 w-12">
             <label for="nombre">Nombre</label>
@@ -209,9 +209,9 @@
         <div class="flex flex-col gap-2 w-12">
             <div class="flex flex-row gap-1 w-12">
                 <label for="cantidad">Cantidad</label>
-                <span class="text-red-500 text-sm" *ngIf="detalle && detalle.saldoBodega && detalle.cantidad > detalle.saldoBodega.saldo">(No puede super el saldo en Bodega)</span>
+                <span class="text-red-500 text-sm" *ngIf="detalle && detalle.saldoBodega && detalle.cantidad > detalle.saldoBodega.saldo">(No puede superar el saldo: {{detalle.saldoBodega.saldo}})</span>
             </div>
-            <p-inputnumber class="w-12 {{ detalle && detalle.saldoBodega && detalle.saldoBodega.saldo >= detalle.cantidad ? '' : 'ng-dirty ng-invalid' }}" inputId="cantidad" [(ngModel)]="detalle.cantidad" />
+            <p-inputnumber class="w-12 {{ detalle && detalle.saldoBodega && detalle.saldoBodega.saldo > detalle.cantidad ? '' : 'ng-dirty ng-invalid' }}" inputId="cantidad" [(ngModel)]="detalle.cantidad" />
         </div>
     </div>
     <ng-template #footer>

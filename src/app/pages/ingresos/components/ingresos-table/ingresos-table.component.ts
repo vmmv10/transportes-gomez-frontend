@@ -18,16 +18,23 @@ import { IngresoFiltro } from '../../models/ingreso-filtro.model';
 import { Ingreso } from '../../models/ingreso.model';
 import { IngresosService } from '../../services/ingresos.service';
 import { ChipModule } from 'primeng/chip';
+import { Observable } from 'rxjs';
+import { RolService } from '../../../uikit/services/rol.service';
+import { SelectEstadoComponent } from '../../../uikit/components/select-estado/select-estado.component';
 
 @Component({
     selector: 'app-ingresos-table',
-    imports: [FormsModule, CommonModule, InputTextModule, ChipModule, RouterModule, PaginatorModule, TooltipModule, TableModule, ButtonModule, ModalLoadingComponent, TableMobileComponent, ToastModule, ConfirmDialogModule, FechaPipe],
+    imports: [FormsModule, CommonModule, InputTextModule, ChipModule, RouterModule, SelectEstadoComponent, PaginatorModule, TooltipModule, TableModule, ButtonModule, ModalLoadingComponent, TableMobileComponent, ToastModule, ConfirmDialogModule, FechaPipe],
     templateUrl: './ingresos-table.component.html',
     styleUrl: './ingresos-table.component.scss',
     standalone: true,
     providers: [MessageService, ConfirmationService]
 })
 export class IngresosTableComponent {
+    esAdmin$!: Observable<boolean>;
+    esConductor$!: Observable<boolean>;
+    esCliente$!: Observable<boolean>;
+
     @Input() agregar: boolean = false;
     @Input() titulo: boolean = false;
     @Input() filtros: boolean = false;
@@ -70,10 +77,18 @@ export class IngresosTableComponent {
     constructor(
         private ingresosService: IngresosService,
         private messageService: MessageService,
-        private confirmationService: ConfirmationService
-    ) {}
+        private confirmationService: ConfirmationService,
+        private rolService: RolService
+    ) {
+        this.esAdmin$ = this.rolService.tieneRol('Administrador');
+        this.esConductor$ = this.rolService.tieneRol('Conductor');
+        this.esCliente$ = this.rolService.tieneRol('Cliente');
+    }
 
     ngOnInit() {
+        if (this.esCliente$ && !this.esAdmin$) {
+            this.filtro.estado = 3;
+        }
         this.getData();
     }
 

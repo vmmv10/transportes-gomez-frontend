@@ -2,18 +2,26 @@
     <p-breadcrumb class="max-w-full" [model]="breadcrumb" />
 </div>
 <div class="flex flex-column gap-3 card">
-    <div class="flex md:flex-row gap-2 flex-column" *ngIf="!ingreso.id">
-        <div class="flex flex-column gap-2 w-12" *ngIf="!ingreso.id">
-            <label for="documento">Documento</label>
-            <input [disabled]="ingreso.id" pInputText id="documento" [(ngModel)]="ingreso.documento" placeholder="Ingrese número de documento" class="w-12 {{ validar && !ingreso.documento ? 'ng-dirty ng-invalid' : '' }}" />
+    <div class="flex gap-2 flex-column" *ngIf="!ingreso.id">
+        <div class="flex md:flex-row flex-column gap-2">
+            <div class="flex flex-column gap-2 w-12" *ngIf="!ingreso.id">
+                <label for="documento">Orden Compra</label>
+                <input [disabled]="ingreso.id" pInputText id="Orden" [(ngModel)]="ingreso.ordenCompra" placeholder="Ingrese número de Orden Compra" class="w-12 {{ validar && !ingreso.ordenCompra ? 'ng-dirty ng-invalid' : '' }}" />
+            </div>
+            <div class="flex flex-column gap-2 w-12" *ngIf="!ingreso.id">
+                <label for="documento">Bodega</label>
+                <app-bodegas-select [disabled]="ingreso.id != undefined" [validar]="validar" [(bodega)]="ingreso.bodega"></app-bodegas-select>
+            </div>
         </div>
-        <div class="flex flex-column gap-2 w-12" *ngIf="!ingreso.id">
-            <label for="documento">Tipo Documento</label>
-            <app-documentos-tipo-select [disabled]="ingreso.id != undefined" [validar]="validar" [(documentoTipo)]="ingreso.documentoTipo"></app-documentos-tipo-select>
-        </div>
-        <div class="flex flex-column gap-2 w-12" *ngIf="!ingreso.id">
-            <label for="documento">Bodega</label>
-            <app-bodegas-select [disabled]="ingreso.id != undefined" [validar]="validar" [(bodega)]="ingreso.bodega"></app-bodegas-select>
+        <div class="flex md:flex-row flex-column gap-2">
+            <div class="flex flex-column gap-2 w-12" *ngIf="!ingreso.id">
+                <label for="documento">Documento</label>
+                <input [disabled]="ingreso.id" pInputText id="documento" [(ngModel)]="ingreso.documento" placeholder="Ingrese número de documento" class="w-12 {{ validar && !ingreso.documento ? 'ng-dirty ng-invalid' : '' }}" />
+            </div>
+            <div class="flex flex-column gap-2 w-12" *ngIf="!ingreso.id">
+                <label for="documento">Tipo Documento</label>
+                <app-documentos-tipo-select [disabled]="ingreso.id != undefined" [validar]="validar" [(documentoTipo)]="ingreso.documentoTipo"></app-documentos-tipo-select>
+            </div>
         </div>
         <div class="flex flex-column algin-items-end justify-content-end w-12" *ngIf="!ingreso.id">
             <button *ngIf="!ingreso.id" pButton [fluid]="true" label="Comenzar" severity="info" class="w-12" (click)="comenzar()"></button>
@@ -21,19 +29,23 @@
     </div>
     <div class="flex flex-column gap-2 justify-content-center" *ngIf="ingreso.id">
         <div class="flex flex-column gap-1">
-            <h2 class="text-2xl mb-0 w-12 text-center font-semibold">INGRESO N° {{ ingreso.id }}</h2>
-            <span class="text-lg text-gray-500 w-12 text-center">Documento: {{ ingreso.documento }}</span>
-            <span class="text-md text-gray-500 w-12 text-center">Fecha Cierre: {{ ingreso.fechaCierre | date: 'short' }}</span>
+            <h2 class="text-2xl mb-0 w-12 text-center font-semibold">Folio N° {{ ingreso.id }}</h2>
         </div>
         <div class="flex flex-column w-12 align-items-center gap-1 justify-content-center" [ngSwitch]="ingreso.estado">
             <p-chip class="bg-orange-400 text-center text-gray-50 font-semibold" *ngSwitchCase="0" label="Temporal"></p-chip>
             <p-chip class="bg-red-500 text-center text-gray-50 font-semibold" *ngSwitchCase="1" label="Abierto"></p-chip>
             <p-chip class="bg-green-500 text-center text-gray-50 font-semibold" *ngSwitchCase="2" label="Cerrado"></p-chip>
+            <p-chip class="bg-red-400 text-center text-gray-50 font-semibold" *ngSwitchCase="3" label="En Revisión"></p-chip>
+            <p-chip class="bg-blue-700 text-center text-gray-50 font-semibold" *ngSwitchCase="4" label="Habilitado"></p-chip>
+        </div><div class="flex flex-column">
+            <span class="text-md text-gray-500 w-12 text-center">Orden Compra N° {{ ingreso.ordenCompra }}</span>
+            <span class="text-md text-gray-500 w-12 text-center" *ngIf="ingreso.documento && ingreso.documentoTipo">{{ingreso.documentoTipo.nombre}} N° {{ ingreso.documento }}</span>
         </div>
+
     </div>
 </div>
 <div class="flex flex-column gap-3 card" *ngIf="ingreso.id">
-    <div class="flex flex-row gap-2" *ngIf="ingreso.estado != 2">
+    <div class="flex flex-row gap-2" *ngIf="ingreso.estado < 2">
         <p-buttongroup>
             <p-button class="md:block hidden" [severity]="modoUnidad ? 'secondary' : 'success'" [outlined]="modoUnidad" label="Manual" (click)="modoChange()" />
             <p-button class="md:hidden block" [severity]="modoUnidad ? 'secondary' : 'success'" [outlined]="modoUnidad" label="M" (click)="modoChange()" />
@@ -47,7 +59,7 @@
             <tr>
                 <th class="text-center">Detalle</th>
                 <th class="text-center">Cantidad</th>
-                <th class="text-center" *ngIf="ingreso.id && ingreso.estado != 2"></th>
+                <th class="text-center" *ngIf="ingreso.id && ingreso.estado < 2"></th>
             </tr>
         </ng-template>
         <ng-template #body let-item>
@@ -61,9 +73,9 @@
                 <td class="text-center">
                     <span class="text-xl">{{ item.cantidad }}</span>
                 </td>
-                <td class="text-center" *ngIf="ingreso.id && ingreso.estado != 2">
+                <td class="text-center" *ngIf="ingreso.id && ingreso.estado < 2">
                     <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="eliminarDetalle(item)" />
-                    <p-button *ngIf="ingreso.id && ingreso.estado != 2" pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="success" (click)="editarDetalle(item)" />
+                    <p-button *ngIf="ingreso.id && ingreso.estado < 2" pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="success" (click)="editarDetalle(item)" />
                 </td>
             </tr>
         </ng-template>
@@ -74,14 +86,25 @@
         </ng-template>
     </p-table>
 </div>
-<div *ngIf="ingreso.id && ingreso.estado == 0" class="flex flex-column gap-2 card">
+<div *ngIf="ingreso.id && ingreso.estado == 0 && (esAdmin$ | async)" class="flex flex-column gap-2 card">
     <button pButton [fluid]="true" label="Guardar" severity="success" class="w-12" (click)="abrir()"></button>
 </div>
-<div class="flex flex-column gap-2 card" *ngIf="ingreso.id && ingreso.estado == 1">
+<div class="flex flex-column gap-2 card" *ngIf="ingreso.id && ingreso.estado == 1 && (esAdmin$ | async)">
     <button pButton [fluid]="true" label="Cerrar" severity="success" class="w-12" (click)="cerrar()"></button>
 </div>
-<div class="flex flex-column gap-2 card" *ngIf="ingreso.estado && tieneSaldo()">
-    <button pButton [fluid]="true" label="Crear Orden de Servicio" severity="primary" class="w-12" [routerLink]="['/ordenes-servicios/ingreso/' + ingreso.id]" routerLinkActive="router-link-active"></button>
+<div class="flex flex-row gap-2 card" *ngIf="ingreso.estado && ingreso.estado == 2 && (esAdmin$ | async)">
+    <button pButton [fluid]="true" label="Informar Problema" class="w-12" severity="info" (click)="informar()"></button>
+    <button pButton [fluid]="true" label="Crear Orden de Servicio" (click)="crearOs()" severity="primary" class="w-12"></button>
+</div>
+<div class="flex flex-row gap-2 card" *ngIf="ingreso.estado && ingreso.estado == 3 && (esCliente$ | async)">
+    <button pButton [fluid]="true" label="Habilitar" (click)="habilitarSlep()" severity="primary" class="w-12"></button>
+    <button pButton [fluid]="true" label="Ver Chat" class="w-12" severity="info" [routerLink]="['/ingresos/formulario/' + this.ingreso.id + '/informe']" routerLinkActive="router-link-active"></button>
+</div>
+<div class="flex flex-row gap-2 card" *ngIf="ingreso.estado && ingreso.estado == 3 && (esAdmin$ | async)">
+    <button pButton [fluid]="true" label="Ver Chat" class="w-12" severity="info" [routerLink]="['/ingresos/formulario/' + this.ingreso.id + '/informe']" routerLinkActive="router-link-active"></button>
+</div>
+<div class="flex flex-row gap-2 card" *ngIf="ingreso.estado && ingreso.estado == 4 && tieneSaldo() && (esAdmin$ | async)">
+    <button pButton [fluid]="true" label="Crear Orden de Servicio" class="w-12" severity="info" [routerLink]="['/ordenes-servicios/ingreso/' + ingreso.id]" routerLinkActive="router-link-active"></button>
 </div>
 <app-modal-loading [visible]="loading"></app-modal-loading>
 <p-toast />
@@ -90,7 +113,7 @@
     <ng-template #message let-message>
         <div class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700">
             <i class="pi pi-trash !text-6xl text-red-500"></i>
-            <p>¿Está seguro de Eliminar la imagen?</p>
+            <p>¿Está seguro de Eliminar?</p>
         </div>
     </ng-template>
     <ng-template #footer>
@@ -109,3 +132,16 @@
         <p-button label="Continuar" class="w-12" [fluid]="true" severity="success" (click)="temporal.onAccept()" />
     </ng-template>
 </p-confirmdialog>
+<p-confirmdialog #confirmarHabilitar key="confirmarHabilitar" header="Habilitar Ingreso">
+    <ng-template #footer>
+        <p-button label="Cancelar" class="w-12" [fluid]="true" [text]="true" severity="secondary" (click)="confirmarHabilitar.onReject()" />
+        <p-button label="Confirmar" class="w-12" [fluid]="true" severity="success" (click)="confirmarHabilitar.onAccept()" />
+    </ng-template>
+</p-confirmdialog>
+<p-confirmdialog #confirmarInhabilitar key="confirmarInhabilitar" header="Informar Ingreso">
+    <ng-template #footer>
+        <p-button label="Cancelar" class="w-12" [fluid]="true" [text]="true" severity="secondary" (click)="confirmarInhabilitar.onReject()" />
+        <p-button label="Confirmar" class="w-12" [fluid]="true" severity="success" (click)="confirmarInhabilitar.onAccept()" />
+    </ng-template>
+</p-confirmdialog>
+
