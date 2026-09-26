@@ -1,0 +1,12 @@
+.form-note {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 1rem;
+    padding: 0.7rem 0.9rem;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    background: color-mix(in srgb, #3b82f6 10%, var(--surface-card));
+    color: var(--text-color);
+    border-left: 3px solid #3b82f6;
+}

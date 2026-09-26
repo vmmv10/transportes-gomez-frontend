@@ -51,6 +51,9 @@ export class AppMenu {
                     },
                     { label: 'Inventario', icon: 'pi pi-fw pi-warehouse', routerLink: ['/inventario'] },
                     { label: 'Ingresos', icon: 'pi pi-fw pi-cart-minus', routerLink: ['/ingresos'] },
+                    { label: 'Clientes', icon: 'pi pi-fw pi-briefcase', routerLink: ['/clientes'] },
+                    { label: 'Contratos', icon: 'pi pi-fw pi-file-edit', routerLink: ['/contratos'] },
+                    { label: 'Destinos', icon: 'pi pi-fw pi-map-marker', routerLink: ['/destinos'] },
                     { label: 'Proveedores', icon: 'pi pi-fw pi-user', routerLink: ['/proveedores'] },
                     { label: 'Transportes', icon: 'pi pi-fw pi-truck', routerLink: ['/transportes'] }
                     //{ label: 'Mantencion', icon: 'pi pi-fw pi-wrench', items: [{ label: 'Categorías OS', routerLink: ['mantencion/categorias-os'] }] }

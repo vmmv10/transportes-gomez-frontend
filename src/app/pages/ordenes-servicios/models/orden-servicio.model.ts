@@ -3,6 +3,11 @@ import { Documento } from '../../documentos/models/documento.model';
 import { Escuela } from '../../escuelas/models/escuela.models';
 import { OrdenServicioCategoria } from '../../ordenes-servicios-categorias/model/orden-servicio-categoria.model';
 import { OrdenServicioDetalle } from './orden-servicio-detalle.model';
+import { Cliente } from '../../clientes/models/cliente.model';
+import { ServicioTipo } from '../../catalogos/models/servicio-tipo.model';
+import { Destino } from '../../destinos/models/destino.model';
+import { Proveedor } from '../../proveedor/models/proveedor.model';
+import { Contrato } from '../../contratos/models/contrato.model';
 
 export class OrdenServicio {
     id: number;
@@ -18,6 +23,14 @@ export class OrdenServicio {
     documentoReferencia: string | undefined;
     categoria: OrdenServicioCategoria | undefined;
     ingreso: number | undefined;
+    /** Quién contrata / a quién se le cobra */
+    cliente: Cliente | undefined;
+    servicioTipo: ServicioTipo | undefined;
+    /** Lugar de entrega. Si hay escuela, el backend usa el destino de esa escuela. */
+    destino: Destino | undefined;
+    /** Proveedor de la mercadería (quién la vendió al cliente) */
+    proveedor: Proveedor | undefined;
+    contrato: Contrato | undefined;
 
     constructor() {
         this.id = 0;

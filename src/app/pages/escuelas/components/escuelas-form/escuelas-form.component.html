@@ -52,6 +52,11 @@
                         <input pInputText id="comuna" type="text" [(ngModel)]="escuela.comuna" placeholder="Ej: Ancud" />
                     </p-iconfield>
                 </div>
+                <div class="form-field form-field--span-2">
+                    <label>Cliente</label>
+                    <app-cliente-select [cliente]="clienteEscuela" (clienteChange)="onClienteChange($event)" placeholder="Sin cliente" />
+                    <small class="form-field__hint">A quién se le cobran los despachos a este establecimiento.</small>
+                </div>
             </div>
         </div>
 

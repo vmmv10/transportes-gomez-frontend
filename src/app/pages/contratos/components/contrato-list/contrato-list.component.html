@@ -1,0 +1,103 @@
+<div class="page-breadcrumb-bar flex flex-column">
+    <p-breadcrumb class="app-breadcrumb max-w-full" [model]="breadcrumb" />
+</div>
+<div class="card flex flex-column gap-2 md:gap-4">
+    <div class="page-header">
+        <div class="page-panel-title-group">
+            <span class="page-panel-title-chip"><i class="pi pi-file-edit"></i></span>
+            <div class="page-panel-title-text">
+                <h2 class="page-header__title">Contratos y licitaciones</h2>
+                <span class="page-panel-subtitle">
+                    Licitaciones, tratos directos y órdenes de compra con cada cliente
+                    <span class="page-panel-count" *ngIf="data">{{ data.totalElements }} registros</span>
+                </span>
+            </div>
+        </div>
+        <div class="page-header__actions">
+            <button pButton icon="pi pi-plus" label="Agregar" class="page-panel-primary-action" [routerLink]="['/contratos/formulario']" [queryParams]="filtro.cliente ? { cliente: filtro.cliente } : {}"></button>
+        </div>
+    </div>
+    <div class="flex flex-column md:flex-row gap-2 md:align-items-center">
+        <div class="w-12">
+            <app-cliente-select *ngIf="clienteListo" [cliente]="cliente" (clienteChange)="onClienteChange($event)" [showClear]="true" placeholder="Todos los clientes" />
+        </div>
+        <input pInputText (keydown.enter)="buscar()" [(ngModel)]="filtro.texto" placeholder="Código o nombre" class="w-12" />
+        <div class="flex align-items-center gap-2 white-space-nowrap">
+            <p-checkbox inputId="soloVigentes" [binary]="true" [(ngModel)]="filtro.vigente" (ngModelChange)="buscar()" />
+            <label for="soloVigentes">Solo vigentes</label>
+        </div>
+        <p-selectbutton [options]="estados" [(ngModel)]="filtro.activo" (ngModelChange)="buscar()" optionLabel="label" optionValue="value" [allowEmpty]="false" />
+        <p-button label="Buscar" icon="pi pi-search" severity="info" [outlined]="true" class="md:w-3 w-12" [fluid]="true" (onClick)="buscar()" />
+        <p-button label="Limpiar" icon="pi pi-filter-slash" severity="secondary" [outlined]="true" class="md:w-3 w-12" [fluid]="true" (onClick)="limpiarFiltros()" />
+    </div>
+    <p-table class="hidden md:block w-12" [value]="data?.content ?? []" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
+        <ng-template #header>
+            <tr>
+                <th>Código</th>
+                <th>Contrato</th>
+                <th>Cliente</th>
+                <th>Período</th>
+                <th>Estado</th>
+                <th></th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-item>
+            <tr>
+                <td>
+                    <span class="page-cell-code">{{ item.codigo }}</span>
+                </td>
+                <td class="page-cell-strong">{{ item.nombre }}</td>
+                <td>{{ item.clienteNombre }}</td>
+                <td class="white-space-nowrap">{{ periodo(item) }}</td>
+                <td><p-tag [value]="estado(item).texto" [severity]="estado(item).severidad" /></td>
+                <td class="text-right white-space-nowrap">
+                    <p-button pTooltip="Editar" tooltipPosition="left" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="success" [routerLink]="['/contratos/formulario/' + item.id]" />
+                    <p-button
+                        [pTooltip]="item.activo === false ? 'Activar' : 'Desactivar'"
+                        tooltipPosition="left"
+                        [icon]="item.activo === false ? 'pi pi-replay' : 'pi pi-power-off'"
+                        [rounded]="true"
+                        [text]="true"
+                        [severity]="item.activo === false ? 'info' : 'danger'"
+                        (click)="confirmarCambioEstado(item)"
+                    />
+                    <p-button pTooltip="Eliminar" tooltipPosition="left" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminar(item)" />
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #summary>
+            <p-paginator styleClass="page-paginator" (onPageChange)="pageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="data ? data.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="6">
+                    <div class="page-empty">
+                        <i class="pi pi-file-edit"></i>
+                        <strong>No hay contratos</strong>
+                        <span>Registra la licitación o el contrato del cliente con "Agregar".</span>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<app-table-mobile
+    [size]="filtro.size"
+    [page]="filtro.page"
+    [totalElements]="data ? data.totalElements : 0"
+    (pageChange)="pageChange($event)"
+    [card]="true"
+    [mostrarAcciones]="true"
+    (accion)="resolverAccion($event)"
+    [acciones]="acciones"
+    [data]="filas"
+    [campos]="campos"
+></app-table-mobile>
+<app-modal-loading [visible]="loading" />
+<p-toast />
+<p-confirmdialog #cContrato key="cContrato">
+    <ng-template #footer>
+        <p-button label="Cancelar" variant="text" icon="pi pi-times" class="w-12" [fluid]="true" severity="secondary" (click)="cContrato.onReject()" />
+        <p-button label="Confirmar" icon="pi pi-check" class="w-12" [fluid]="true" severity="danger" (click)="cContrato.onAccept()" />
+    </ng-template>
+</p-confirmdialog>

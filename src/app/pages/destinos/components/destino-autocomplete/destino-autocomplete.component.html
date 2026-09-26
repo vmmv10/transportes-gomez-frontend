@@ -1,0 +1,32 @@
+<p-autocomplete
+    [ngModel]="destino"
+    (ngModelChange)="onChange($event)"
+    [suggestions]="sugerencias"
+    (completeMethod)="buscar($event)"
+    optionLabel="nombre"
+    dataKey="id"
+    [forceSelection]="true"
+    [showClear]="true"
+    [minLength]="2"
+    [delay]="300"
+    [fluid]="true"
+    appendTo="body"
+    [disabled]="disabled"
+    [placeholder]="placeholder"
+    class="w-12 {{ !destino && validar ? 'ng-dirty ng-invalid' : '' }}"
+>
+    <ng-template #item let-item>
+        <div class="flex align-items-center gap-2">
+            <i [class]="icono(item)"></i>
+            <div class="flex flex-column">
+                <span>{{ item.nombre }}</span>
+                <small class="text-color-secondary"
+                    >{{ item.comuna?.nombre }}<ng-container *ngIf="item.direccion"> · {{ item.direccion }}</ng-container></small
+                >
+            </div>
+        </div>
+    </ng-template>
+    <ng-template #empty>
+        <span class="text-color-secondary">Sin resultados. Puedes crearlo en Destinos.</span>
+    </ng-template>
+</p-autocomplete>

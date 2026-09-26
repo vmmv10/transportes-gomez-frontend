@@ -1,0 +1,103 @@
+<div class="flex flex-column gap-3">
+    <div class="flex flex-column md:flex-row md:align-items-center justify-content-between gap-2">
+        <div class="flex flex-column">
+            <span class="text-xl font-semibold"
+                >Bultos <span class="text-color-secondary font-normal">({{ bultos?.length || 0 }})</span></span
+            >
+            <small class="text-color-secondary">Cajas o pallets cerrados que llegan dirigidos a un destino, con el N° de seguimiento del transportista.</small>
+        </div>
+        <p-button *ngIf="editable" label="Agregar bulto" icon="pi pi-plus" [outlined]="true" (onClick)="nuevo()" />
+    </div>
+    <small class="text-orange-500" *ngIf="sinDestino > 0"><i class="pi pi-exclamation-triangle"></i> {{ sinDestino }} {{ sinDestino === 1 ? 'bulto no tiene' : 'bultos no tienen' }} destino asignado.</small>
+    <p-table [value]="bultos ?? []" [responsive]="true" showGridlines>
+        <ng-template #header>
+            <tr>
+                <th>N° seguimiento</th>
+                <th>Descripción</th>
+                <th>Destino</th>
+                <th class="text-right">Peso / Vol.</th>
+                <th class="text-center">Estado</th>
+                <th *ngIf="editable"></th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-item>
+            <tr>
+                <td>
+                    <span class="page-cell-code" *ngIf="item.codigoExterno; else sinCodigo">{{ item.codigoExterno }}</span
+                    ><ng-template #sinCodigo><span class="page-cell-empty">—</span></ng-template>
+                </td>
+                <td [class.page-cell-empty]="!item.descripcion">{{ item.descripcion || '—' }}</td>
+                <td>
+                    <div class="flex flex-column" *ngIf="item.destino; else sinDestinoTpl">
+                        <span>{{ item.destino.nombre }}</span>
+                        <small class="page-cell-muted">{{ item.destino.comuna?.nombre }}</small>
+                    </div>
+                    <ng-template #sinDestinoTpl><span class="text-orange-500">Sin destino</span></ng-template>
+                </td>
+                <td class="text-right white-space-nowrap">
+                    <span *ngIf="item.pesoKg">{{ item.pesoKg | number: '1.0-2' }} kg</span>
+                    <span *ngIf="item.pesoKg && item.volumenM3"> · </span>
+                    <span *ngIf="item.volumenM3">{{ item.volumenM3 | number: '1.0-3' }} m³</span>
+                    <span class="page-cell-empty" *ngIf="!item.pesoKg && !item.volumenM3">—</span>
+                </td>
+                <td class="text-center">
+                    <div class="flex flex-column align-items-center gap-1">
+                        <p-tag [value]="estadoTexto(item)" [severity]="estadoSeveridad(item)" />
+                        <a *ngIf="item.ordenServicioId" class="text-sm" [routerLink]="['/ordenes-servicios/formulario/' + item.ordenServicioId]">OS N° {{ item.ordenServicioId }}</a>
+                    </div>
+                </td>
+                <td *ngIf="editable" class="text-right white-space-nowrap">
+                    <ng-container *ngIf="modificable(item)">
+                        <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="success" (click)="editar(item)" />
+                        <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="eliminar(item)" />
+                    </ng-container>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td [attr.colspan]="editable ? 6 : 5" class="text-center text-color-secondary">Este ingreso no tiene bultos. Si la carga viene en cajas cerradas para un destino, agrégalas aquí.</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog [header]="bulto.id ? 'Editar bulto' : 'Agregar bulto'" [modal]="true" [(visible)]="dialogoVisible" [style]="{ width: '40rem' }" [breakpoints]="{ '640px': '95vw' }">
+    <div class="flex flex-column gap-3">
+        <div class="flex flex-column gap-1">
+            <label for="codigoExterno" class="font-semibold">N° de seguimiento</label>
+            <input
+                pInputText
+                id="codigoExterno"
+                [(ngModel)]="bulto.codigoExterno"
+                placeholder="Código de Kaiken, Starken u otro"
+                [class.ng-invalid]="intentoGuardar && !bulto.codigoExterno?.trim() && !bulto.descripcion?.trim()"
+                [class.ng-dirty]="intentoGuardar"
+            />
+        </div>
+        <div class="flex flex-column gap-1">
+            <label for="descripcion" class="font-semibold">Descripción</label>
+            <input pInputText id="descripcion" [(ngModel)]="bulto.descripcion" placeholder="Ej: Caja con textos escolares" />
+        </div>
+        <div class="flex flex-column gap-1">
+            <label class="font-semibold">Destino</label>
+            <app-destino-autocomplete [(destino)]="bulto.destino" [clienteId]="clienteId" />
+            <small class="text-color-secondary">A dónde va el bulto. Si no aparece, créalo en Destinos.</small>
+        </div>
+        <div class="flex flex-column md:flex-row gap-3">
+            <div class="flex flex-column gap-1 w-12">
+                <label for="peso" class="font-semibold">Peso (kg)</label>
+                <p-inputnumber inputId="peso" [(ngModel)]="bulto.pesoKg" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2" [min]="0" [fluid]="true" locale="es-CL" />
+            </div>
+            <div class="flex flex-column gap-1 w-12">
+                <label for="volumen" class="font-semibold">Volumen (m³)</label>
+                <p-inputnumber inputId="volumen" [(ngModel)]="bulto.volumenM3" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="3" [min]="0" [fluid]="true" locale="es-CL" />
+            </div>
+        </div>
+    </div>
+    <ng-template #footer>
+        <p-button label="Cancelar" severity="secondary" [text]="true" (click)="dialogoVisible = false" />
+        <p-button *ngIf="!bulto.id" label="Guardar y agregar otro" severity="secondary" [outlined]="true" [loading]="guardando" (click)="guardar(true)" />
+        <p-button label="Guardar" icon="pi pi-check" severity="success" [loading]="guardando" (click)="guardar(false)" />
+    </ng-template>
+</p-dialog>

@@ -10,6 +10,8 @@ export class Escuela {
     comuna: any
     latitud: string;
     longitud: string;
+    /** Cliente al que pertenece el establecimiento (ej. SLEP Chiloé) */
+    clienteId?: number;
 
     constructor(
     ) {

@@ -1,0 +1,18 @@
+<p-select
+    *ngIf="!loading"
+    [options]="tipos"
+    [ngModel]="servicioTipo"
+    optionLabel="nombre"
+    dataKey="id"
+    [placeholder]="error ? 'No se pudieron cargar los tipos' : 'Selecciona tipo de servicio'"
+    [showClear]="showClear"
+    class="w-12 {{ !servicioTipo && validar ? 'ng-dirty ng-invalid' : '' }}"
+    appendTo="body"
+    [disabled]="disabled"
+    (ngModelChange)="onChangeSelect($event)"
+>
+    <ng-template #item let-item>
+        <span class="flex align-items-center gap-2"><i [class]="icono(item)"></i>{{ item.nombre }}</span>
+    </ng-template>
+</p-select>
+<p-skeleton *ngIf="loading" class="w-12" height="2.5rem" />

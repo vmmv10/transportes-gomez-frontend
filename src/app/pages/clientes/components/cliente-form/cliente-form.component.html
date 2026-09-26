@@ -1,0 +1,125 @@
+<p-toast />
+<div class="page-breadcrumb-bar flex flex-column">
+    <p-breadcrumb class="app-breadcrumb max-w-full" [model]="breadcrumb" />
+</div>
+
+<div class="form-page">
+    <section class="card form-card">
+        <div class="page-header">
+            <div class="page-panel-title-group">
+                <span class="page-panel-title-chip"><i class="pi pi-briefcase"></i></span>
+                <div class="page-panel-title-text">
+                    <h2 class="page-header__title">{{ esNuevo ? 'Nuevo cliente' : 'Editar cliente' }}</h2>
+                    <span class="page-panel-subtitle">
+                        <ng-container *ngIf="esNuevo">Quien contrata el servicio y a quien se le cobra</ng-container>
+                        <ng-container *ngIf="!esNuevo">
+                            {{ cliente.razonSocial }}
+                            <p-tag *ngIf="cliente.activo === false" severity="danger" value="Inactivo" />
+                        </ng-container>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Identificación -->
+        <div class="form-section">
+            <div class="form-section__head">
+                <span class="form-section__icon"><i class="pi pi-id-card"></i></span>
+                <div>
+                    <h3 class="form-section__title">Identificación</h3>
+                    <p class="form-section__desc">Datos tributarios del cliente.</p>
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-field">
+                    <label for="rut">RUT <span class="form-field__req">*</span></label>
+                    <input pInputText id="rut" [(ngModel)]="cliente.rut" (blur)="normalizarRut()" placeholder="61981360-K" [class.ng-invalid]="intentoGuardar && !rutOk" [class.ng-dirty]="intentoGuardar && !rutOk" />
+                    <small class="form-field__error" *ngIf="intentoGuardar && !rutOk">RUT inválido: revisa el dígito verificador.</small>
+                </div>
+                <div class="form-field form-field--span-2">
+                    <label for="razonSocial">Razón social <span class="form-field__req">*</span></label>
+                    <input pInputText id="razonSocial" [(ngModel)]="cliente.razonSocial" placeholder="Nombre legal" [class.ng-invalid]="intentoGuardar && !cliente.razonSocial.trim()" [class.ng-dirty]="intentoGuardar && !cliente.razonSocial.trim()" />
+                    <small class="form-field__error" *ngIf="intentoGuardar && !cliente.razonSocial.trim()">La razón social es obligatoria.</small>
+                </div>
+                <div class="form-field">
+                    <label for="nombreCorto">Nombre corto</label>
+                    <input pInputText id="nombreCorto" [(ngModel)]="cliente.nombreCorto" placeholder="Ej: SLEP Chiloé" />
+                    <small class="form-field__hint">Cómo se muestra en listas y reportes.</small>
+                </div>
+                <div class="form-field form-field--span-2">
+                    <label>Tipo</label>
+                    <p-selectbutton [options]="tiposPersona" [(ngModel)]="cliente.tipoPersona" optionLabel="label" optionValue="value" [allowEmpty]="false" />
+                </div>
+                <div class="form-field form-field--span-2">
+                    <label>Sector</label>
+                    <p-selectbutton [options]="sectores" [(ngModel)]="cliente.sector" optionLabel="label" optionValue="value" [allowEmpty]="false" />
+                </div>
+                <div class="form-field form-field--span-2">
+                    <label for="giro">Giro</label>
+                    <input pInputText id="giro" [(ngModel)]="cliente.giro" placeholder="Actividad comercial" />
+                </div>
+                <div class="form-field form-field--span-2" *ngIf="cliente.sector === 'PUBLICO'">
+                    <label for="codigoMp">Código Mercado Público</label>
+                    <input pInputText id="codigoMp" [(ngModel)]="cliente.codigoMp" placeholder="Ej: 1393093" />
+                    <small class="form-field__hint">Código del organismo comprador en mercadopublico.cl.</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ubicación y contacto -->
+        <div class="form-section">
+            <div class="form-section__head">
+                <span class="form-section__icon"><i class="pi pi-users"></i></span>
+                <div>
+                    <h3 class="form-section__title">Ubicación y contacto</h3>
+                    <p class="form-section__desc">Con quién coordinar los servicios.</p>
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-field form-field--span-2">
+                    <label for="direccion">Dirección</label>
+                    <p-iconfield>
+                        <p-inputicon class="pi pi-map-marker" />
+                        <input pInputText id="direccion" [(ngModel)]="cliente.direccion" placeholder="Calle y número" />
+                    </p-iconfield>
+                </div>
+                <div class="form-field form-field--span-2">
+                    <label>Comuna</label>
+                    <app-comuna-select [(comuna)]="cliente.comuna" />
+                </div>
+                <div class="form-field form-field--span-2">
+                    <label for="contacto">Persona de contacto</label>
+                    <p-iconfield>
+                        <p-inputicon class="pi pi-user" />
+                        <input pInputText id="contacto" [(ngModel)]="cliente.contacto" placeholder="Nombre y cargo" />
+                    </p-iconfield>
+                </div>
+                <div class="form-field">
+                    <label for="telefono">Teléfono</label>
+                    <p-iconfield>
+                        <p-inputicon class="pi pi-phone" />
+                        <input pInputText id="telefono" type="tel" [(ngModel)]="cliente.telefono" placeholder="9 1234 5678" />
+                    </p-iconfield>
+                </div>
+                <div class="form-field">
+                    <label for="email">Email</label>
+                    <p-iconfield>
+                        <p-inputicon class="pi pi-envelope" />
+                        <input pInputText id="email" type="email" [(ngModel)]="cliente.email" placeholder="correo@dominio.cl" [class.ng-invalid]="intentoGuardar && !emailOk" [class.ng-dirty]="intentoGuardar && !emailOk" />
+                    </p-iconfield>
+                    <small class="form-field__error" *ngIf="intentoGuardar && !emailOk">Email inválido.</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="form-actions">
+        <span class="form-actions__hint"><span class="form-field__req">*</span> Campos obligatorios</span>
+        <div class="form-actions__buttons">
+            <p-button label="Volver" icon="pi pi-arrow-left" severity="secondary" [text]="true" [routerLink]="['/clientes']" />
+            <p-button *ngIf="!esNuevo" label="Contratos" icon="pi pi-file-edit" severity="secondary" [outlined]="true" [routerLink]="['/contratos']" [queryParams]="{ cliente: cliente.id }" />
+            <p-button [label]="esNuevo ? 'Crear cliente' : 'Guardar cambios'" icon="pi pi-check" class="page-panel-primary-action" [loading]="loading" (onClick)="guardar()" />
+        </div>
+    </div>
+</div>
+<app-modal-loading [visible]="loading"></app-modal-loading>

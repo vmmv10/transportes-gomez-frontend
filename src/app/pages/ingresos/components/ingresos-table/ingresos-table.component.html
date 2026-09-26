@@ -16,7 +16,7 @@
             <input pInputText id="folio" (keydown.enter)="getData()" [(ngModel)]="filtro.id" placeholder="Buscar por folio" class="w-12" />
             <input pInputText id="oc" (keydown.enter)="getData()" [(ngModel)]="filtro.ordenCompra" placeholder="Buscar por OC" class="w-12" />
             <input pInputText id="documento" (keydown.enter)="getData()" [(ngModel)]="filtro.documento" placeholder="Buscar por documento" class="w-12" />
-            <app-select-estado *ngIf="agregar && (esAdmin$ | async)" [(variable)]="filtro.estado" (ngModelChange)="getData()" [showClear]="true" class="w-12" />
+            <app-select-estado *ngIf="agregar && (esAdmin$ | async)" [(variable)]="filtro.estado" (variableChange)="getData()" [showClear]="true" class="w-12" />
             <button class="hidden md:flex w-12" [fluid]="true" pButton icon="pi pi-search" [severity]="'info'" [loading]="loading" (click)="getData()"></button>
         </div>
         <div *ngIf="filtros" class="flex flex-row gap-1 md:hidden">

@@ -11,7 +11,7 @@ import { SelectModule } from 'primeng/select';
 })
 export class SelectEstadoComponent {
     @Input() variable: number | undefined;
-    @Output() variableChange = new EventEmitter<boolean>();
+    @Output() variableChange = new EventEmitter<number | undefined>();
     @Input() showClear: boolean = false;
     @Input() validar: boolean = false;
     @Input() showFilter: boolean = false;

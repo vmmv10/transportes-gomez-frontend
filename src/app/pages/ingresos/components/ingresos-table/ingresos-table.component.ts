@@ -25,7 +25,7 @@ import { SelectEstadoComponent } from '../../../uikit/components/select-estado/s
 
 @Component({
     selector: 'app-ingresos-table',
-    imports: [FormsModule, CommonModule, InputTextModule, ChipModule, TagModule, RouterModule, PaginatorModule, TooltipModule, TableModule, ButtonModule, ModalLoadingComponent, TableMobileComponent, ToastModule, ConfirmDialogModule, FechaPipe],
+    imports: [FormsModule, CommonModule, InputTextModule, ChipModule, TagModule, RouterModule, PaginatorModule, TooltipModule, TableModule, ButtonModule, ModalLoadingComponent, TableMobileComponent, ToastModule, ConfirmDialogModule, FechaPipe, SelectEstadoComponent],
     templateUrl: './ingresos-table.component.html',
     styleUrl: './ingresos-table.component.scss',
     standalone: true,

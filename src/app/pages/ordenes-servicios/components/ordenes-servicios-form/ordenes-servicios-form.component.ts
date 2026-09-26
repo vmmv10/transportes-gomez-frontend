@@ -48,6 +48,12 @@ import { RutasService } from '../../../rutas/services/rutas.service';
 import { Ruta } from '../../../rutas/models/ruta.model';
 import { RutasModalSelectComponent } from '../../../rutas/components/rutas-modal-select/rutas-modal-select.component';
 import { Usuario } from '../../../usuarios/models/usuario.model';
+import { ClienteSelectComponent } from '../../../clientes/components/cliente-select/cliente-select.component';
+import { Cliente } from '../../../clientes/models/cliente.model';
+import { ServicioTipoSelectComponent } from '../../../catalogos/components/servicio-tipo-select/servicio-tipo-select.component';
+import { ContratoSelectComponent } from '../../../contratos/components/contrato-select/contrato-select.component';
+import { ProveedorSelectComponent } from '../../../proveedor/components/proveedor-select/proveedor-select.component';
+import { Escuela } from '../../../escuelas/models/escuela.models';
 
 /** Qué hacer con la OS recién creada respecto a las rutas. */
 export type ModoRuta = 'ninguna' | 'existente' | 'nueva';
@@ -89,7 +95,11 @@ export type ModoRuta = 'ninguna' | 'existente' | 'nueva';
         SelectButtonModule,
         DatePickerModule,
         UsuariosSelectComponent,
-        RutasModalSelectComponent
+        RutasModalSelectComponent,
+        ClienteSelectComponent,
+        ServicioTipoSelectComponent,
+        ContratoSelectComponent,
+        ProveedorSelectComponent
     ],
     templateUrl: './ordenes-servicios-form.component.html',
     styleUrl: './ordenes-servicios-form.component.scss',
@@ -205,6 +215,26 @@ export class OrdenesServiciosFormComponent {
         //         }
         //     });
         // }
+    }
+
+    /**
+     * Al cambiar el establecimiento se descarta el destino anterior:
+     * el backend asigna el destino de la nueva escuela al guardar.
+     */
+    onEscuelaChange(escuela: Escuela | undefined) {
+        const cambio = this.orden.escuela?.id !== escuela?.id;
+        this.orden.escuela = escuela;
+        if (cambio) {
+            this.orden.destino = undefined;
+        }
+    }
+
+    /** El contrato debe ser del cliente de la orden. */
+    onClienteChange(cliente: Cliente | undefined) {
+        this.orden.cliente = cliente;
+        if (this.orden.contrato && this.orden.contrato.clienteId !== cliente?.id) {
+            this.orden.contrato = undefined;
+        }
     }
 
     getByIngreso(ingreso: number) {

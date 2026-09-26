@@ -1,0 +1,28 @@
+<p-select
+    *ngIf="!loading"
+    [options]="clientes"
+    [ngModel]="cliente"
+    optionLabel="razonSocial"
+    dataKey="id"
+    [placeholder]="error ? 'No se pudieron cargar los clientes' : placeholder"
+    [showClear]="showClear"
+    [filter]="clientes.length > 6"
+    filterBy="razonSocial,nombreCorto,rut"
+    class="w-12 {{ !cliente && validar ? 'ng-dirty ng-invalid' : '' }}"
+    appendTo="body"
+    [disabled]="disabled"
+    (ngModelChange)="onChangeSelect($event)"
+>
+    <ng-template #selectedItem let-item>
+        <span *ngIf="item">{{ etiqueta(item) }}</span>
+    </ng-template>
+    <ng-template #item let-item>
+        <div class="flex flex-column">
+            <span>{{ etiqueta(item) }}</span>
+            <small class="text-color-secondary"
+                >{{ item.rut }}<ng-container *ngIf="item.nombreCorto"> · {{ item.razonSocial }}</ng-container></small
+            >
+        </div>
+    </ng-template>
+</p-select>
+<p-skeleton *ngIf="loading" class="w-12" height="2.5rem" />

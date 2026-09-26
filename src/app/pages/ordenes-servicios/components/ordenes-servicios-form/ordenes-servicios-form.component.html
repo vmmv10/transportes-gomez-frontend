@@ -16,6 +16,7 @@
                             <p-tag *ngIf="orden.entregado" severity="success" value="Entregada" icon="pi pi-check" />
                             <p-tag *ngIf="!orden.entregado" severity="warn" value="Pendiente" icon="pi pi-clock" />
                             <span *ngIf="orden.escuela">{{ orden.escuela.nombre }}</span>
+                            <span *ngIf="orden.cliente">· {{ orden.cliente.nombreCorto || orden.cliente.razonSocial }}</span>
                         </ng-container>
                     </span>
                 </div>
@@ -47,7 +48,7 @@
                 </div>
                 <div class="form-field form-field--span-2">
                     <label for="escuela">Establecimiento de destino <span class="form-field__req">*</span></label>
-                    <app-escuelas-select [validar]="validar" [disabled]="orden.entregado" [(escuela)]="orden.escuela" [showClear]="true" [showFilter]="true" class="w-12"></app-escuelas-select>
+                    <app-escuelas-select [validar]="validar" [disabled]="orden.entregado" [escuela]="orden.escuela" (escuelaChange)="onEscuelaChange($event)" [showClear]="true" [showFilter]="true" class="w-12"></app-escuelas-select>
                 </div>
             </div>
 
@@ -58,6 +59,36 @@
                 <span class="page-cell-icon" *ngIf="orden.escuela.comuna"><i class="pi pi-map"></i>{{ orden.escuela.comuna }}</span>
                 <span class="page-cell-icon" *ngIf="orden.escuela.direccion"><i class="pi pi-map-marker"></i>{{ orden.escuela.direccion }}</span>
                 <span class="page-cell-icon" *ngIf="orden.escuela.director"><i class="pi pi-user"></i>{{ orden.escuela.director }}</span>
+            </div>
+        </div>
+
+        <!-- Servicio -->
+        <div class="form-section" *ngIf="orden.escuela">
+            <div class="form-section__head">
+                <span class="form-section__icon"><i class="pi pi-briefcase"></i></span>
+                <div>
+                    <h3 class="form-section__title">Servicio</h3>
+                    <p class="form-section__desc">A quién se le presta el servicio y bajo qué contrato.</p>
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-field form-field--span-2">
+                    <label>Cliente</label>
+                    <app-cliente-select [cliente]="orden.cliente" (clienteChange)="onClienteChange($event)" [autoSeleccionarUnico]="esNueva" [disabled]="orden.entregado" placeholder="Se toma del establecimiento" />
+                </div>
+                <div class="form-field form-field--span-2">
+                    <label>Tipo de servicio</label>
+                    <app-servicio-tipo-select [(servicioTipo)]="orden.servicioTipo" [codigoPorDefecto]="esNueva ? 'CARGA_TER' : undefined" [disabled]="orden.entregado" />
+                </div>
+                <div class="form-field form-field--span-2">
+                    <label>Contrato / licitación</label>
+                    <app-contrato-select [(contrato)]="orden.contrato" [clienteId]="orden.cliente?.id" [autoSeleccionarUnico]="esNueva" [disabled]="orden.entregado" />
+                </div>
+                <div class="form-field form-field--span-2">
+                    <label>Proveedor de la mercadería</label>
+                    <app-proveedor-select [(proveedor)]="orden.proveedor" [showClear]="true" [showFilter]="true" />
+                    <small class="form-field__hint">Quién vendió los artículos al cliente (opcional).</small>
+                </div>
             </div>
         </div>
 

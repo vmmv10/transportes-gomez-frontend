@@ -25,6 +25,10 @@ import { BodegasSelectComponent } from '../../../bodegas/components/bodegas-sele
 import { ChipModule } from 'primeng/chip';
 import { RolService } from '../../../uikit/services/rol.service';
 import { Observable } from 'rxjs';
+import { ClienteSelectComponent } from '../../../clientes/components/cliente-select/cliente-select.component';
+import { ProveedorSelectComponent } from '../../../proveedor/components/proveedor-select/proveedor-select.component';
+import { IngresoBultosComponent } from '../ingreso-bultos/ingreso-bultos.component';
+import { mensajeError } from '../../../uikit/utils/error-mensaje';
 
 @Component({
     selector: 'app-ingresos-formulario',
@@ -47,7 +51,10 @@ import { Observable } from 'rxjs';
         ConfirmDialogModule,
         BodegasSelectComponent,
         RouterLink,
-        ChipModule
+        ChipModule,
+        ClienteSelectComponent,
+        ProveedorSelectComponent,
+        IngresoBultosComponent
     ],
     templateUrl: './ingresos-formulario.component.html',
     styleUrl: './ingresos-formulario.component.scss',
@@ -138,7 +145,7 @@ export class IngresosFormularioComponent {
 
     comenzar() {
         this.validar = true;
-        if (!this.ingreso.bodega || !this.ingreso.ordenCompra) {
+        if (!this.ingreso.bodega || !this.ingreso.ordenCompra || !this.ingreso.cliente) {
             this.messageService.add({
                 severity: 'error',
                 summary: 'Error',
@@ -157,6 +164,7 @@ export class IngresosFormularioComponent {
             error: (error) => {
                 console.error('Error al crear:', error);
                 this.loading = false;
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: mensajeError(error, 'No se pudo crear el ingreso') });
             }
         });
     }

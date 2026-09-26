@@ -1,0 +1,23 @@
+<p-select
+    *ngIf="!loading"
+    [options]="comunas"
+    [ngModel]="comuna"
+    optionLabel="nombre"
+    dataKey="id"
+    [placeholder]="error ? 'No se pudieron cargar las comunas' : placeholder"
+    [showClear]="showClear"
+    [filter]="true"
+    filterBy="nombre"
+    class="w-12 {{ !comuna && validar ? 'ng-dirty ng-invalid' : '' }}"
+    appendTo="body"
+    [disabled]="disabled"
+    (ngModelChange)="onChangeSelect($event)"
+>
+    <ng-template #item let-item>
+        <div class="flex flex-column">
+            <span>{{ item.nombre }}</span>
+            <small class="text-color-secondary">{{ item.provincia }}</small>
+        </div>
+    </ng-template>
+</p-select>
+<p-skeleton *ngIf="loading" class="w-12" height="2.5rem" />

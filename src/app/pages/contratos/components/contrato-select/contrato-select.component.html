@@ -1,0 +1,24 @@
+<p-select
+    *ngIf="!loading"
+    [options]="contratos"
+    [ngModel]="contrato"
+    optionLabel="nombre"
+    dataKey="id"
+    [placeholder]="!clienteId ? 'Primero elige el cliente' : contratos.length ? 'Sin contrato' : 'El cliente no tiene contratos vigentes'"
+    [showClear]="true"
+    class="w-12"
+    appendTo="body"
+    [disabled]="disabled || !clienteId || !contratos.length"
+    (ngModelChange)="onChangeSelect($event)"
+>
+    <ng-template #selectedItem let-item>
+        <span *ngIf="item">{{ item.codigo }} · {{ item.nombre }}</span>
+    </ng-template>
+    <ng-template #item let-item>
+        <div class="flex flex-column">
+            <span>{{ item.nombre }}</span>
+            <small class="text-color-secondary">{{ item.codigo }}<ng-container *ngIf="item.vigente === false"> · no vigente</ng-container></small>
+        </div>
+    </ng-template>
+</p-select>
+<p-skeleton *ngIf="loading" class="w-12" height="2.5rem" />

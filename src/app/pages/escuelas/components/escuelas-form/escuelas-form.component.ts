@@ -15,10 +15,12 @@ import { TooltipModule } from 'primeng/tooltip';
 import { EscuelasService } from '../../services/escuelas.service';
 import { ToastModule } from 'primeng/toast';
 import { ModalLoadingComponent } from '../../../uikit/components/modal-loading/modal-loading.component';
+import { ClienteSelectComponent } from '../../../clientes/components/cliente-select/cliente-select.component';
+import { Cliente } from '../../../clientes/models/cliente.model';
 
 @Component({
     selector: 'app-escuelas-form',
-    imports: [CommonModule, ButtonModule, FormsModule, InputTextModule, BreadcrumbModule, RouterModule, ToastModule, ModalLoadingComponent, IconFieldModule, InputIconModule, InputGroupModule, InputGroupAddonModule, TooltipModule],
+    imports: [CommonModule, ButtonModule, FormsModule, InputTextModule, BreadcrumbModule, RouterModule, ToastModule, ModalLoadingComponent, IconFieldModule, InputIconModule, InputGroupModule, InputGroupAddonModule, TooltipModule, ClienteSelectComponent],
     templateUrl: './escuelas-form.component.html',
     styleUrl: './escuelas-form.component.scss',
     providers: [MessageService]
@@ -48,6 +50,23 @@ export class EscuelasFormComponent {
             this.items = [...this.items.slice(0, 2), { label: 'Editar' }];
             this.getEscuela(id);
         }
+    }
+
+    /** Para el select: basta el id, el select busca el cliente en su lista. */
+    get clienteEscuela(): Cliente | undefined {
+        if (!this.escuela.clienteId) {
+            return undefined;
+        }
+        if (this.clienteSel?.id !== this.escuela.clienteId) {
+            this.clienteSel = { id: this.escuela.clienteId } as Cliente;
+        }
+        return this.clienteSel;
+    }
+    private clienteSel: Cliente | undefined;
+
+    onClienteChange(cliente: Cliente | undefined) {
+        this.clienteSel = cliente;
+        this.escuela.clienteId = cliente?.id;
     }
 
     get esNuevo(): boolean {

@@ -1,20 +1,15 @@
 <p-toast />
 
 <!-- Disparador: muestra la ruta elegida o invita a buscar -->
-<div
-    class="ruta-trigger"
-    [ngClass]="{ 'ruta-trigger--vacio': !ruta, 'ruta-trigger--invalido': validar && !ruta, 'ruta-trigger--disabled': disabled }"
-    role="button"
-    tabindex="0"
-    (click)="abrir()"
-    (keydown.enter)="abrir()"
->
+<div class="ruta-trigger" [ngClass]="{ 'ruta-trigger--vacio': !ruta, 'ruta-trigger--invalido': validar && !ruta, 'ruta-trigger--disabled': disabled }" role="button" tabindex="0" (click)="abrir()" (keydown.enter)="abrir()">
     <span class="ruta-trigger__icon"><i class="pi" [ngClass]="ruta ? 'pi-directions' : 'pi-search'"></i></span>
     <div class="ruta-trigger__body" *ngIf="ruta; else vacio">
-        <span class="ruta-trigger__title">Ruta N° {{ ruta.id }} · {{ fechaCorta(ruta.fecha) }} <span class="ruta-trigger__rel">({{ fechaRelativa(ruta.fecha) }})</span></span>
+        <span class="ruta-trigger__title"
+            >Ruta N° {{ ruta.id }} · {{ fechaCorta(ruta.fecha) }} <span class="ruta-trigger__rel">({{ fechaRelativa(ruta.fecha) }})</span></span
+        >
         <span class="ruta-trigger__meta">
             <span><i class="pi pi-user"></i>{{ nombreChofer(ruta) }}</span>
-            <span><i class="pi pi-box"></i>{{ ruta.ordenes?.length ?? 0 }} OS</span>
+            <span><i class="pi pi-box"></i>{{ ruta.ordenes.length || 0 }} OS</span>
             <p-tag *ngIf="ruta.enTransito" severity="warn" value="En tránsito" />
         </span>
     </div>
@@ -44,7 +39,8 @@
 
     <div class="rms-leyenda" *ngIf="escuela?.comuna">
         <i class="pi pi-star-fill"></i>
-        Se destacan las rutas que ya pasan por <b>{{ escuela?.nombre }}</b> o por la comuna de <b>{{ escuela?.comuna }}</b>.
+        Se destacan las rutas que ya pasan por <b>{{ escuela?.nombre }}</b> o por la comuna de <b>{{ escuela?.comuna }}</b
+        >.
     </div>
 
     <p-table

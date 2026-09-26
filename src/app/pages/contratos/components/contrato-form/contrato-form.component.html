@@ -1,0 +1,91 @@
+<p-toast />
+<div class="page-breadcrumb-bar flex flex-column">
+    <p-breadcrumb class="app-breadcrumb max-w-full" [model]="breadcrumb" />
+</div>
+
+<div class="form-page">
+    <section class="card form-card">
+        <div class="page-header">
+            <div class="page-panel-title-group">
+                <span class="page-panel-title-chip"><i class="pi pi-file-edit"></i></span>
+                <div class="page-panel-title-text">
+                    <h2 class="page-header__title">{{ esNuevo ? 'Nuevo contrato' : 'Contrato ' + contrato.codigo }}</h2>
+                    <span class="page-panel-subtitle">
+                        <ng-container *ngIf="esNuevo">Licitación, trato directo u orden de compra de un cliente</ng-container>
+                        <ng-container *ngIf="!esNuevo">
+                            {{ contrato.clienteNombre }}
+                            <p-tag [value]="estado.texto" [severity]="estado.severidad" />
+                        </ng-container>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="form-section__head">
+                <span class="form-section__icon"><i class="pi pi-id-card"></i></span>
+                <div>
+                    <h3 class="form-section__title">Datos del contrato</h3>
+                    <p class="form-section__desc">Las órdenes de servicio se pueden asociar a un contrato vigente del cliente.</p>
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-field form-field--span-2">
+                    <label>Cliente <span class="form-field__req">*</span></label>
+                    <app-cliente-select *ngIf="clienteListo" [cliente]="cliente" (clienteChange)="onClienteChange($event)" [validar]="intentoGuardar" [disabled]="!esNuevo" />
+                    <small class="form-field__hint" *ngIf="!esNuevo">El cliente no se cambia en un contrato ya creado.</small>
+                    <small class="form-field__error" *ngIf="intentoGuardar && !contrato.clienteId">Elige el cliente.</small>
+                </div>
+                <div class="form-field form-field--span-2">
+                    <label for="codigo">Código <span class="form-field__req">*</span></label>
+                    <input pInputText id="codigo" [(ngModel)]="contrato.codigo" placeholder="Ej: 1393093-12-LP25" [class.ng-invalid]="intentoGuardar && !contrato.codigo.trim()" [class.ng-dirty]="intentoGuardar && !contrato.codigo.trim()" />
+                    <small class="form-field__hint">ID de la licitación u orden de compra en Mercado Público.</small>
+                </div>
+                <div class="form-field form-field--full">
+                    <label for="nombre">Nombre <span class="form-field__req">*</span></label>
+                    <input
+                        pInputText
+                        id="nombre"
+                        [(ngModel)]="contrato.nombre"
+                        placeholder="Ej: Servicio de distribución de material educativo en Chiloé"
+                        [class.ng-invalid]="intentoGuardar && !contrato.nombre.trim()"
+                        [class.ng-dirty]="intentoGuardar && !contrato.nombre.trim()"
+                    />
+                    <small class="form-field__error" *ngIf="intentoGuardar && !contrato.nombre.trim()">El nombre es obligatorio.</small>
+                </div>
+                <div class="form-field form-field--span-2">
+                    <label>Fecha de inicio</label>
+                    <p-datepicker [(ngModel)]="fechaInicio" dateFormat="dd-mm-yy" [showIcon]="true" [showButtonBar]="true" appendTo="body" placeholder="dd-mm-aaaa" />
+                </div>
+                <div class="form-field form-field--span-2">
+                    <label>Fecha de término</label>
+                    <p-datepicker
+                        [(ngModel)]="fechaFin"
+                        dateFormat="dd-mm-yy"
+                        [showIcon]="true"
+                        [showButtonBar]="true"
+                        [minDate]="fechaInicio ?? null"
+                        appendTo="body"
+                        placeholder="Sin término"
+                        [class.ng-invalid]="!fechasOk"
+                        [class.ng-dirty]="!fechasOk"
+                    />
+                    <small class="form-field__error" *ngIf="!fechasOk">No puede ser anterior a la fecha de inicio.</small>
+                </div>
+                <div class="form-field form-field--full">
+                    <label for="observaciones">Observaciones</label>
+                    <textarea pTextarea id="observaciones" [(ngModel)]="contrato.observaciones" rows="3" placeholder="Condiciones, montos, contrapartes…"></textarea>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="form-actions">
+        <span class="form-actions__hint"><span class="form-field__req">*</span> Campos obligatorios</span>
+        <div class="form-actions__buttons">
+            <p-button label="Volver" icon="pi pi-arrow-left" severity="secondary" [text]="true" [routerLink]="['/contratos']" />
+            <p-button [label]="esNuevo ? 'Crear contrato' : 'Guardar cambios'" icon="pi pi-check" class="page-panel-primary-action" [loading]="loading" (onClick)="guardar()" />
+        </div>
+    </div>
+</div>
+<app-modal-loading [visible]="loading"></app-modal-loading>
