@@ -5,6 +5,8 @@ import { Observable } from 'rxjs';
 import { Page } from '../../uikit/models/page.model';
 import { Ingreso } from '../models/ingreso.model';
 import { IngresoDetalle } from '../models/ingreso-detalle.model';
+import { IngresoConversacion } from '../models/ingreso-conversacion.model';
+import { IngresoMensaje } from '../models/ingreso-mensaje.model';
 
 @Injectable({
     providedIn: 'root'
@@ -19,13 +21,16 @@ export class IngresosService {
     getAll(filtro: IngresoFiltro): Observable<Page<Ingreso>> {
         let link = this.url + '?size=' + filtro.size + '&page=' + filtro.page + '&sort=' + filtro.key + ',' + filtro.sort;
         if (filtro.documento) {
-            link += '&documento=' + filtro.documento.id;
+            link += '&documento=' + filtro.documento;
         }
-        if (filtro.estado !== undefined) {
+        if (filtro.estado) {
             link += '&estado=' + filtro.estado;
         }
         if (filtro.id) {
             link += '&id=' + filtro.id;
+        }
+        if (filtro.ordenCompra) {
+            link += '&ordenCompra=' + filtro.ordenCompra;
         }
         return this.authHttp.get<Page<Ingreso>>(link);
     }
@@ -58,6 +63,14 @@ export class IngresosService {
         return this.authHttp.put<void>(`${this.url}/${id}/abrir`, {});
     }
 
+    habilitar(id: string): Observable<void> {
+        return this.authHttp.put<void>(`${this.url}/${id}/habilitar`, {});
+    }
+
+    inhabilitar(id: string): Observable<void> {
+        return this.authHttp.put<void>(`${this.url}/${id}/inhabilitar`, {});
+    }
+
     modificarDetalle(id: string, detalle: IngresoDetalle): Observable<void> {
         return this.authHttp.put<void>(`${this.url}/detalles/${id}/editar-cantidad`, detalle);
     }
@@ -68,5 +81,13 @@ export class IngresosService {
 
     getTemporal(): Observable<Ingreso> {
         return this.authHttp.get<Ingreso>(`${this.url}/temporal`);
+    }
+
+    getConversacion(id: string): Observable<IngresoConversacion> {
+        return this.authHttp.get<IngresoConversacion>(`${this.url}/${id}/conversacion`);
+    }
+
+    crearMensaje(id: string, mensaje: IngresoMensaje): Observable<IngresoMensaje> {
+        return this.authHttp.post<IngresoMensaje>(`${this.url}/${id}/conversacion/mensaje`, mensaje);
     }
 }

@@ -12,8 +12,17 @@
         </div>
     </div>
     <div *ngIf="filtros" class="flex flex-column md:flex-row gap-1">
-        <input pInputText id="ordenServicioId" (keydown.enter)="getData()" [(ngModel)]="filtro.id" placeholder="Buscar por folio" class="w-12" />
-        <button pButton icon="pi pi-search" [severity]="'info'" label="Buscar" class="md:w-4 w-12" [loading]="loading" (click)="getData()"></button>
+        <div *ngIf="filtros" class="flex flex-row gap-1 w-12">
+            <input pInputText id="folio" (keydown.enter)="getData()" [(ngModel)]="filtro.id" placeholder="Buscar por folio" class="w-12" />
+            <input pInputText id="oc" (keydown.enter)="getData()" [(ngModel)]="filtro.ordenCompra" placeholder="Buscar por OC" class="w-12" />
+            <input pInputText id="documento" (keydown.enter)="getData()" [(ngModel)]="filtro.documento" placeholder="Buscar por documento" class="w-12" />
+            <app-select-estado *ngIf="agregar && (esAdmin$ | async)" [(variable)]="filtro.estado" (ngModelChange)="getData()" [showClear]="true" class="w-12" />
+            <button class="hidden md:flex w-12" [fluid]="true" pButton icon="pi pi-search" [severity]="'info'" [loading]="loading" (click)="getData()"></button>
+        </div>
+        <div *ngIf="filtros" class="flex flex-row gap-1 md:hidden">
+            <button pButton icon="pi pi-search" label="Buscar" class="flex md:hidden w-12" [severity]="'info'" [loading]="loading" (click)="getData()"></button>
+            <button class="flex md:hidden w-12" *ngIf="agregar && (esAdmin$ | async)" icon="pi pi-plus" label="Nuevo" [routerLink]="['/ingresos/formulario']"></button>
+        </div>
     </div>
     <p-table class="hidden md:block w-12" [value]="data && data.content ? data.content : []" id="data-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
         <ng-template #header>
@@ -21,14 +30,19 @@
                 <th class="text-center">Folio</th>
                 <th class="text-center">Estado</th>
                 <th class="text-center">Fecha</th>
+                <th class="text-center">Orden Compra</th>
                 <th class="text-center">Documento</th>
                 <th class="text-center">Documento Tipo</th>
-                <th></th>
+                <th>
+                    <button *ngIf="agregar && (esAdmin$ | async)" class="w-12" pButton icon="pi pi-plus" label="Nuevo" [routerLink]="['/ingresos/formulario']"></button>
+                </th>
             </tr>
         </ng-template>
         <ng-template #body let-item>
             <tr>
-                <td class="text-center"><span class="page-cell-code">{{ item.id }}</span></td>
+                <td class="text-center">
+                    <span class="page-cell-code">{{ item.id }}</span>
+                </td>
                 <td class="text-center">
                     <ng-container [ngSwitch]="item.estado">
                         <p-tag *ngSwitchCase="0" severity="warn" value="Temporal" />
@@ -37,6 +51,7 @@
                     </ng-container>
                 </td>
                 <td class="text-center">{{ item.fecha | fecha }}</td>
+                <td class="text-center">{{ item.ordenCompra }}</td>
                 <td class="text-center">{{ item.documento }}</td>
                 <td class="text-center page-cell-muted">{{ item.documentoTipo?.nombre }}</td>
                 <td class="text-center">
@@ -61,7 +76,17 @@
         </ng-template>
     </p-table>
 </div>
-<app-table-mobile [card]="card" [size]="filtro.size" [page]="filtro.page" (pageChange)="pageChange($event)" [mostrarAcciones]="acciones" (accion)="resolverAccion($event)" [acciones]="accionesDevoluciones" [data]="data ? data.content : []" [campos]="campos"></app-table-mobile>
+<app-table-mobile
+    [card]="card"
+    [size]="filtro.size"
+    [page]="filtro.page"
+    (pageChange)="pageChange($event)"
+    [mostrarAcciones]="acciones"
+    (accion)="resolverAccion($event)"
+    [acciones]="accionesDevoluciones"
+    [data]="data ? data.content : []"
+    [campos]="campos"
+></app-table-mobile>
 <app-modal-loading [visible]="loading" />
 <p-toast />
 <p-confirmdialog #cIngreso key="cIngreso">

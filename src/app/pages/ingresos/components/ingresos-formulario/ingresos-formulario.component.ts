@@ -23,6 +23,8 @@ import { IngresoDetalle } from '../../models/ingreso-detalle.model';
 import { IngresosService } from '../../services/ingresos.service';
 import { BodegasSelectComponent } from '../../../bodegas/components/bodegas-select/bodegas-select.component';
 import { ChipModule } from 'primeng/chip';
+import { RolService } from '../../../uikit/services/rol.service';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-ingresos-formulario',
@@ -53,6 +55,9 @@ import { ChipModule } from 'primeng/chip';
     providers: [MessageService, ConfirmationService]
 })
 export class IngresosFormularioComponent {
+    esAdmin$!: Observable<boolean>;
+    esConductor$!: Observable<boolean>;
+    esCliente$!: Observable<boolean>;
     breadcrumb: MenuItem[] = [];
     ordenesServicio: OrdenServicio[] = [];
     ingreso: Ingreso = new Ingreso();
@@ -70,20 +75,25 @@ export class IngresosFormularioComponent {
         private router: Router,
         private ingresosService: IngresosService,
         private messageService: MessageService,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private rolService: RolService
     ) {
         this.breadcrumb = [
             { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
             { label: 'Ingresos', routerLink: '/ingresos' }
         ];
+        this.esAdmin$ = this.rolService.tieneRol('Administrador');
+        this.esConductor$ = this.rolService.tieneRol('Conductor');
+        this.esCliente$ = this.rolService.tieneRol('Cliente');
     }
 
     ngOnInit() {
         const id = this.route.snapshot.paramMap.get('id');
         if (id) {
             this.get(id);
-            this.breadcrumb.push({ label: 'Ingreso ' + id, routerLink: `/ingresos/formulario/${id}` });
+            this.breadcrumb.push({ label: 'Folio ' + id, routerLink: `/ingresos/formulario/${id}` });
         } else {
+            this.breadcrumb.push({ label: 'Nuevo Folio', routerLink: '/ingresos/formulario' });
             this.loading = true;
             this.ingresosService.getTemporal().subscribe({
                 next: (ingreso) => {
@@ -128,11 +138,11 @@ export class IngresosFormularioComponent {
 
     comenzar() {
         this.validar = true;
-        if (!this.ingreso.documento || !this.ingreso.documentoTipo) {
+        if (!this.ingreso.bodega || !this.ingreso.ordenCompra) {
             this.messageService.add({
                 severity: 'error',
                 summary: 'Error',
-                detail: 'Debe ingresar un documento y tipo de documento antes de comenzar'
+                detail: 'Debe completar todos los campos antes de comenzar'
             });
             return;
         }
@@ -200,6 +210,11 @@ export class IngresosFormularioComponent {
             },
             error: (error) => {
                 this.loading = false;
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: error.error?.message || 'No se pudo agregar el detalle'
+                });
                 console.error('Error al agregar detalle:', error);
             }
         });
@@ -275,6 +290,7 @@ export class IngresosFormularioComponent {
                     summary: 'Éxito',
                     detail: 'Actualizado correctamente'
                 });
+                this.ngOnInit();
                 this.router.navigate(['/ingresos/formulario', this.ingreso.id]);
             },
             error: (error) => {
@@ -406,5 +422,92 @@ export class IngresosFormularioComponent {
 
     tieneSaldo(): boolean {
         return this.ingreso.detalles.some((det) => det.saldo > 0);
+    }
+
+    habilitar() {
+        this.loading = true;
+        this.ingresosService.habilitar(this.ingreso.id).subscribe({
+            next: () => {
+                this.loading = false;
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Éxito',
+                    detail: 'Ingreso habilitado correctamente'
+                });
+                this.ngOnInit();
+                this.router.navigate(['/ingresos/formulario', this.ingreso.id]);
+            },
+            error: (error) => {
+                console.error('Error al habilitar:', error);
+                this.loading = false;
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'No se pudo habilitar el ingreso'
+                });
+            }
+        });
+    }
+
+    habilitarSlep() {
+        this.confirmationService.confirm({
+            message: '¿Confirma que el ingreso fue correcto?',
+            key: 'confirmarHabilitar',
+            accept: () => {
+                this.habilitar();
+            }
+        });
+        return;
+    }
+
+    crearOs() {
+        if (this.ingreso.estado && this.ingreso.estado == 2) {
+            this.confirmationService.confirm({
+                message: '¿Confirma que el ingreso fue correcto?',
+                key: 'confirmarHabilitar',
+                accept: () => {
+                    this.habilitar();
+                }
+            });
+            return;
+        }
+        if (!this.tieneSaldo()) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'No se puede crear una orden de servicio sin saldo pendiente'
+            });
+            return;
+        }
+        this.router.navigate(['/ordenes-servicios/ingreso/' + this.ingreso.id]);
+    }
+
+    informar() {
+        this.confirmationService.confirm({
+            message: '¿Confirma que desea informar un problema con este ingreso?',
+            key: 'confirmarInhabilitar',
+            accept: () => {
+                this.inhabilitar();
+            }
+        });
+    }
+
+    inhabilitar() {
+        this.loading = true;
+        this.ingresosService.inhabilitar(this.ingreso.id).subscribe({
+            next: () => {
+                this.loading = false;
+                this.router.navigate(['/ingresos/formulario/' + this.ingreso.id + '/informe']);
+            },
+            error: (error) => {
+                console.error('Error al inhabilitar:', error);
+                this.loading = false;
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'No se pudo inhabilitar el ingreso'
+                });
+            }
+        });
     }
 }

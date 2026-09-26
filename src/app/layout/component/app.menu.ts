@@ -50,7 +50,7 @@ export class AppMenu {
                         ]
                     },
                     { label: 'Inventario', icon: 'pi pi-fw pi-warehouse', routerLink: ['/inventario'] },
-                    { label: 'Ingresos a Bodega', icon: 'pi pi-fw pi-cart-minus', routerLink: ['/ingresos'] },
+                    { label: 'Ingresos', icon: 'pi pi-fw pi-cart-minus', routerLink: ['/ingresos'] },
                     { label: 'Proveedores', icon: 'pi pi-fw pi-user', routerLink: ['/proveedores'] },
                     { label: 'Transportes', icon: 'pi pi-fw pi-truck', routerLink: ['/transportes'] }
                     //{ label: 'Mantencion', icon: 'pi pi-fw pi-wrench', items: [{ label: 'Categorías OS', routerLink: ['mantencion/categorias-os'] }] }
@@ -69,7 +69,7 @@ export class AppMenu {
         }
 
         if (this.roles.includes('Cliente')) {
-            return ['Establecimientos', 'Inventario'].includes(menuLabel);
+            return ['Establecimientos', 'Inventario', 'Ingresos'].includes(menuLabel);
         }
 
         return false;

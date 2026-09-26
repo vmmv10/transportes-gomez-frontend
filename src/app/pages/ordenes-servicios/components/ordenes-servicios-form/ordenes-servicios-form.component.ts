@@ -113,6 +113,7 @@ export class OrdenesServiciosFormComponent {
     displayConfirmacion: boolean = false;
     indexDetalle: number = -1;
     ingreso: number | undefined;
+    esIngreso: boolean = false;
 
     // ---- Asignación a ruta (solo al crear) ----
     modoRuta: ModoRuta = 'ninguna';
@@ -214,6 +215,7 @@ export class OrdenesServiciosFormComponent {
                     this.orden = data;
                 }
                 this.loading = false;
+                this.esIngreso = true;
             },
             error: (error) => {
                 console.error('Error fetching orden by ingreso:', error);
@@ -433,7 +435,7 @@ export class OrdenesServiciosFormComponent {
         if (!this.orden.detalles) {
             this.orden.detalles = [];
         }
-        if (this.orden.bodega && this.orden.bodega.id !== 4) {
+        if (this.orden.bodega && this.orden.bodega.id !== 4 && this.indexDetalle == -1) {
             let existeItem = this.orden.detalles.some((d) => d.saldoBodega?.item.id === this.detalle.saldoBodega?.item.id);
             if (existeItem) {
                 this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'El item ya existe en la orden de servicio' });
@@ -442,7 +444,6 @@ export class OrdenesServiciosFormComponent {
         }
         if (this.indexDetalle !== -1) {
             this.orden.detalles[this.indexDetalle] = { ...this.detalle };
-            this.indexDetalle = -1;
         } else {
             this.orden.detalles.push({ ...this.detalle });
         }
@@ -453,8 +454,8 @@ export class OrdenesServiciosFormComponent {
             this.visibleItem = false;
         }
         this.detalle = new OrdenServicioDetalle();
+        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: `Detalle ${this.indexDetalle == -1 ? 'agregado' : 'editado'} correctamente` });
         this.indexDetalle = -1;
-        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Detalle agregado correctamente' });
     }
 
     cerrardialogItem() {
@@ -477,10 +478,12 @@ export class OrdenesServiciosFormComponent {
         }
         if (this.orden.bodega && this.orden.bodega.id !== 4) {
             this.visibleItem = true;
-            this.filtroSaldoBodega.bodega = this.orden.bodega;
-            this.loading = true;
-            await this.buscarSaldoBodega();
-            this.loading = false;
+            if (!this.esIngreso) {
+                this.filtroSaldoBodega.bodega = this.orden.bodega;
+                this.loading = true;
+                await this.buscarSaldoBodega();
+                this.loading = false;
+            }
         }
     }
 

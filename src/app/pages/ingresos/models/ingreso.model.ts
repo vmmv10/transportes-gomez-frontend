@@ -12,4 +12,5 @@ export class Ingreso {
     documentoTipo: DocumentoTipo | undefined;
     estado: number = 0;
     bodega: Bodega | undefined;
+    ordenCompra: string = '';
 }

@@ -25,6 +25,7 @@
             <div class="page-filters flex w-12 flex-column md:flex-row gap-2 mb-3">
                 <input type="text" class="w-12" pInputText placeholder="Nombre" [(ngModel)]="filtro.nombre" (keyup.enter)="getEscuelas()" />
                 <input type="text" class="w-12" placeholder="Comuna" pInputText [(ngModel)]="filtro.comuna" (keyup.enter)="getEscuelas()" />
+                <input type="text" class="w-12" placeholder="RBD" pInputText [(ngModel)]="filtro.rbd" (keyup.enter)="getEscuelas()" />
                 <p-button label="Buscar" [fluid]="true" class="w-12 md:w-3" severity="info" icon="pi pi-search" [outlined]="true" (onClick)="getEscuelas()" />
                 <p-button label="Limpiar" [fluid]="true" class="w-12 md:w-3" severity="secondary" icon="pi pi-filter-slash" [outlined]="true" (onClick)="limpiarFiltros()" />
             </div>

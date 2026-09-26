@@ -100,6 +100,7 @@ export class EscuelasListComponent {
     limpiarFiltros() {
         this.filtro.nombre = undefined;
         this.filtro.comuna = undefined;
+        this.filtro.rbd = undefined;
         this.filtro.page = 0;
         this.getEscuelas();
     }
