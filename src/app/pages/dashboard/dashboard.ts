@@ -67,6 +67,7 @@ export class Dashboard {
     filtroEntregasAdministrador: EntregaFiltro = new EntregaFiltro();
     filtroOs: OrdenServicioFiltro = new OrdenServicioFiltro();
 
+    hoy: Date = new Date();
     fechaFiltro: Date | null = null;
     escuelaSeleccionada: any = null;
     categoriaSeleccionada: Categoria | undefined = undefined;
@@ -128,7 +129,35 @@ export class Dashboard {
         };
     }
 
+    get hayFiltros(): boolean {
+        return !!(this.escuelaSeleccionada || this.categoriaSeleccionada || this.oc || this.fechaFiltro);
+    }
+
+    limpiarFiltros() {
+        this.escuelaSeleccionada = null;
+        this.categoriaSeleccionada = undefined;
+        this.oc = undefined;
+        this.fechaFiltro = null;
+        this.filtroEntregasAdministrador = {
+            ...this.filtroEntregasAdministrador,
+            escuela: undefined,
+            categoria: undefined,
+            oc: undefined,
+            fecha: undefined
+        };
+        this.filtroOs = {
+            ...this.filtroOs,
+            escuela: undefined,
+            categoria: undefined,
+            documentoReferencia: undefined,
+            fecha: undefined
+        };
+    }
+
     ocChange() {
+        if ((this.oc || undefined) === (this.filtroEntregasAdministrador.oc || undefined)) {
+            return;
+        }
         this.filtroEntregasAdministrador = {
             ...this.filtroEntregasAdministrador,
             oc: this.oc

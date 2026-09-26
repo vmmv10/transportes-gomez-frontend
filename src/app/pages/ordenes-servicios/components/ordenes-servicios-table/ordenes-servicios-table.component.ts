@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { OrdenesServiciosService } from '../../services/ordenes-servicios.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
@@ -21,6 +21,7 @@ import { TableMobileComponent } from '../../../uikit/components/table-mobile/tab
 import { EscuelasSelectComponent } from '../../../escuelas/components/escuelas-select/escuelas-select.component';
 import { SelectBooleanComponent } from '../../../uikit/components/select-boolean/select-boolean.component';
 import { CategoriasSelectComponent } from '../../../categorias/components/categorias-select/categorias-select.component';
+import { PanelModule } from 'primeng/panel';
 
 @Component({
     selector: 'app-ordenes-servicios-table',
@@ -41,7 +42,8 @@ import { CategoriasSelectComponent } from '../../../categorias/components/catego
         TableMobileComponent,
         EscuelasSelectComponent,
         SelectBooleanComponent,
-        CategoriasSelectComponent
+        CategoriasSelectComponent,
+        PanelModule
     ],
     templateUrl: './ordenes-servicios-table.component.html',
     styleUrl: './ordenes-servicios-table.component.scss',
@@ -50,6 +52,10 @@ import { CategoriasSelectComponent } from '../../../categorias/components/catego
 export class OrdenesServiciosTableComponent {
     @Input() filtro: OrdenServicioFiltro = new OrdenServicioFiltro();
     @Input() filtros: boolean = true;
+    /** false = sin p-panel propio (lo pone la página contenedora). */
+    @Input() panel: boolean = true;
+    /** Emite el total de registros cada vez que se consulta. */
+    @Output() buscado = new EventEmitter<number>();
     ordenes!: Page<OrdenServicio>;
     orden: OrdenServicio | undefined;
     loading: boolean = true;
@@ -117,6 +123,7 @@ export class OrdenesServiciosTableComponent {
             next: (data) => {
                 this.ordenes = data;
                 this.loading = false;
+                this.buscado.emit(data.totalElements);
             },
             error: (error) => {
                 this.MessageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener Items' });

@@ -1,10 +1,18 @@
-<div class="card flex flex-column gap-2 py-1">
-    <p-breadcrumb class="max-w-full" [model]="breadcrumb" />
+<div class="page-breadcrumb-bar flex flex-column">
+    <p-breadcrumb class="app-breadcrumb max-w-full" [model]="breadcrumb" />
 </div>
 <div class="card flex flex-column gap-2 md:gap-4">
-    <div class="flex flex-column md:flex-row w-12 justify-content-between md:gap-0 gap-2">
-        <h2 class="align-items-center mb-0 md:text-left text-center w-12 text-xl md:text-2xl">Proveedores</h2>
-        <button pButton icon="pi pi-plus" label="Agregar" class="md:w-4 w-12" [routerLink]="['/proveedores/formulario']"></button>
+    <div class="page-header">
+        <div class="page-panel-title-group">
+            <span class="page-panel-title-chip"><i class="pi pi-user"></i></span>
+            <div class="page-panel-title-text">
+                <h2 class="page-header__title">Proveedores</h2>
+                <span class="page-panel-subtitle">Empresas que abastecen las bodegas</span>
+            </div>
+        </div>
+        <div class="page-header__actions">
+            <button pButton icon="pi pi-plus" label="Agregar" class="page-panel-primary-action" [routerLink]="['/proveedores/formulario']"></button>
+        </div>
     </div>
     <div class="flex flex-column md:flex-row gap-1">
         <input pInputText id="ordenServicioId" (keydown.enter)="getData()" [(ngModel)]="filtro.rut" placeholder="Buscar por Rut" class="w-12" />
@@ -34,7 +42,7 @@
             </tr>
         </ng-template>
         <ng-template #summary>
-            <p-paginator (onPageChange)="pageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="data ? data.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
+            <p-paginator styleClass="page-paginator" (onPageChange)="pageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="data ? data.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
         </ng-template>
         <ng-template #emptymessage>
             <tr>

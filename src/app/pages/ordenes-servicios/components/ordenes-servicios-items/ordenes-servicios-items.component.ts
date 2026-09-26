@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { OrdenesServiciosService } from '../../services/ordenes-servicios.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
@@ -50,6 +50,10 @@ import { SelectBooleanComponent } from '../../../uikit/components/select-boolean
 export class OrdenesServiciosItemsComponent {
     @Input() filtro: OrdenServicioFiltro = new OrdenServicioFiltro();
     @Input() filtros: boolean = true;
+    /** false = la tabla va sin tarjeta propia (la pone la página contenedora). */
+    @Input() card: boolean = true;
+    /** Emite el total de registros cada vez que se consulta. */
+    @Output() buscado = new EventEmitter<number>();
     ordenes!: Page<OrdenServicioDetalle>;
     orden: OrdenServicio | undefined;
     loading: boolean = false;
@@ -80,6 +84,7 @@ export class OrdenesServiciosItemsComponent {
             next: (data) => {
                 this.ordenes = data;
                 this.loading = false;
+                this.buscado.emit(data.totalElements);
             },
             error: (error) => {
                 this.MessageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener Items' });

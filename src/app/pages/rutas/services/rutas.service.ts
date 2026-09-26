@@ -21,10 +21,10 @@ export class RutasService {
             link += `&id=${filtro.id}`;
         }
         if (filtro.fechaDesde) {
-            link += `&fechaDesde=${filtro.fechaDesde.toISOString()}`;
+            link += `&fechaDesde=${this.fechaLocal(filtro.fechaDesde)}`;
         }
         if (filtro.fechaHasta) {
-            link += `&fechaHasta=${filtro.fechaHasta.toISOString()}`;
+            link += `&fechaHasta=${this.fechaLocal(filtro.fechaHasta)}`;
         }
         if (filtro.chofer) {
             link += `&chofer=${filtro.chofer.id}`;
@@ -37,6 +37,14 @@ export class RutasService {
             }
         }
         return this.authHttp.get<Page<Ruta>>(link);
+    }
+
+    /** yyyy-MM-dd en hora local (toISOString adelanta un día en la noche en Chile). */
+    private fechaLocal(fecha: Date): string {
+        const y = fecha.getFullYear();
+        const m = String(fecha.getMonth() + 1).padStart(2, '0');
+        const d = String(fecha.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
     }
 
     get(id: string): Observable<Ruta> {

@@ -1,6 +1,7 @@
 <p-dialog [modal]="true" [resizable]="false" [(visible)]="visible" [breakpoints]="{ '1600': '30vw', '960px': '30vw', '575px': '80vw' }" [closable]="false" [style]="{ width: '20vw' }" [draggable]="false">
     <div class="flex flex-column aligm-items-center justify-content-center gap-2">
-        <div class="loader"></div>
+        <!-- <div class="loader"></div> -->
+        <img style="align-self: center" class="layout-topbar-brand-image" src="assets/images/icon.gif" alt="Logo Transporte Gomez" width="180" height="180" />
         <p class="font-medium text-center">{{ texto == '' ? 'Cargando' : texto }}</p>
     </div>
 </p-dialog>

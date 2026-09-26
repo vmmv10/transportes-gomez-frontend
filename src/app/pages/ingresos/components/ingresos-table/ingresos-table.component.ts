@@ -1,4 +1,5 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { TagModule } from 'primeng/tag';
 import { Page } from '../../../uikit/models/page.model';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -21,7 +22,7 @@ import { ChipModule } from 'primeng/chip';
 
 @Component({
     selector: 'app-ingresos-table',
-    imports: [FormsModule, CommonModule, InputTextModule, ChipModule, RouterModule, PaginatorModule, TooltipModule, TableModule, ButtonModule, ModalLoadingComponent, TableMobileComponent, ToastModule, ConfirmDialogModule, FechaPipe],
+    imports: [FormsModule, CommonModule, InputTextModule, ChipModule, TagModule, RouterModule, PaginatorModule, TooltipModule, TableModule, ButtonModule, ModalLoadingComponent, TableMobileComponent, ToastModule, ConfirmDialogModule, FechaPipe],
     templateUrl: './ingresos-table.component.html',
     styleUrl: './ingresos-table.component.scss',
     standalone: true,
@@ -34,6 +35,8 @@ export class IngresosTableComponent {
     @Input() card: boolean = false;
     @Input() acciones: boolean = false;
     @Input() filtro: IngresoFiltro = new IngresoFiltro();
+    /** Emite el total de registros cada vez que se consulta. */
+    @Output() buscado = new EventEmitter<number>();
     loading: boolean = false;
     data!: Page<Ingreso>;
 
@@ -83,6 +86,7 @@ export class IngresosTableComponent {
             next: (data) => {
                 this.data = data;
                 this.loading = false;
+                this.buscado.emit(data.totalElements);
             },
             error: (error) => {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener los datos' });

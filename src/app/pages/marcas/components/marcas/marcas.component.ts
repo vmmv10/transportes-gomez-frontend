@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { PanelModule } from 'primeng/panel';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -44,7 +45,8 @@ import { MarcasService } from '../../services/marcas.service';
         TooltipModule,
         ModalLoadingComponent,
         PaginatorModule,
-        TableMobileComponent
+        TableMobileComponent,
+        PanelModule
     ],
     templateUrl: './marcas.component.html',
     styleUrl: './marcas.component.scss',
@@ -59,6 +61,7 @@ export class MarcasComponent {
     breadcrumb: MenuItem[] = [];
     loading: boolean = true;
     visible: boolean = false;
+    filtrosVisibles: boolean = false;
 
     campos: any[] = [
         { etiqueta: 'id', propiedad: 'id', tipo: 'texto' },
@@ -88,7 +91,9 @@ export class MarcasComponent {
     constructor(
         private MessageService: MessageService,
         private confirmationService: ConfirmationService,
-        private marcasService: MarcasService
+        private marcasService: MarcasService,
+        private router: Router,
+        private route: ActivatedRoute
     ) {
         this.breadcrumb = [
             { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
@@ -97,10 +102,53 @@ export class MarcasComponent {
     }
 
     ngOnInit() {
+        this.leerQueryParams();
+        this.filtrosVisibles = this.filtrosActivos > 0;
         this.getData();
     }
 
+    /** Cantidad de filtros aplicados (se muestra como badge en el botón). */
+    get filtrosActivos(): number {
+        return this.filtro.nombre ? 1 : 0;
+    }
+
+    buscar() {
+        this.filtro.page = 0;
+        this.getData();
+    }
+
+    limpiarFiltros() {
+        this.filtro.nombre = undefined;
+        this.buscar();
+    }
+
+    private leerQueryParams() {
+        const p = this.route.snapshot.queryParamMap;
+        const numero = (clave: string) => {
+            const v = p.get(clave);
+            return v !== null && v !== '' && !isNaN(Number(v)) ? Number(v) : undefined;
+        };
+        this.filtro.nombre = p.get('nombre') || undefined;
+        this.filtro.page = numero('page') ?? 0;
+        this.filtro.size = numero('size') ?? 10;
+    }
+
+    private actualizarQueryParams() {
+        const f = this.filtro;
+        this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: {
+                nombre: f.nombre || null,
+                page: f.page > 0 ? f.page : null,
+                size: f.size !== 10 ? f.size : null
+            },
+            queryParamsHandling: 'merge',
+            replaceUrl: true
+        });
+    }
+
     getData() {
+        this.actualizarQueryParams();
         this.filtro.activo = true;
         this.loading = true;
         this.marcasService.getAll(this.filtro).subscribe({

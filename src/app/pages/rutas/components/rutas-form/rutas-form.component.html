@@ -1,6 +1,6 @@
 <p-toast />
-<div class="card flex flex-column gap-2 py-1">
-    <p-breadcrumb class="max-w-full" [model]="breadcrumb" />
+<div class="page-breadcrumb-bar flex flex-column">
+    <p-breadcrumb class="app-breadcrumb max-w-full" [model]="breadcrumb" />
 </div>
 <div class="card flex flex-column gap-3" *ngIf="ruta && ruta.estado != 'FINALIZADA'">
     <app-ordenes-servicios-modal-select

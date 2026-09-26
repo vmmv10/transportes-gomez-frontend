@@ -65,6 +65,6 @@
         </div>
     </div>
     <div class="flex flex-column w-12 {{ card ? 'card' : '' }}">
-        <p-paginator (onPageChange)="onPageChange($event)" [first]="page * size" [rows]="size" [totalRecords]="totalElements" [rowsPerPageOptions]="[10, 20, 30]" />
+        <p-paginator styleClass="page-paginator" (onPageChange)="onPageChange($event)" [first]="page * size" [rows]="size" [totalRecords]="totalElements" [rowsPerPageOptions]="[10, 20, 30]" />
     </div>
 </div>

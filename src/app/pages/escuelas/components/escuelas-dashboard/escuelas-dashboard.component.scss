@@ -1,0 +1,171 @@
+.escuela-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.escuela-info {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+    padding: 0.9rem 1.25rem;
+    border-top: 1px solid color-mix(in srgb, var(--surface-border) 80%, transparent);
+    background: color-mix(in srgb, var(--surface-hover) 45%, var(--surface-card));
+}
+
+.escuela-info__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    min-width: 0;
+
+    > div {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+        min-width: 0;
+    }
+}
+
+.escuela-info__icono {
+    display: inline-grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    flex: 0 0 auto;
+    border-radius: 10px;
+    background: color-mix(in srgb, #2178bd 10%, var(--surface-card));
+    color: #2178bd;
+    font-size: 0.85rem;
+}
+
+.escuela-info__label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-color-secondary);
+}
+
+.escuela-info__valor {
+    font-weight: 600;
+    color: var(--text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.escuela-info__link {
+    color: #2178bd;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.escuela-mapa {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--surface-border) 80%, transparent);
+}
+
+.escuela-mapa__canvas {
+    height: 400px;
+    width: 100%;
+    z-index: 0;
+}
+
+.escuela-mapa__acciones {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.escuela-mapa__recentrar {
+    position: absolute;
+    right: 12px;
+    top: 84px;
+    z-index: 500;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--surface-card);
+    color: #2178bd;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.18);
+    cursor: pointer;
+
+    &:hover {
+        background: #2178bd;
+        color: #fff;
+    }
+}
+
+.escuela-mapa__coords {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    z-index: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--surface-card) 92%, transparent);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15);
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-color);
+
+    i {
+        color: #2178bd;
+        font-size: 0.75rem;
+    }
+}
+
+.escuela-mapa__vacio {
+    position: absolute;
+    inset: 0;
+    justify-content: center;
+    background: color-mix(in srgb, var(--surface-hover) 60%, var(--surface-card));
+}
+
+@media (max-width: 1200px) {
+    .escuela-info {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767px) {
+    .escuela-info {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .escuela-acciones {
+        width: 100%;
+        justify-content: stretch;
+
+        > * {
+            flex: 1 1 auto;
+        }
+    }
+
+    .escuela-mapa__canvas {
+        height: 300px;
+    }
+
+    .escuela-mapa__acciones {
+        width: 100%;
+
+        > * {
+            flex: 1 1 auto;
+        }
+    }
+}

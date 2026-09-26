@@ -43,11 +43,17 @@
             </tr>
         </ng-template>
         <ng-template #summary>
-            <p-paginator (onPageChange)="pageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="entregas ? entregas.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
+            <p-paginator styleClass="page-paginator" (onPageChange)="pageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="entregas ? entregas.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
         </ng-template>
         <ng-template #emptymessage>
             <tr>
-                <td colspan="6" class="text-center">No se encontraron entregas</td>
+                <td colspan="8">
+                    <div class="page-empty">
+                        <i class="pi pi-search"></i>
+                        <strong>No se encontraron entregas</strong>
+                        <span>Prueba con otros filtros.</span>
+                    </div>
+                </td>
             </tr>
         </ng-template>
     </p-table>

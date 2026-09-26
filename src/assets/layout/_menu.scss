@@ -13,22 +13,58 @@
         transform var(--layout-section-transition-duration),
         left var(--layout-section-transition-duration);
     background-color: var(--surface-overlay);
-    border-radius: var(--content-border-radius);
-    padding: 0.5rem 1.5rem;
+    border: 1px solid var(--surface-border);
+    border-radius: 20px;
+    box-shadow: 0 18px 40px -28px rgba(15, 23, 42, 0.45);
+    padding: 1rem 1rem 1.25rem;
+
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--surface-border) 80%, transparent) transparent;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: color-mix(in srgb, var(--surface-border) 80%, transparent);
+        border-radius: 999px;
+    }
+
+    &:hover::-webkit-scrollbar-thumb {
+        background-color: color-mix(in srgb, var(--text-color-secondary) 35%, transparent);
+    }
 }
 
 .layout-menu {
+    /* Único punto de verdad para el azul corporativo dentro del menú.
+       Se usa solo como acento (ítem activo), nunca como fondo masivo — regla 60-30-10. */
+    --menu-accent: #2178bd;
+
     margin: 0;
     padding: 0;
     list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
 
     .layout-root-menuitem {
+        &:not(:first-child) {
+            margin-top: 0.75rem;
+        }
+
         > .layout-menuitem-root-text {
-            font-size: 0.857rem;
+            font-size: clamp(0.75rem, 0.65rem + 0.2vw, 0.8125rem);
             text-transform: uppercase;
             font-weight: 700;
-            color: var(--text-color);
-            margin: 0.75rem 0;
+            letter-spacing: 0.07em;
+            /* Gris neutro ~7.7:1 sobre fondo blanco/surface-overlay -> AAA para texto normal */
+            color: #52525b;
+            margin: 0 0 0.375rem;
+            padding: 0 0.625rem;
         }
 
         > a {
@@ -39,19 +75,13 @@
     a {
         user-select: none;
 
-        &.active-menuitem {
-            > .layout-submenu-toggler {
-                transform: rotate(-180deg);
-            }
+        &.active-menuitem > .layout-submenu-toggler {
+            transform: rotate(-180deg);
         }
     }
 
-    li.active-menuitem {
-        > a {
-            .layout-submenu-toggler {
-                transform: rotate(-180deg);
-            }
-        }
+    li.active-menuitem > a .layout-submenu-toggler {
+        transform: rotate(-180deg);
     }
 
     ul {
@@ -62,80 +92,82 @@
         a {
             display: flex;
             align-items: center;
+            gap: 0.625rem;
             position: relative;
             outline: 0 none;
             color: var(--text-color);
             cursor: pointer;
-            padding: 0.75rem 1rem;
-            border-radius: var(--content-border-radius);
+            padding: 0.6rem 0.625rem;
+            border-radius: 0.625rem;
+            font-size: clamp(0.9375rem, 0.85rem + 0.3vw, 1.0625rem);
+            font-weight: 500;
             transition:
                 background-color var(--element-transition-duration),
+                color var(--element-transition-duration),
                 box-shadow var(--element-transition-duration);
 
             .layout-menuitem-icon {
-                margin-right: 0.5rem;
+                display: inline-flex;
+                flex: 0 0 auto;
+                align-items: center;
+                justify-content: center;
+                width: 1.5rem;
+                font-size: 1.05rem;
+                color: var(--text-color-secondary);
+                transition: color var(--element-transition-duration);
             }
 
             .layout-submenu-toggler {
-                font-size: 75%;
+                flex: 0 0 auto;
                 margin-left: auto;
+                font-size: 0.65rem;
+                color: var(--text-color-secondary);
                 transition: transform var(--element-transition-duration);
             }
 
             &.active-route {
-                font-weight: 700;
-                color: var(--primary-color);
+                font-weight: 600;
+                color: var(--menu-accent);
+                background-color: color-mix(in srgb, var(--menu-accent) 8%, transparent);
+                box-shadow: inset 3px 0 0 var(--menu-accent);
+
+                .layout-menuitem-icon {
+                    color: var(--menu-accent);
+                }
             }
 
-            &:hover {
-                background-color: var(--surface-hover);
+            &:hover:not(.active-route) {
+                background-color: color-mix(in srgb, var(--menu-accent) 6%, var(--surface-hover));
+
+                .layout-menuitem-icon {
+                    color: var(--text-color);
+                }
             }
 
-            &:focus {
+            &:focus-visible {
                 @include focused-inset();
             }
         }
 
+        /* Cubre cualquier nivel de anidamiento (ul > li > ul > li ...) sin repetir reglas por profundidad */
         ul {
             overflow: hidden;
-            border-radius: var(--content-border-radius);
+            margin: 0.125rem 0 0.25rem 0.9375rem;
+            padding-left: 0.6875rem;
+            border-left: 1px solid var(--surface-border);
 
-            li {
-                a {
-                    margin-left: 1rem;
-                }
-
-                li {
-                    a {
-                        margin-left: 2rem;
-                    }
-
-                    li {
-                        a {
-                            margin-left: 2.5rem;
-                        }
-
-                        li {
-                            a {
-                                margin-left: 3rem;
-                            }
-
-                            li {
-                                a {
-                                    margin-left: 3.5rem;
-                                }
-
-                                li {
-                                    a {
-                                        margin-left: 4rem;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+            a {
+                padding-top: 0.475rem;
+                padding-bottom: 0.475rem;
+                font-size: clamp(0.9375rem, 0.85rem + 0.3vw, 1.0625rem);
             }
         }
+    }
+
+    .menu-separator {
+        height: 1px;
+        margin: 0.625rem 0.625rem;
+        background: var(--surface-border);
     }
 }
 

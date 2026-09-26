@@ -21,7 +21,8 @@ export class ItemsAutocompleteComponent {
     @Output() selected = new EventEmitter<Item>();
     data: Item[] = [];
     loading: boolean = false;
-    item: Item | undefined;
+    /** Valor inicial / actual (permite mostrar un artículo preseleccionado). */
+    @Input() item: Item | undefined;
 
     constructor(
         private MessageService: MessageService,

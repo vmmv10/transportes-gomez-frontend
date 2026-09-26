@@ -1,65 +1,106 @@
 <p-toast />
-<div class="card flex flex-column gap-2 py-1">
-    <p-breadcrumb class="max-w-full" [model]="breadcrumb" />
+<div class="page-breadcrumb-bar flex flex-column">
+    <p-breadcrumb class="app-breadcrumb max-w-full" [model]="breadcrumb" />
 </div>
-<div class="flex flex-column">
-    <div class="flex flex-column md:flex-row gap-2 w-12 justify-content-between card">
-        <h2 class="w-12 md:text-2xl text-xl md:text-left text-center mb-0">Rutas</h2>
-        <p-button *ngIf="esAdmin$ | async" class="md:w-4 w-12" [fluid]="true" label="Nueva Ruta" icon="pi pi-plus" severity="info" [routerLink]="['/rutas/formulario']" routerLinkActive="router-link-active" />
-    </div>
-    <div class="flex flex-column md:flex-row gap-2 w-12 card">
-        <input pInputText id="filtro" (keydown.enter)="getData()" [(ngModel)]="filtro.id" placeholder="Buscar por id" class="w-12" />
-        <app-usuarios-select [rol]="'repartidor'" [(usuario)]="filtro.chofer" [showClear]="true" [showFilter]="true" class="w-12"></app-usuarios-select>
-        <select-boolean [opciones]="opcionesSelectBoolean" class="w-12" [(variable)]="filtro.estado" [showClear]="true" [showFilter]="true" [validar]="false" (ngModelChange)="getData()"></select-boolean>
-        <button pButton icon="pi pi-search" label="Buscar" class="md:w-4 w-12" [loading]="loading" (click)="getData()"></button>
-    </div>
-    <p-table class="hidden md:block" [value]="data && data.content ? data.content : []" id="ordenes-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
-        <ng-template #header>
-            <tr>
-                <th class="text-center">id</th>
-                <th class="text-center">Fecha</th>
-                <th class="text-center">Chofer</th>
-                <th class="text-center">Estado</th>
-                <th class="text-center">Km</th>
-                <th *ngIf="esAdmin$ | async"></th>
-            </tr>
+<div class="flex flex-column gap-2">
+    <p-panel class="w-12 page-panel">
+        <ng-template pTemplate="header">
+            <div class="page-panel-title-group">
+                <span class="page-panel-title-chip"><i class="pi pi-map"></i></span>
+                <div class="page-panel-title-text">
+                    <span class="p-panel-title">Rutas</span>
+                    <span class="page-panel-subtitle">
+                        Planificación y seguimiento de despachos
+                        <span class="page-panel-count" *ngIf="data">{{ data.totalElements }} registros</span>
+                    </span>
+                </div>
+            </div>
         </ng-template>
-        <ng-template #body let-item let-index="rowIndex">
-            <tr>
-                <td class="text-center">{{ item.id }}</td>
-                <td class="text-center">{{ item.fecha | fecha }}</td>
-                <td class="text-center">{{ item.chofer.nombre }}</td>
-                <td class="text-center" *ngIf="item.entregado">
-                    <p-tag severity="success" value="Entregado" />
-                </td>
-                <td class="text-center" *ngIf="item.estado == 'FINALIZADA'">
-                    <p-tag severity="success" value="Finalizada" />
-                </td>
-                <td class="text-center" *ngIf="item.estado != 'FINALIZADA'">
-                    <p-tag severity="warn" value="Pendiente" />
-                </td>
-                <td class="text-center">{{ item.kilometros ? item.kilometros : 0 }} Km.</td>
-                <td class="text-center">
-                    <p-button *ngIf="esAdmin$ | async" pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="help" [routerLink]="['/rutas/formulario/' + item.id]" />
-                    <p-button *ngIf="esAdmin$ | async" pTooltip="Asignar Kilometros" icon="pi pi-truck" [rounded]="true" [text]="true" severity="secondary" (click)="openModalAsignarKilometros(item)" />
-                    <p-button *ngIf="esAdmin$ | async" pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminar(item)" />
-                </td>
-            </tr>
+        <ng-template pTemplate="icons">
+            <div class="flex w-12 gap-2">
+                <p-button
+                    [label]="filtrosVisibles ? 'Ocultar Filtros' : 'Mostrar Filtros'"
+                    [icon]="filtrosVisibles ? 'pi pi-chevron-up' : 'pi pi-filter'"
+                    [badge]="filtrosActivos ? filtrosActivos.toString() : undefined"
+                    class="page-panel-header-action"
+                    (onClick)="filtrosVisibles = !filtrosVisibles"
+                />
+                <p-button *ngIf="esAdmin$ | async" label="Nueva Ruta" icon="pi pi-plus" class="page-panel-primary-action" [routerLink]="['/rutas/formulario']" />
+            </div>
         </ng-template>
-        <ng-template #summary>
-            <p-paginator (onPageChange)="onPageChange($event)" [first]="filtro.page * filtro.size" [rows]="data && data.size ? data.size : 0" [totalRecords]="data && data.totalElements ? data.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
-        </ng-template>
-    </p-table>
-    <app-table-mobile
-        [size]="filtro.size"
-        [page]="filtro.page"
-        (pageChange)="onPageChange($event)"
-        [mostrarAcciones]="true"
-        (accion)="resolverAccion($event)"
-        [acciones]="acciones"
-        [data]="data ? data.content : []"
-        [campos]="campos"
-    ></app-table-mobile>
+
+        <div class="filters-collapse" [class.filters-collapse--open]="filtrosVisibles">
+            <div class="page-filters flex w-12 flex-column md:flex-row gap-2 mb-3">
+                <input type="number" class="w-12" pInputText placeholder="Número de ruta" [(ngModel)]="filtro.id" (keyup.enter)="buscar()" />
+                <app-usuarios-select class="w-12" [rol]="'repartidor'" [(usuario)]="filtro.chofer" [showClear]="true" [showFilter]="true" />
+                <select-boolean class="w-12" [opciones]="opcionesSelectBoolean" [(variable)]="filtro.estado" [showClear]="true" [validar]="false" />
+                <input type="date" class="w-12" pInputText [(ngModel)]="desde" pTooltip="Desde" tooltipPosition="top" />
+                <input type="date" class="w-12" pInputText [(ngModel)]="hasta" pTooltip="Hasta" tooltipPosition="top" />
+                <p-button label="Buscar" [fluid]="true" class="w-12 md:w-3" severity="info" icon="pi pi-search" [outlined]="true" (onClick)="buscar()" />
+                <p-button label="Limpiar" [fluid]="true" class="w-12 md:w-3" severity="secondary" icon="pi pi-filter-slash" [outlined]="true" (onClick)="limpiarFiltros()" />
+            </div>
+        </div>
+
+        <div class="hidden md:block">
+            <p-table [value]="data && data.content ? data.content : []" id="rutas-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
+                <ng-template #header>
+                    <tr>
+                        <th>Número</th>
+                        <th>Fecha</th>
+                        <th>Chofer</th>
+                        <th>Estado</th>
+                        <th>Km</th>
+                        <th *ngIf="esAdmin$ | async"></th>
+                    </tr>
+                </ng-template>
+                <ng-template #body let-item>
+                    <tr>
+                        <td><span class="page-cell-code">{{ item.id }}</span></td>
+                        <td>
+                            <span class="page-cell-icon"><i class="pi pi-calendar"></i>{{ item.fecha | fecha }}</span>
+                        </td>
+                        <td class="page-cell-strong">
+                            <span class="page-cell-icon"><i class="pi pi-user"></i>{{ item.chofer?.nombre }}</span>
+                        </td>
+                        <td>
+                            <p-tag *ngIf="item.estado == 'FINALIZADA'" severity="success" value="Finalizada" />
+                            <p-tag *ngIf="item.estado != 'FINALIZADA'" severity="warn" value="Pendiente" />
+                        </td>
+                        <td class="page-cell-muted">{{ item.kilometros ? item.kilometros : 0 }} Km</td>
+                        <td class="text-right" *ngIf="esAdmin$ | async">
+                            <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" class="page-row-action" [routerLink]="['/rutas/formulario/' + item.id]" />
+                            <p-button pTooltip="Asignar Kilómetros" icon="pi pi-truck" [rounded]="true" [text]="true" severity="secondary" (click)="openModalAsignarKilometros(item)" />
+                            <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminar(item)" />
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template #emptymessage>
+                    <tr>
+                        <td colspan="6">
+                            <div class="page-empty">
+                                <i class="pi pi-search"></i>
+                                <strong>No se encontraron rutas</strong>
+                                <span>Prueba con otros filtros.</span>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template #summary>
+                    <p-paginator styleClass="page-paginator" (onPageChange)="onPageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="data && data.totalElements ? data.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
+                </ng-template>
+            </p-table>
+        </div>
+        <app-table-mobile
+            [size]="filtro.size"
+            [page]="filtro.page"
+            (pageChange)="onPageChange($event)"
+            [mostrarAcciones]="true"
+            (accion)="resolverAccion($event)"
+            [acciones]="acciones"
+            [data]="data ? data.content : []"
+            [campos]="campos"
+        ></app-table-mobile>
+    </p-panel>
 </div>
 <app-modal-loading [visible]="loading" />
 <p-confirmdialog #eliminarRuta key="eliminarRuta">

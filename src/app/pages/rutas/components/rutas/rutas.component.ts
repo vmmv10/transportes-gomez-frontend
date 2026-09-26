@@ -9,7 +9,9 @@ import { FormsModule } from '@angular/forms';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { PanelModule } from 'primeng/panel';
+import { Usuario } from '../../../usuarios/models/usuario.model';
 import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -53,7 +55,8 @@ import { SelectBooleanComponent } from '../../../uikit/components/select-boolean
         InputTextModule,
         UsuariosSelectComponent,
         InputNumberModule,
-        SelectBooleanComponent
+        SelectBooleanComponent,
+        PanelModule
     ],
     templateUrl: './rutas.component.html',
     styleUrl: './rutas.component.scss',
@@ -69,6 +72,10 @@ export class RutasComponent {
     esConductor: boolean = false;
     ruta: Ruta = new Ruta();
     displayAsignarKilometros: boolean = false;
+    filtrosVisibles: boolean = false;
+    /** Fechas del filtro como texto yyyy-MM-dd (input type="date"). */
+    desde: string | undefined;
+    hasta: string | undefined;
 
     campos: any[] = [
         { etiqueta: 'Número', propiedad: 'id', tipo: 'texto' },
@@ -87,7 +94,9 @@ export class RutasComponent {
         private confirmationService: ConfirmationService,
         private messageService: MessageService,
         private rutasService: RutasService,
-        private rolService: RolService
+        private rolService: RolService,
+        private router: Router,
+        private route: ActivatedRoute
     ) {
         this.esAdmin$ = this.rolService.tieneRol('Administrador');
         this.breadcrumb = [
@@ -132,11 +141,80 @@ export class RutasComponent {
     }
 
     async ngOnInit() {
-        this.getData(); // se carga solo después de saber si es conductor
+        this.leerQueryParams();
+        this.filtrosVisibles = this.filtrosActivos > 0;
+        this.getData();
+    }
+
+    /** Cantidad de filtros aplicados (se muestra como badge en el botón). */
+    get filtrosActivos(): number {
+        const f = this.filtro;
+        return [f.id, f.chofer, f.estado, this.desde, this.hasta].filter((v) => v !== undefined && v !== null && v !== '').length;
+    }
+
+    buscar() {
+        this.filtro.page = 0;
+        this.getData();
+    }
+
+    limpiarFiltros() {
+        this.filtro.id = null;
+        this.filtro.chofer = undefined;
+        this.filtro.estado = undefined;
+        this.desde = undefined;
+        this.hasta = undefined;
+        this.buscar();
+    }
+
+    private aplicarFechas() {
+        this.filtro.fechaDesde = this.desde ? new Date(this.desde + 'T00:00:00') : null;
+        this.filtro.fechaHasta = this.hasta ? new Date(this.hasta + 'T23:59:59') : null;
+    }
+
+    private leerQueryParams() {
+        const p = this.route.snapshot.queryParamMap;
+        const numero = (clave: string) => {
+            const v = p.get(clave);
+            return v !== null && v !== '' && !isNaN(Number(v)) ? Number(v) : undefined;
+        };
+        const fecha = (clave: string) => {
+            const v = p.get(clave);
+            return v && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : undefined;
+        };
+
+        this.filtro.id = numero('numero') ?? null;
+        const chofer = numero('chofer');
+        this.filtro.chofer = chofer !== undefined ? ({ id: chofer } as unknown as Usuario) : undefined;
+        const estado = p.get('estado');
+        this.filtro.estado = estado === 'finalizada' ? true : estado === 'pendiente' ? false : undefined;
+        this.desde = fecha('desde');
+        this.hasta = fecha('hasta');
+        this.filtro.page = numero('page') ?? 0;
+        this.filtro.size = numero('size') ?? 10;
+    }
+
+    private actualizarQueryParams() {
+        const f = this.filtro;
+        this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: {
+                numero: f.id ?? null,
+                chofer: f.chofer?.id ?? null,
+                estado: f.estado === true ? 'finalizada' : f.estado === false ? 'pendiente' : null,
+                desde: this.desde || null,
+                hasta: this.hasta || null,
+                page: f.page > 0 ? f.page : null,
+                size: f.size !== 10 ? f.size : null
+            },
+            queryParamsHandling: 'merge',
+            replaceUrl: true
+        });
     }
 
     getData() {
         this.loading = true;
+        this.aplicarFechas();
+        this.actualizarQueryParams();
         this.rutasService.getAll(this.filtro).subscribe({
             next: (data) => {
                 this.data = data;

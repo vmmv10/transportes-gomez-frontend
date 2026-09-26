@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
@@ -68,6 +68,8 @@ export class EntregasTableComponent {
     @Input() categoriaFiltro: boolean = false;
     @Input() oc: boolean = false;
     @Input() ocFiltro: boolean = false;
+    /** Emite el total de registros cada vez que se consulta. */
+    @Output() buscado = new EventEmitter<number>();
     entregas!: Page<Entrega>;
     entrega: Entrega | undefined;
     tok: string = '';
@@ -128,6 +130,7 @@ export class EntregasTableComponent {
             next: (data) => {
                 this.entregas = data;
                 this.loading = false;
+                this.buscado.emit(data.totalElements);
             },
             error: (error) => {
                 this.MessageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener las Entregas' });

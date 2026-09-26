@@ -1,25 +1,72 @@
-<div class="flex flex-column gap-4">
-    <div class="card flex md:flex-row flex-column w-12 gap-2 justify-content-between align-items-center mb-0" *ngIf="(esAdmin$ | async) || (esCliente$ | async)">
-        <app-escuelas-select (escuelaChange)="escuelaChange($event)" [(escuela)]="escuelaSeleccionada" [showClear]="true" [showFilter]="true" class="w-12 p-fluid"></app-escuelas-select>
-        <input pInputText id="ordenCompraId" (keydown.enter)="ocChange()" [(ngModel)]="oc" placeholder="Buscar por Orden Compra" class="w-12 p-fluid" />
-        <app-categorias-select (categoriaChange)="categoriaSeleccionadaChange($event)" [categoria]="categoriaSeleccionada" class="w-12" [showClear]="true" [showFilter]="true" [validar]="false" />
-        <p-datepicker class="w-12" (ngModelChange)="changeDate($event)" placeholder="Filtre por Fecha" [(ngModel)]="fechaFiltro" [fluid]="true" dateFormat="dd/mm/yy" [showClear]="true" />
-    </div>
-    <div class="flex flex-column gap-2" *ngIf="(esAdmin$ | async) || (esCliente$ | async)">
+<div class="dashboard-page">
+    <ng-container *ngIf="(esAdmin$ | async) || (esCliente$ | async)">
+        <section class="dash-card dash-header">
+            <div class="dash-header__top">
+                <div class="page-panel-title-group">
+                    <span class="page-panel-title-chip"><i class="pi pi-chart-bar"></i></span>
+                    <div class="page-panel-title-text">
+                        <h1 class="dash-header__title">Panel de control logístico</h1>
+                        <span class="dash-header__date">{{ hoy | date: 'EEEE d \'de\' MMMM' }} · Entregas y órdenes de servicio</span>
+                    </div>
+                </div>
+            </div>
+            <div class="dash-filters">
+                <app-escuelas-select (escuelaChange)="escuelaChange($event)" [(escuela)]="escuelaSeleccionada" [showClear]="true" [showFilter]="true" class="w-12 p-fluid" />
+                <input pInputText (keydown.enter)="ocChange()" (blur)="ocChange()" [(ngModel)]="oc" placeholder="Orden de compra" class="w-12" />
+                <app-categorias-select (categoriaChange)="categoriaSeleccionadaChange($event)" [categoria]="categoriaSeleccionada" class="w-12" [showClear]="true" [showFilter]="true" [validar]="false" />
+                <p-datepicker class="w-12" (ngModelChange)="changeDate($event)" placeholder="Fecha" [(ngModel)]="fechaFiltro" [fluid]="true" dateFormat="dd/mm/yy" [showClear]="true" appendTo="body" />
+                <p-button label="Limpiar" icon="pi pi-filter-slash" severity="secondary" [outlined]="true" class="page-panel-header-action" [disabled]="!hayFiltros" (onClick)="limpiarFiltros()" />
+            </div>
+        </section>
+
         <app-entregas-dashboard class="w-12" [filtro]="filtroEntregasAdministrador"></app-entregas-dashboard>
-        <div class="flex flex-column w-12 gap-4">
-            <div class="card w-12 p-fluid">
+
+        <div class="dashboard-analytics-grid">
+            <article class="dashboard-analytics-card p-fluid">
+                <div class="dashboard-card-header">
+                    <div>
+                        <span class="dashboard-card-kicker">Órdenes de servicio</span>
+                        <h3>Items despachados</h3>
+                    </div>
+                    <span class="dashboard-card-icon"><i class="pi pi-box"></i></span>
+                </div>
                 <app-ordenes-servicios-items-despachados-chart [filtro]="filtroOs" class="p-fluid w-12"></app-ordenes-servicios-items-despachados-chart>
-            </div>
-            <div class="card w-12 p-fluid">
+            </article>
+
+            <article class="dashboard-analytics-card p-fluid">
+                <div class="dashboard-card-header">
+                    <div>
+                        <span class="dashboard-card-kicker">Tendencia</span>
+                        <h3>Entregas por mes</h3>
+                    </div>
+                    <span class="dashboard-card-icon"><i class="pi pi-chart-line"></i></span>
+                </div>
                 <app-entregas-mes-chart [filtro]="filtroEntregasAdministrador" class="p-fluid w-12"></app-entregas-mes-chart>
-            </div>
-            <div class="flex justify-content-center card w-12">
-                <app-entregas-top-escuelas-chart class="p-fluid w-12"></app-entregas-top-escuelas-chart>
-            </div>
+            </article>
+
+            <article class="dashboard-analytics-card dashboard-analytics-card-full">
+                <div class="dashboard-card-header">
+                    <div>
+                        <span class="dashboard-card-kicker">Distribución</span>
+                        <h3>Escuelas con más entregas</h3>
+                    </div>
+                    <span class="dashboard-card-icon"><i class="pi pi-graduation-cap"></i></span>
+                </div>
+                <div class="dashboard-card-body-center">
+                    <app-entregas-top-escuelas-chart class="p-fluid w-12"></app-entregas-top-escuelas-chart>
+                </div>
+            </article>
         </div>
-    </div>
-    <div class="flex flex-column gap-2" *ngIf="esConductor$ | async">
+    </ng-container>
+
+    <section class="dashboard-driver" *ngIf="esConductor$ | async">
+        <div class="dashboard-section-heading">
+            <div>
+                <span class="dashboard-section-kicker">Conductor</span>
+                <h2>Ruta actual</h2>
+            </div>
+            <p>Consulta el estado de la ruta activa y el seguimiento de despacho en tiempo real.</p>
+        </div>
         <app-rutas-actual class="w-12" />
-    </div>
+    </section>
 </div>

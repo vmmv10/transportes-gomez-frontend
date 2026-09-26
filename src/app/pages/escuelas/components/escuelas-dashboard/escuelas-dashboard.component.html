@@ -1,41 +1,130 @@
-<div class="card flex flex-column gap-2 py-1">
-    <p-breadcrumb class="max-w-full" [model]="items" />
+<div class="page-breadcrumb-bar flex flex-column">
+    <p-breadcrumb class="app-breadcrumb max-w-full" [model]="items" />
 </div>
-<div class="card flex flex-column gap-2" *ngIf="escuela">
-    <div class="flex flex-row gap-2 w-12 justify-content-between">
-        <h1 class="text-3xl">{{ escuela.nombre }}</h1>
-        <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" [routerLink]="['/establecimientos/formulario/' + escuela.id]" routerLinkActive="router-link-active" />
-    </div>
-    <div class="flex flex-row gap-2 w-12">
-        <i class="pi pi-user text-black" style="font-size: 1rem"></i>
-        <span class="text-black">{{ escuela.director }}</span>
-    </div>
-    <div class="flex flex-row gap-2 w-12">
-        <i class="pi pi-map-marker text-black" style="font-size: 1rem"></i>
-        <span class="text-black">{{ escuela.direccion }}</span>
-    </div>
-    <div class="flex flex-row gap-2 w-12">
-        <i class="pi pi-phone text-black" style="font-size: 1rem"></i>
-        <span class="text-black">{{ escuela.telefono }}</span>
-    </div>
-    <div class="flex flex-row gap-2 w-12">
-        <i class="pi pi-envelope text-black" style="font-size: 1rem"></i>
-        <span class="text-black">{{ escuela.email }}</span>
-    </div>
-</div>
-<div class="flex flex-column gap-2" *ngIf="escuela && escuela.id > 0">
-    <h2 class="card text-xl">Entregas</h2>
-    <app-entregas-dashboard class="w-12" [filtro]="filtroEntregas"></app-entregas-dashboard>
-    <div class="flex flex-column w-12 gap-4">
-        <div class="card w-12 p-fluid">
-            <app-ordenes-servicios-items-despachados-chart [filtro]="filtroOs" class="p-fluid w-12"></app-ordenes-servicios-items-despachados-chart>
+
+<div class="dashboard-page">
+    <!-- Encabezado del establecimiento -->
+    <section class="dash-card dash-header">
+        <div class="dash-header__top">
+            <div class="page-panel-title-group" *ngIf="escuela; else cargandoTitulo">
+                <span class="page-panel-title-chip"><i class="pi pi-graduation-cap"></i></span>
+                <div class="page-panel-title-text">
+                    <h1 class="dash-header__title">{{ escuela.nombre }}</h1>
+                    <span class="page-panel-subtitle">
+                        <button *ngIf="escuela.rbd" type="button" class="rbd-badge" (click)="copiarRbd()" [pTooltip]="rbdCopiado ? '¡Copiado!' : 'Copiar RBD'" tooltipPosition="bottom" [attr.aria-label]="'RBD ' + escuela.rbd + ', copiar'">
+                            <span class="rbd-badge__label">RBD</span>
+                            <span class="rbd-badge__valor">{{ escuela.rbd }}</span>
+                            <i class="pi" [ngClass]="rbdCopiado ? 'pi-check' : 'pi-copy'"></i>
+                        </button>
+                        <span *ngIf="escuela.comuna" class="page-cell-icon"><i class="pi pi-map-marker"></i>{{ escuela.comuna }}</span>
+                    </span>
+                </div>
+            </div>
+            <ng-template #cargandoTitulo>
+                <div class="page-panel-title-group">
+                    <p-skeleton width="2.9rem" height="2.5rem" />
+                    <div class="flex flex-column gap-2">
+                        <p-skeleton width="16rem" height="1.4rem" />
+                        <p-skeleton width="10rem" height="0.9rem" />
+                    </div>
+                </div>
+            </ng-template>
+
+            <div class="escuela-acciones" *ngIf="escuela">
+                <p-button label="Órdenes" icon="pi pi-file" class="page-panel-header-action" [routerLink]="['/ordenes-servicios']" [queryParams]="{ escuela: escuela.id }" pTooltip="Ver órdenes de este establecimiento" tooltipPosition="bottom" />
+                <p-button label="Entregas" icon="pi pi-envelope" class="page-panel-header-action" [routerLink]="['/entregas']" [queryParams]="{ escuela: escuela.id }" pTooltip="Ver entregas de este establecimiento" tooltipPosition="bottom" />
+                <p-button label="Editar" icon="pi pi-pencil" class="page-panel-primary-action" [routerLink]="['/establecimientos/formulario/' + escuela.id]" />
+            </div>
         </div>
-        <div class="card w-12 p-fluid">
-            <app-entregas-mes-chart [filtro]="filtroEntregas" class="p-fluid w-12"></app-entregas-mes-chart>
+
+        <div class="escuela-info" *ngIf="escuela">
+            <div class="escuela-info__item">
+                <span class="escuela-info__icono"><i class="pi pi-user"></i></span>
+                <div>
+                    <span class="escuela-info__label">Director(a)</span>
+                    <span class="escuela-info__valor" [class.page-cell-empty]="!escuela.director">{{ escuela.director || 'Sin registrar' }}</span>
+                </div>
+            </div>
+            <div class="escuela-info__item">
+                <span class="escuela-info__icono"><i class="pi pi-map-marker"></i></span>
+                <div>
+                    <span class="escuela-info__label">Dirección</span>
+                    <span class="escuela-info__valor" [class.page-cell-empty]="!escuela.direccion">{{ escuela.direccion || 'Sin registrar' }}</span>
+                </div>
+            </div>
+            <div class="escuela-info__item">
+                <span class="escuela-info__icono"><i class="pi pi-phone"></i></span>
+                <div>
+                    <span class="escuela-info__label">Teléfono</span>
+                    <a *ngIf="escuela.telefono; else sinTelefono" class="escuela-info__valor escuela-info__link" [href]="'tel:' + escuela.telefono">{{ escuela.telefono }}</a>
+                    <ng-template #sinTelefono><span class="escuela-info__valor page-cell-empty">Sin registrar</span></ng-template>
+                </div>
+            </div>
+            <div class="escuela-info__item">
+                <span class="escuela-info__icono"><i class="pi pi-envelope"></i></span>
+                <div>
+                    <span class="escuela-info__label">Email</span>
+                    <a *ngIf="escuela.email; else sinEmail" class="escuela-info__valor escuela-info__link" [href]="'mailto:' + escuela.email">{{ escuela.email }}</a>
+                    <ng-template #sinEmail><span class="escuela-info__valor page-cell-empty">Sin registrar</span></ng-template>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-<div class="card flex flex-column gap-2">
-    <h2 class="text-xl">Mapa</h2>
-    <div id="map" style="height: 400px; width: 100%; margin-top: 1rem"></div>
+    </section>
+
+    <!-- Indicadores, entregas y gráficos -->
+    <ng-container *ngIf="escuela && escuela.id > 0">
+        <app-entregas-dashboard class="w-12" [filtro]="filtroEntregas"></app-entregas-dashboard>
+
+        <div class="dashboard-analytics-grid">
+            <article class="dashboard-analytics-card p-fluid">
+                <div class="dashboard-card-header">
+                    <div>
+                        <span class="dashboard-card-kicker">Órdenes de servicio</span>
+                        <h3>Items despachados</h3>
+                    </div>
+                    <span class="dashboard-card-icon"><i class="pi pi-box"></i></span>
+                </div>
+                <app-ordenes-servicios-items-despachados-chart [filtro]="filtroOs" class="p-fluid w-12"></app-ordenes-servicios-items-despachados-chart>
+            </article>
+
+            <article class="dashboard-analytics-card p-fluid">
+                <div class="dashboard-card-header">
+                    <div>
+                        <span class="dashboard-card-kicker">Tendencia</span>
+                        <h3>Entregas por mes</h3>
+                    </div>
+                    <span class="dashboard-card-icon"><i class="pi pi-chart-line"></i></span>
+                </div>
+                <app-entregas-mes-chart [filtro]="filtroEntregas" class="p-fluid w-12"></app-entregas-mes-chart>
+            </article>
+        </div>
+    </ng-container>
+
+    <!-- Mapa (el contenedor siempre existe para que Leaflet pueda montarse) -->
+    <article class="dashboard-analytics-card">
+        <div class="dashboard-card-header">
+            <div>
+                <span class="dashboard-card-kicker">Ubicación</span>
+                <h3>Mapa</h3>
+            </div>
+            <div class="escuela-mapa__acciones" *ngIf="tieneCoordenadas">
+                <p-button icon="pi pi-directions" label="Cómo llegar" class="page-panel-header-action" (onClick)="abrir('https://www.google.com/maps/dir/?api=1&destination=' + lat + ',' + lon)" />
+                <p-button icon="pi pi-external-link" label="Google Maps" class="page-panel-header-action" (onClick)="abrir('https://www.google.com/maps/search/?api=1&query=' + lat + ',' + lon)" />
+            </div>
+        </div>
+        <div class="escuela-mapa">
+            <div id="map" class="escuela-mapa__canvas"></div>
+            <button *ngIf="tieneCoordenadas" type="button" class="escuela-mapa__recentrar" (click)="recentrar()" pTooltip="Centrar en el establecimiento" tooltipPosition="left">
+                <i class="pi pi-compass"></i>
+            </button>
+            <div class="escuela-mapa__coords" *ngIf="tieneCoordenadas">
+                <i class="pi pi-map-marker"></i>{{ lat | number: '1.5-5' }}, {{ lon | number: '1.5-5' }}
+            </div>
+            <div class="page-empty escuela-mapa__vacio" *ngIf="escuela && !tieneCoordenadas">
+                <i class="pi pi-map"></i>
+                <strong>Sin ubicación registrada</strong>
+                <span>Agrega latitud y longitud en el formulario del establecimiento.</span>
+            </div>
+        </div>
+    </article>
 </div>

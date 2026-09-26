@@ -1,11 +1,21 @@
 <p-toast />
-<div class="card flex flex-column gap-2 py-1">
-    <p-breadcrumb class="max-w-full" [model]="breadcrumb" />
+<div class="page-breadcrumb-bar flex flex-column">
+    <p-breadcrumb class="app-breadcrumb max-w-full" [model]="breadcrumb" />
 </div>
 <div class="flex flex-column">
-    <div class="flex flex-column md:flex-row gap-2 w-12 justify-content-between card">
-        <h2 class="mb-0 md:text-left text-center text-3xl">Documentos</h2>
-        <p-button class="md:w-3 w-12" [fluid]="true" label="Nuevo Documento" icon="pi pi-plus" severity="info" [routerLink]="['/documents/formulario']" routerLinkActive="router-link-active" />
+    <div class="card">
+        <div class="page-header">
+            <div class="page-panel-title-group">
+                <span class="page-panel-title-chip"><i class="pi pi-file-import"></i></span>
+                <div class="page-panel-title-text">
+                    <h2 class="page-header__title">Documentos</h2>
+                    <span class="page-panel-subtitle">Facturas, guías y documentos de proveedores</span>
+                </div>
+            </div>
+            <div class="page-header__actions">
+                <p-button class="page-panel-primary-action" label="Nuevo Documento" icon="pi pi-plus" [routerLink]="['/documents/formulario']" />
+            </div>
+        </div>
     </div>
     <app-documentos-table [acciones]="true" [proveedor]="true" [bodega]="true" [tipo]="true" [filtro]="filtro" [filtros]="true"></app-documentos-table>
 </div>

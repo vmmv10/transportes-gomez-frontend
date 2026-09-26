@@ -7,27 +7,35 @@
         </div>
         <button pButton icon="pi pi-search" label="Buscar" class="md:w-4 w-12" [loading]="loading" (click)="getData()"></button>
     </div>
-    <p-table class="hidden md:block card" [value]="ordenes && ordenes.content ? ordenes.content : []" id="ordenes-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
+    <p-table class="hidden md:block {{ card ? 'card' : '' }}" [value]="ordenes && ordenes.content ? ordenes.content : []" id="ordenes-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
         <ng-template #header>
             <tr>
-                <th class="text-center">Establecimiento</th>
-                <th class="text-center">Nombre</th>
-                <th class="text-center">Cantidad</th>
+                <th>Establecimiento</th>
+                <th>Artículo</th>
+                <th class="text-right">Cantidad</th>
             </tr>
         </ng-template>
         <ng-template #body let-producto>
             <tr>
-                <td class="text-center">{{ producto.escuela }}</td>
-                <td class="text-center">{{ producto.nombre }}</td>
-                <td class="text-center">{{ producto.cantidad }}</td>
+                <td>
+                    <span class="page-cell-icon"><i class="pi pi-graduation-cap"></i>{{ producto.escuela }}</span>
+                </td>
+                <td class="page-cell-strong">{{ producto.nombre }}</td>
+                <td class="text-right"><span class="page-cell-code">{{ producto.cantidad | number: '1.0-2' }}</span></td>
             </tr>
         </ng-template>
         <ng-template #summary>
-            <p-paginator (onPageChange)="pageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="ordenes ? ordenes.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
+            <p-paginator styleClass="page-paginator" (onPageChange)="pageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="ordenes ? ordenes.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
         </ng-template>
         <ng-template #emptymessage>
             <tr>
-                <td colspan="5" class="text-center">No se encontraron ordenes de servicio</td>
+                <td colspan="3">
+                    <div class="page-empty">
+                        <i class="pi pi-search"></i>
+                        <strong>No se encontraron artículos entregados</strong>
+                        <span>Prueba con otros filtros.</span>
+                    </div>
+                </td>
             </tr>
         </ng-template>
     </p-table>

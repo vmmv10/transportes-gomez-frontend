@@ -1,9 +1,59 @@
-<div class="card flex flex-column gap-2 py-1">
-    <p-breadcrumb class="max-w-full" [model]="breadcrumb" />
-</div>
-<div class="flex flex-column">
-    <div class="card flex flex-row w-12 justify-content-between">
-        <h2 class="align-items-center mb-0 md:text-left text-center w-12 text-xl md:text-2xl">Entregas</h2>
+<div class="flex flex-column gap-2">
+    <div class="page-breadcrumb-bar flex flex-column">
+        <p-breadcrumb class="app-breadcrumb max-w-full" [model]="breadcrumb" />
     </div>
-    <app-entregas-table [escuelaFiltro]="true" [estado]="true" [orden]="true" [escuela]="true" [ruta]="true" [filtro]="filtro" [filtros]="true"></app-entregas-table>
+    <p-panel class="w-12 page-panel">
+        <ng-template pTemplate="header">
+            <div class="page-panel-title-group">
+                <span class="page-panel-title-chip"><i class="pi pi-envelope"></i></span>
+                <div class="page-panel-title-text">
+                    <span class="p-panel-title">Entregas</span>
+                    <span class="page-panel-subtitle">
+                        Estado de las entregas a establecimientos
+                        <span class="page-panel-count" *ngIf="total !== undefined">{{ total }} registros</span>
+                    </span>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="icons">
+            <div class="flex w-12 gap-2">
+                <p-button
+                    [label]="filtrosVisibles ? 'Ocultar Filtros' : 'Mostrar Filtros'"
+                    [icon]="filtrosVisibles ? 'pi pi-chevron-up' : 'pi pi-filter'"
+                    [badge]="filtrosActivos ? filtrosActivos.toString() : undefined"
+                    class="page-panel-header-action"
+                    (onClick)="filtrosVisibles = !filtrosVisibles"
+                />
+                <p-button label="Excel" icon="pi pi-file-excel" class="page-panel-primary-action" pTooltip="Descargar las entregas filtradas" tooltipPosition="bottom" (onClick)="tabla.descargarExcel()" />
+            </div>
+        </ng-template>
+
+        <div class="filters-collapse" [class.filters-collapse--open]="filtrosVisibles">
+            <div class="page-filters flex w-12 flex-column md:flex-row flex-wrap md:flex-nowrap gap-2 mb-3">
+                <input type="number" class="w-12" pInputText placeholder="Orden de Servicio" [(ngModel)]="filtro.ordenServicioId" (keyup.enter)="buscar()" />
+                <input type="text" class="w-12" pInputText placeholder="Orden de Compra" [(ngModel)]="filtro.oc" (keyup.enter)="buscar()" />
+                <app-escuelas-select class="w-12" [(escuela)]="filtro.escuela" [showClear]="true" [showFilter]="true" [validar]="false" />
+                <app-categorias-select class="w-12" [(categoria)]="filtro.categoria" [showClear]="true" [showFilter]="true" [validar]="false" />
+                <select-boolean class="w-12" [opciones]="opcionesEstado" [(variable)]="filtro.entregado" [showClear]="true" [validar]="false" />
+                <input type="date" class="w-12" pInputText [(ngModel)]="filtro.fecha" pTooltip="Fecha de la ruta" tooltipPosition="top" />
+                <p-button label="Buscar" [fluid]="true" class="w-12 md:w-3" severity="info" icon="pi pi-search" [outlined]="true" (onClick)="buscar()" />
+                <p-button label="Limpiar" [fluid]="true" class="w-12 md:w-3" severity="secondary" icon="pi pi-filter-slash" [outlined]="true" (onClick)="limpiarFiltros()" />
+            </div>
+        </div>
+
+        <app-entregas-table
+            #tabla
+            [escuelaFiltro]="false"
+            [estado]="true"
+            [orden]="true"
+            [escuela]="true"
+            [ruta]="true"
+            [oc]="true"
+            [categoria]="true"
+            [card]="false"
+            [filtro]="filtro"
+            [filtros]="false"
+            (buscado)="onBuscado($event)"
+        ></app-entregas-table>
+    </p-panel>
 </div>

@@ -1,7 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { PanelModule } from 'primeng/panel';
+import { Marca } from '../../../marcas/models/marca.model';
+import { Categoria } from '../../../categorias/models/categoria.model';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -27,7 +30,6 @@ import { TableMobileComponent } from '../../../uikit/components/table-mobile/tab
 import { ItemCodigoProveedor } from '../../models/item-codigo-proveedor.model';
 import { ProveedorSelectComponent } from '../../../proveedor/components/proveedor-select/proveedor-select.component';
 import { DividerModule } from 'primeng/divider';
-import e from 'cors';
 
 @Component({
     standalone: true,
@@ -54,7 +56,8 @@ import e from 'cors';
         PaginatorModule,
         TableMobileComponent,
         ProveedorSelectComponent,
-        DividerModule
+        DividerModule,
+        PanelModule
     ],
     templateUrl: './items-lista.component.html',
     styleUrl: './items-lista.component.scss',
@@ -71,6 +74,7 @@ export class ItemsListaComponent {
     modalCodigoProveedor: boolean = false;
     codigoProveedor: ItemCodigoProveedor = new ItemCodigoProveedor();
     validaCodigoProveedor: boolean = false;
+    filtrosVisibles: boolean = false;
 
     campos: any[] = [
         { etiqueta: 'id', propiedad: 'id', tipo: 'texto' },
@@ -116,7 +120,9 @@ export class ItemsListaComponent {
     constructor(
         private itemService: ItemsService,
         private MessageService: MessageService,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private router: Router,
+        private route: ActivatedRoute
     ) {
         this.breadcrumb = [
             { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
@@ -125,10 +131,65 @@ export class ItemsListaComponent {
     }
 
     ngOnInit() {
+        this.leerQueryParams();
+        this.filtrosVisibles = this.filtrosActivos > 0;
         this.getData();
     }
 
+    /** Cantidad de filtros aplicados (se muestra como badge en el botón). */
+    get filtrosActivos(): number {
+        const f = this.filtro;
+        return [f.nombre, f.codigo, f.marca, f.categoria].filter((v) => v !== undefined && v !== null && v !== '').length;
+    }
+
+    buscar() {
+        this.filtro.page = 0;
+        this.getData();
+    }
+
+    limpiarFiltros() {
+        this.filtro.nombre = undefined;
+        this.filtro.codigo = undefined;
+        this.filtro.marca = undefined;
+        this.filtro.categoria = undefined;
+        this.buscar();
+    }
+
+    private leerQueryParams() {
+        const p = this.route.snapshot.queryParamMap;
+        const numero = (clave: string) => {
+            const v = p.get(clave);
+            return v !== null && v !== '' && !isNaN(Number(v)) ? Number(v) : undefined;
+        };
+        this.filtro.nombre = p.get('nombre') || undefined;
+        this.filtro.codigo = p.get('codigo') || undefined;
+        const marca = numero('marca');
+        this.filtro.marca = marca !== undefined ? ({ id: marca } as unknown as Marca) : undefined;
+        const categoria = numero('categoria');
+        this.filtro.categoria = categoria !== undefined ? ({ id: categoria } as unknown as Categoria) : undefined;
+        this.filtro.page = numero('page') ?? 0;
+        this.filtro.size = numero('size') ?? 10;
+    }
+
+    private actualizarQueryParams() {
+        const f = this.filtro;
+        this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: {
+                nombre: f.nombre || null,
+                codigo: f.codigo || null,
+                marca: f.marca?.id ?? null,
+                categoria: f.categoria?.id ?? null,
+                page: f.page > 0 ? f.page : null,
+                size: f.size !== 10 ? f.size : null
+            },
+            queryParamsHandling: 'merge',
+            replaceUrl: true
+        });
+    }
+
     getData() {
+        this.actualizarQueryParams();
         this.filtro.activo = true;
         this.loading = true;
         this.itemService.getAll(this.filtro).subscribe({

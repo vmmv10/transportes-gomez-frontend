@@ -1,1 +1,42 @@
-<app-ordenes-servicios-items></app-ordenes-servicios-items>
+<div class="flex flex-column gap-2">
+    <div class="page-breadcrumb-bar flex flex-column">
+        <p-breadcrumb class="app-breadcrumb max-w-full" [model]="breadcrumb" />
+    </div>
+    <p-panel class="w-12 page-panel">
+        <ng-template pTemplate="header">
+            <div class="page-panel-title-group">
+                <span class="page-panel-title-chip"><i class="pi pi-box"></i></span>
+                <div class="page-panel-title-text">
+                    <span class="p-panel-title">Artículos Entregados</span>
+                    <span class="page-panel-subtitle">
+                        Cantidades despachadas por establecimiento
+                        <span class="page-panel-count" *ngIf="total !== undefined">{{ total }} registros</span>
+                    </span>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="icons">
+            <div class="flex w-12 gap-2">
+                <p-button
+                    [label]="filtrosVisibles ? 'Ocultar Filtros' : 'Mostrar Filtros'"
+                    [icon]="filtrosVisibles ? 'pi pi-chevron-up' : 'pi pi-filter'"
+                    [badge]="filtrosActivos ? filtrosActivos.toString() : undefined"
+                    class="page-panel-header-action"
+                    (onClick)="filtrosVisibles = !filtrosVisibles"
+                />
+            </div>
+        </ng-template>
+
+        <div class="filters-collapse" [class.filters-collapse--open]="filtrosVisibles">
+            <div class="page-filters flex w-12 flex-column md:flex-row gap-2 mb-3">
+                <app-items-autocomplete class="w-12" [item]="filtro.item" (selected)="filtro.item = $event" />
+                <app-escuelas-select class="w-12" [(escuela)]="filtro.escuela" [showClear]="true" [showFilter]="true" [validar]="false" />
+                <select-boolean class="w-12" [opciones]="opcionesEstado" [(variable)]="filtro.entregado" [showClear]="true" [validar]="false" />
+                <p-button label="Buscar" [fluid]="true" class="w-12 md:w-3" severity="info" icon="pi pi-search" [outlined]="true" (onClick)="buscar()" />
+                <p-button label="Limpiar" [fluid]="true" class="w-12 md:w-3" severity="secondary" icon="pi pi-filter-slash" [outlined]="true" (onClick)="limpiarFiltros()" />
+            </div>
+        </div>
+
+        <app-ordenes-servicios-items #tabla [filtro]="filtro" [filtros]="false" [card]="false" (buscado)="onBuscado($event)"></app-ordenes-servicios-items>
+    </p-panel>
+</div>

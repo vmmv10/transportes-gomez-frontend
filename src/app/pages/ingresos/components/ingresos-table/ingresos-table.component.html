@@ -1,7 +1,15 @@
 <div class="{{ card ? 'card' : '' }} flex flex-column gap-2 md:gap-4">
-    <div class="flex flex-column md:flex-row w-12 justify-content-between md:gap-0 gap-2" *ngIf="agregar || titulo">
-        <h2 *ngIf="titulo" class="align-items-center mb-0 md:text-left text-center w-12 text-xl md:text-2xl">Ingresos</h2>
-        <button *ngIf="agregar" pButton icon="pi pi-plus" label="Nuevo" class="md:w-4 w-12" [routerLink]="['/ingresos/formulario']"></button>
+    <div class="page-header" *ngIf="agregar || titulo">
+        <div class="page-panel-title-group">
+            <span class="page-panel-title-chip"><i class="pi pi-cart-arrow-down"></i></span>
+            <div class="page-panel-title-text">
+                <h2 class="page-header__title" *ngIf="titulo">Ingresos</h2>
+                <span class="page-panel-subtitle">Recepción de mercadería en bodega</span>
+            </div>
+        </div>
+        <div class="page-header__actions">
+            <button *ngIf="agregar" pButton icon="pi pi-plus" label="Nuevo" class="page-panel-primary-action" [routerLink]="['/ingresos/formulario']"></button>
+        </div>
     </div>
     <div *ngIf="filtros" class="flex flex-column md:flex-row gap-1">
         <input pInputText id="ordenServicioId" (keydown.enter)="getData()" [(ngModel)]="filtro.id" placeholder="Buscar por folio" class="w-12" />
@@ -20,34 +28,40 @@
         </ng-template>
         <ng-template #body let-item>
             <tr>
-                <td class="text-center">{{ item.id }}</td>
+                <td class="text-center"><span class="page-cell-code">{{ item.id }}</span></td>
                 <td class="text-center">
-                    <div class="flex flex-column w-12 align-items-center gap-1 justify-content-center" [ngSwitch]="item.estado">
-                        <p-chip class="bg-orange-400 text-center text-gray-50 font-semibold" *ngSwitchCase="0" label="Temporal"></p-chip>
-                        <p-chip class="bg-red-500 text-center text-gray-50 font-semibold" *ngSwitchCase="1" label="Abierto"></p-chip>
-                        <p-chip class="bg-green-500 text-center text-gray-50 font-semibold" *ngSwitchCase="2" label="Cerrado"></p-chip>
-                    </div>
+                    <ng-container [ngSwitch]="item.estado">
+                        <p-tag *ngSwitchCase="0" severity="warn" value="Temporal" />
+                        <p-tag *ngSwitchCase="1" severity="info" value="Abierto" />
+                        <p-tag *ngSwitchCase="2" severity="success" value="Cerrado" />
+                    </ng-container>
                 </td>
                 <td class="text-center">{{ item.fecha | fecha }}</td>
                 <td class="text-center">{{ item.documento }}</td>
-                <td class="text-center">{{ item.documentoTipo.nombre }}</td>
+                <td class="text-center page-cell-muted">{{ item.documentoTipo?.nombre }}</td>
                 <td class="text-center">
-                    <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="success" [routerLink]="['/ingresos/formulario/' + item.id]" routerLinkActive="router-link-active" />
+                    <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" class="page-row-action" [routerLink]="['/ingresos/formulario/' + item.id]" />
                     <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminar(item)" />
                 </td>
             </tr>
         </ng-template>
         <ng-template #summary>
-            <p-paginator (onPageChange)="pageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="data ? data.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
+            <p-paginator styleClass="page-paginator" (onPageChange)="pageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="data ? data.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
         </ng-template>
         <ng-template #emptymessage>
             <tr>
-                <td colspan="5" class="text-center">No se encontraron datos</td>
+                <td colspan="6">
+                    <div class="page-empty">
+                        <i class="pi pi-search"></i>
+                        <strong>No se encontraron ingresos</strong>
+                        <span>Prueba con otros filtros.</span>
+                    </div>
+                </td>
             </tr>
         </ng-template>
     </p-table>
 </div>
-<app-table-mobile [card]="true" [mostrarAcciones]="acciones" (accion)="resolverAccion($event)" [acciones]="accionesDevoluciones" [data]="data ? data.content : []" [campos]="campos"></app-table-mobile>
+<app-table-mobile [card]="card" [size]="filtro.size" [page]="filtro.page" (pageChange)="pageChange($event)" [mostrarAcciones]="acciones" (accion)="resolverAccion($event)" [acciones]="accionesDevoluciones" [data]="data ? data.content : []" [campos]="campos"></app-table-mobile>
 <app-modal-loading [visible]="loading" />
 <p-toast />
 <p-confirmdialog #cIngreso key="cIngreso">

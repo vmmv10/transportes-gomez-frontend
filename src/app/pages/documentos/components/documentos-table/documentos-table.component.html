@@ -34,7 +34,7 @@
             </tr>
         </ng-template>
         <ng-template #summary >
-            <p-paginator (onPageChange)="pageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="documentos ? documentos.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
+            <p-paginator styleClass="page-paginator" (onPageChange)="pageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="documentos ? documentos.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
         </ng-template>
         <ng-template #emptymessage>
             <tr>

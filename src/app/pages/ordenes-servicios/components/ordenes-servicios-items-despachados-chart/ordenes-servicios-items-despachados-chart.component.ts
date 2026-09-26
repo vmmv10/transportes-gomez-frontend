@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { ChartModule } from 'primeng/chart';
+import { altoHorizontal, datasetBarras, opcionesBarras } from '../../../uikit/charts/chart-theme';
 import { OrdenesServiciosService } from '../../services/ordenes-servicios.service';
 import { Escuela } from '../../../escuelas/models/escuela.models';
 import { OrdenServicioFiltro } from '../../models/orden-servicio-filtro.model';
@@ -16,6 +17,7 @@ export class OrdenesServiciosItemsDespachadosChartComponent {
     @Input() filtro: OrdenServicioFiltro = new OrdenServicioFiltro();
     basicData: any;
     basicOptions: any;
+    altura: string = '12rem';
     constructor(private ordenesServiciosService: OrdenesServiciosService) {}
 
     ngOnInit() {
@@ -36,71 +38,11 @@ export class OrdenesServiciosItemsDespachadosChartComponent {
                 const labels = data.map((d) => d.titulo);
                 const values = data.map((d) => d.total);
                 this.basicData = {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Top Artículos Despachados',
-                            backgroundColor: '#50E3C2',
-                            data: values
-                        }
-                    ]
+                    labels,
+                    datasets: [datasetBarras('Despachados', values, true)]
                 };
-
-                this.basicOptions = {
-                    responsive: true,
-                    indexAxis: 'y',
-                    animation: {
-                        duration: 1000,
-                        easing: 'easeOutQuart'
-                    },
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Top de Artículos Despachados',
-                                color: '#333',
-                                font: { size: 14, weight: 'bold' }
-                            },
-                            ticks: {
-                                stepSize: 1,
-                                color: '#555',
-                                font: { size: 12 },
-                                callback: function (value: any) {
-                                    return Number.isInteger(value) ? value : '';
-                                }
-                            },
-                            grid: { color: '#eee' }
-                        },
-                        y: {
-                            ticks: { color: '#555', font: { size: 12 } },
-                            grid: { color: '#f5f5f5' }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top',
-                            labels: {
-                                color: '#333',
-                                font: { size: 13 }
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Top de Artículos Despachados',
-                            color: '#222',
-                            font: { size: 18, weight: 'bold' },
-                            padding: { bottom: 20 }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function (context: any) {
-                                    return `${context.formattedValue} despachados`;
-                                }
-                            }
-                        }
-                    }
-                };
+                this.altura = altoHorizontal(labels.length);
+                this.basicOptions = opcionesBarras({ horizontal: true, unidad: 'despachados', maxEtiqueta: 24 });
             },
             error: (error) => {}
         });

@@ -15,7 +15,8 @@ import { ImageModule } from 'primeng/image';
     selector: 'app-login',
     standalone: true,
     imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator, CommonModule, ImageModule],
-    templateUrl: './login.html'
+    templateUrl: './login.html',
+    styleUrl: './login.scss'
 })
 export class Login {
     private authService = inject(AuthService);

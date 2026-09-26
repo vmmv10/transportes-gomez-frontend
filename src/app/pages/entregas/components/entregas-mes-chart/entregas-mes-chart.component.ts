@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { EntregasService } from '../../services/entregas.service';
 import { MessageService } from 'primeng/api';
 import { ChartModule } from 'primeng/chart';
+import { altoHorizontal, datasetBarras, opcionesBarras } from '../../../uikit/charts/chart-theme';
 import { EntregaFiltro } from '../../models/entrega-filtro.models';
 import { Escuela } from '../../../escuelas/models/escuela.models';
 
@@ -14,9 +15,10 @@ import { Escuela } from '../../../escuelas/models/escuela.models';
     providers: [MessageService]
 })
 export class EntregasMesChartComponent {
-     @Input() filtro: EntregaFiltro = new EntregaFiltro();
+    @Input() filtro: EntregaFiltro = new EntregaFiltro();
     basicData: any;
     basicOptions: any;
+    altura: string = '16rem';
     constructor(
         private entregasService: EntregasService,
         private MessageService: MessageService
@@ -36,66 +38,10 @@ export class EntregasMesChartComponent {
                 const labels = data.map((d) => d.titulo);
                 const values = data.map((d) => d.total);
                 this.basicData = {
-                    labels: labels,
-                    datasets: [
-                        {
-                            backgroundColor: '#42A5F5',
-                            data: values,
-                            label: 'Entregas por Mes'
-                        }
-                    ]
+                    labels,
+                    datasets: [datasetBarras('Entregas por mes', values, false)]
                 };
-
-                this.basicOptions = {
-                    responsive: true,
-                    animation: {
-                        duration: 1000,
-                        easing: 'easeOutQuart'
-                    },
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                color: '#333',
-                                font: { size: 14, weight: 'bold' }
-                            },
-                            ticks: {
-                                stepSize: 1,
-                                color: '#555',
-                                font: { size: 12 }
-                            },
-                            grid: { color: '#eee' }
-                        },
-                        y: {
-                            ticks: { color: '#555', font: { size: 12 } },
-                            grid: { color: '#f5f5f5' }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top',
-                            labels: {
-                                color: '#333',
-                                font: { size: 13 }
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Entregas por Mes',
-                            color: '#222',
-                            font: { size: 18, weight: 'bold' },
-                            padding: { bottom: 20 }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function (context: any) {
-                                    return `${context.formattedValue} entregas`;
-                                }
-                            }
-                        }
-                    }
-                };
+                this.basicOptions = opcionesBarras({ horizontal: false, unidad: 'entregas' });
             },
             error: (error) => {
                 this.MessageService.add({

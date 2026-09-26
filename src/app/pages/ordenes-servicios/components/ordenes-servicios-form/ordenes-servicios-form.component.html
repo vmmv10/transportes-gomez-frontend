@@ -1,174 +1,304 @@
 <p-toast />
-<div class="card flex flex-column gap-2 py-1">
-    <p-breadcrumb class="max-w-full" [model]="menus" />
+<div class="page-breadcrumb-bar flex flex-column">
+    <p-breadcrumb class="app-breadcrumb max-w-full" [model]="menus" />
 </div>
-<div class="flex flex-column">
-    <div class="flex flex-column gap-3 card">
-        <div class="flex md:flex-row flex-column gap-1">
-            <div class="flex flex-column gap-2 w-12">
-                <label class="text-md font-semibold">Bodega origen</label>
-                <app-bodegas-select [validar]="validar" [disabled]="orden.entregado || orden.id > 0" [(bodega)]="orden.bodega" [showClear]="true" [showFilter]="true" class="w-12"></app-bodegas-select>
+<div class="form-page">
+    <!-- ================= Datos generales ================= -->
+    <section class="card form-card">
+        <div class="page-header">
+            <div class="page-panel-title-group">
+                <span class="page-panel-title-chip"><i class="pi pi-file"></i></span>
+                <div class="page-panel-title-text">
+                    <h2 class="page-header__title">{{ esNueva ? 'Nueva orden de servicio' : 'Orden de servicio N° ' + orden.id }}</h2>
+                    <span class="page-panel-subtitle">
+                        <ng-container *ngIf="esNueva">Selecciona la bodega de origen y el establecimiento de destino</ng-container>
+                        <ng-container *ngIf="!esNueva">
+                            <p-tag *ngIf="orden.entregado" severity="success" value="Entregada" icon="pi pi-check" />
+                            <p-tag *ngIf="!orden.entregado" severity="warn" value="Pendiente" icon="pi pi-clock" />
+                            <span *ngIf="orden.escuela">{{ orden.escuela.nombre }}</span>
+                        </ng-container>
+                    </span>
+                </div>
             </div>
-            <div class="flex flex-col gap-2 w-12">
-                <div class="flex flex-col gap-2 w-12">
-                    <label for="escuela">Establecimiento Destino</label>
+            <div class="page-header__actions" *ngIf="!esNueva">
+                <p-button label="PDF" icon="pi pi-file-pdf" class="page-panel-header-action" pTooltip="Descargar orden en PDF" tooltipPosition="bottom" (onClick)="obtenerPdf()" />
+            </div>
+        </div>
+
+        <div class="form-note form-note--success" *ngIf="orden.entregado">
+            <i class="pi pi-lock"></i>
+            <span>Esta orden ya fue <b>entregada</b>: el detalle y las observaciones quedan solo de lectura.</span>
+        </div>
+
+        <!-- Origen y destino -->
+        <div class="form-section">
+            <div class="form-section__head">
+                <span class="form-section__icon"><i class="pi pi-arrow-right-arrow-left"></i></span>
+                <div>
+                    <h3 class="form-section__title">Origen y destino</h3>
+                    <p class="form-section__desc">Desde qué bodega sale la mercadería y a qué establecimiento va.</p>
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-field form-field--span-2">
+                    <label>Bodega de origen <span class="form-field__req">*</span></label>
+                    <app-bodegas-select [validar]="validar" [disabled]="orden.entregado || orden.id > 0" [(bodega)]="orden.bodega" [showClear]="true" [showFilter]="true" class="w-12"></app-bodegas-select>
+                    <small class="form-field__hint" *ngIf="orden.id > 0">La bodega no se puede cambiar en una orden ya creada.</small>
+                </div>
+                <div class="form-field form-field--span-2">
+                    <label for="escuela">Establecimiento de destino <span class="form-field__req">*</span></label>
                     <app-escuelas-select [validar]="validar" [disabled]="orden.entregado" [(escuela)]="orden.escuela" [showClear]="true" [showFilter]="true" class="w-12"></app-escuelas-select>
                 </div>
             </div>
-        </div>
-        <div *ngIf="orden.escuela" class="flex md:flex-row flex-column gap-1">
-            <div class="flex flex-column gap-2 w-12">
-                <label class="text-md font-semibold">Categoría</label>
-                <app-ordenes-servicio-categorias-select [(categoria)]="orden.categoria" [showClear]="true" [showFilter]="true" [validar]="false" />
-            </div>
-            <div class="flex flex-column gap-2 w-12">
-                <label class="text-md font-semibold">Orden de Compra</label>
-                <input pInputText id="nombre" type="text" [(ngModel)]="orden.documentoReferencia" class="w-12" />
-            </div>
-            <div class="flex flex-column gap-2 w-12">
-                <label class="text-md font-semibold">Ingreso</label>
-                <input pInputText id="nombre" type="text" [(ngModel)]="orden.ingreso" class="w-12" />
+
+            <div class="orden-destino" *ngIf="orden.escuela">
+                <span class="rbd-badge rbd-badge--sm" *ngIf="orden.escuela.rbd"
+                    ><span class="rbd-badge__label">RBD</span><span class="rbd-badge__valor">{{ orden.escuela.rbd }}</span></span
+                >
+                <span class="page-cell-icon" *ngIf="orden.escuela.comuna"><i class="pi pi-map"></i>{{ orden.escuela.comuna }}</span>
+                <span class="page-cell-icon" *ngIf="orden.escuela.direccion"><i class="pi pi-map-marker"></i>{{ orden.escuela.direccion }}</span>
+                <span class="page-cell-icon" *ngIf="orden.escuela.director"><i class="pi pi-user"></i>{{ orden.escuela.director }}</span>
             </div>
         </div>
-        <p-panel *ngIf="orden.escuela" header="Cliente" class="w-12">
-            <table class="table-auto border-collapse w-12">
-                <tr>
-                    <th class="text-left font-bold p-2 border-y-1">RBD</th>
-                    <th class="text-left p-2 border-y-1">{{ orden.escuela.rbd }}</th>
-                </tr>
-                <tr>
-                    <th class="text-left p-2 border-bottom-1">Comuna</th>
-                    <th class="text-left p-2 border-bottom-1">{{ orden.escuela.comuna }}</th>
-                </tr>
-                <tr>
-                    <th class="text-left p-2 border-bottom-1">Nombre Establecimiento</th>
-                    <th class="text-left p-2 border-bottom-1">{{ orden.escuela.nombre }}</th>
-                </tr>
-                <tr>
-                    <th class="text-left p-2 border-bottom-1">Director (a)</th>
-                    <th class="text-left p-2 border-bottom-1">{{ orden.escuela.director }}</th>
-                </tr>
-                <tr>
-                    <th class="text-left p-2 border-bottom-1">Dirección</th>
-                    <th class="text-left p-2 border-bottom-1">{{ orden.escuela.direccion }}</th>
-                </tr>
-            </table>
-        </p-panel>
-    </div>
-    <div *ngIf="orden.bodega && orden.bodega.id == 4 && orden.id == 0 && orden.escuela" class="flex flex-column gap-3 card">
-        <app-documentos-modal-select class="flex w-12" [asignado]="false" [documento]="documento" (documentoChange)="documentoChange($event)"></app-documentos-modal-select>
-    </div>
-    <div *ngIf="(orden.bodega && orden.bodega.id != 4 && orden.escuela) || (orden.bodega && orden.bodega.id == 4 && orden.documento.id > 0 && orden.escuela)" class="flex flex-column gap-2 card">
-        <div class="flex flex-row gap-2 w-12 justify-content-between">
-            <h3 class="text-lg font-semibold mb-0 {{ validar && orden.detalles.length == 0 ? 'text-red-600' : '' }}">Detalles de la Orden</h3>
-            <i *ngIf="validar && orden.detalles.length == 0" class="text-xl pi pi-exclamation-triangle text-red-600 align-items-center flex"></i>
-        </div>
-        <p-table *ngIf="(orden.bodega && orden.bodega.id != 4) || (orden.bodega && orden.bodega.id == 4 && orden.documento.id > 0)" [value]="orden.detalles" id="ordenes-table" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
-            <ng-template #header>
-                <tr>
-                    <th class="text-center">Insumo</th>
-                    <th class="text-center">Cantidad</th>
-                    <th class="text-center"><p-button [disabled]="orden.entregado" pTooltip="Agregar Item" icon="pi pi-plus" [rounded]="true" [text]="true" severity="success" (click)="agregarFila()" /></th>
-                </tr>
-            </ng-template>
-            <ng-template #body let-producto let-index="rowIndex">
-                <tr>
-                    <td class="text-center">{{ producto.nombre }}</td>
-                    <td class="text-center">{{ producto.cantidad }}</td>
-                    <td class="text-center">
-                        <p-button pTooltip="Eliminar" icon="pi pi-trash" [disabled]="orden.entregado" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminarDetalle(producto)" />
-                        <p-button pTooltip="Editar" icon="pi pi-pencil" [disabled]="orden.entregado" [rounded]="true" [text]="true" severity="help" (click)="editarDetalle(index)" />
-                    </td>
-                </tr>
-            </ng-template>
-            <ng-template #emptymesage>
-                <div class="flex items-center w-12 p-2 text-center justify-between">Sin Items</div>
-            </ng-template>
-        </p-table>
-    </div>
-    <div class="flex flex-column gap-3 card" *ngIf="(orden.bodega && orden.bodega.id != 4 && orden.escuela) || (orden.bodega && orden.bodega.id == 4 && orden.documento.id > 0 && orden.escuela)">
-        <textarea [disabled]="orden.entregado" [(ngModel)]="orden.observaciones" class="w-12 p-inputtext p-component" rows="5" placeholder="Ingrese observaciones"></textarea>
-    </div>
-    <!--<div class="flex flex-column gap-2 card w-12" *ngIf="orden.id > 0 && imagenes && imagenes.length > 0">
-        <span class="text-lg font-semibold">PDF</span>
-        <div class="flex flex-row gap-1">
-            <div class="flex w-12 md:flex-row flex-col gap-1">
-                <button pButton type="button" icon="pi pi-plus" label="Descargar PDF" class="w-12" severity="danger" (click)="descargarPdfVerificacion(imagenes[0].itemImageSrc)"></button>
-                <button pButton type="button" icon="pi pi-trash" label="Eliminar" class="w-12" severity="danger" (click)="confirmarEliminar(imagenes[0].id)" [outlined]="true"></button>
-            </div>
-        </div>
-    </div>-->
-    <div *ngIf="orden.id > 0 && imagenes" class="flex flex-column gap-3 card">
-        <p-galleria *ngIf="imagenes && imagenes.length > 0" [value]="imagenes" (onItemChange)="onImagenChange($event)" [responsiveOptions]="responsiveOptions" [numVisible]="5">
-            <ng-template #item let-item>
-                <img [src]="item.itemImageSrc" style="width: 100%" />
-            </ng-template>
-            <ng-template #caption let-item>
-                <div class="flex flex-row justify-content-between items-center w-12 p-fluid">
-                    <p-button variant="text" label="Eliminar" severity="danger" icon="pi pi-trash" size="large" (click)="confirmarEliminar(item.id)" class="w-12 p-fluid" [fluid]="true" [disabled]="!imagenSeleccionada" />
+
+        <!-- Datos de la orden -->
+        <div class="form-section" *ngIf="orden.escuela">
+            <div class="form-section__head">
+                <span class="form-section__icon"><i class="pi pi-tags"></i></span>
+                <div>
+                    <h3 class="form-section__title">Datos de la orden</h3>
+                    <p class="form-section__desc">Clasificación y documentos de referencia.</p>
                 </div>
-            </ng-template>
-            <ng-template #thumbnail let-item>
-                <img [src]="item.thumbnailImageSrc" style="width: 50px; height: 50px; object-fit: cover" />
-            </ng-template>
-        </p-galleria>
-        <p-fileupload
-            *ngIf="orden.id > 0 && imagenes && imagenes.length == 0"
-            name="myfile[]"
-            url="https://www.primefaces.org/cdn/api/upload.php"
-            [multiple]="true"
-            accept="application/pdf, image/*"
-            maxFileSize="1000000"
-            (onUpload)="onTemplatedUpload()"
-            (onSelect)="onSelectedFiles($event)"
-        >
-            <ng-template #header let-files let-chooseCallback="chooseCallback" let-clearCallback="clearCallback" let-uploadCallback="uploadCallback">
-                <div class="flex justify-between items-center flex-1 gap-4">
-                    <div class="flex gap-2">
-                        <p-button (onClick)="choose($event, chooseCallback)" icon="pi pi-file-pdf" [rounded]="true" />
-                        <p-button (onClick)="clearCallback()" icon="pi pi-trash" [rounded]="true" [outlined]="true" severity="danger" [disabled]="!files || files.length === 0" />
+            </div>
+            <div class="form-grid">
+                <div class="form-field form-field--span-2">
+                    <label>Categoría</label>
+                    <app-ordenes-servicio-categorias-select [(categoria)]="orden.categoria" [showClear]="true" [showFilter]="true" [validar]="false" />
+                </div>
+                <div class="form-field">
+                    <label for="ordenCompra">Orden de compra</label>
+                    <p-iconfield>
+                        <p-inputicon class="pi pi-shopping-cart" />
+                        <input pInputText id="ordenCompra" type="text" [(ngModel)]="orden.documentoReferencia" placeholder="Ej: OC-1234" />
+                    </p-iconfield>
+                </div>
+                <div class="form-field">
+                    <label for="ingreso">Ingreso</label>
+                    <p-iconfield>
+                        <p-inputicon class="pi pi-inbox" />
+                        <input pInputText id="ingreso" type="text" [(ngModel)]="orden.ingreso" placeholder="N° de ingreso" />
+                    </p-iconfield>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documento de respaldo (bodega de documentos, orden nueva) -->
+        <div class="form-section" *ngIf="orden.bodega && orden.bodega.id == 4 && orden.id == 0 && orden.escuela">
+            <div class="form-section__head">
+                <span class="form-section__icon"><i class="pi pi-file-import"></i></span>
+                <div>
+                    <h3 class="form-section__title">Documento de respaldo</h3>
+                    <p class="form-section__desc">Selecciona el documento del que se tomarán los insumos.</p>
+                </div>
+            </div>
+            <app-documentos-modal-select class="flex w-12" [asignado]="false" [documento]="documento" (documentoChange)="documentoChange($event)"></app-documentos-modal-select>
+        </div>
+    </section>
+
+    <!-- ================= Detalle ================= -->
+    <section class="card form-card" *ngIf="puedeDetallar">
+        <div class="page-header">
+            <div class="page-panel-title-group">
+                <span class="page-panel-title-chip"><i class="pi pi-list"></i></span>
+                <div class="page-panel-title-text">
+                    <h2 class="page-header__title">Detalle de insumos</h2>
+                    <span class="page-panel-subtitle">
+                        Artículos que se despacharán
+                        <span class="page-panel-count">{{ orden.detalles.length }} {{ orden.detalles.length === 1 ? 'ítem' : 'ítems' }}</span>
+                    </span>
+                </div>
+            </div>
+            <div class="page-header__actions">
+                <p-button label="Agregar ítem" icon="pi pi-plus" class="page-panel-primary-action" [disabled]="orden.entregado" (onClick)="agregarFila()" />
+            </div>
+        </div>
+
+        <div class="form-section">
+            <p-table [value]="orden.detalles" id="ordenes-table" [loading]="loading" class="detalle-table">
+                <ng-template #header>
+                    <tr>
+                        <th style="width: 3rem">#</th>
+                        <th>Insumo</th>
+                        <th class="text-right">Cantidad</th>
+                        <th style="width: 7rem"></th>
+                    </tr>
+                </ng-template>
+                <ng-template #body let-producto let-index="rowIndex">
+                    <tr>
+                        <td class="page-cell-muted">{{ index + 1 }}</td>
+                        <td class="page-cell-strong">{{ producto.nombre }}</td>
+                        <td class="text-right">
+                            <span class="page-cell-code">{{ producto.cantidad | number: '1.0-2' }}</span>
+                        </td>
+                        <td class="text-right">
+                            <p-button pTooltip="Editar" tooltipPosition="left" icon="pi pi-pencil" [disabled]="orden.entregado" [rounded]="true" [text]="true" class="page-row-action" (click)="editarDetalle(index)" />
+                            <p-button pTooltip="Eliminar" tooltipPosition="left" icon="pi pi-trash" [disabled]="orden.entregado" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminarDetalle(producto)" />
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template #emptymessage>
+                    <tr>
+                        <td colspan="4">
+                            <div class="page-empty">
+                                <i class="pi pi-box"></i>
+                                <strong>Aún no hay ítems en la orden</strong>
+                                <span>Usa "Agregar ítem" para sumar insumos desde la bodega.</span>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <!-- Observaciones -->
+        <div class="form-section">
+            <div class="form-section__head">
+                <span class="form-section__icon"><i class="pi pi-comment"></i></span>
+                <div>
+                    <h3 class="form-section__title">Observaciones</h3>
+                    <p class="form-section__desc">Indicaciones para el despacho o la recepción (opcional).</p>
+                </div>
+            </div>
+            <textarea pTextarea [disabled]="orden.entregado" [(ngModel)]="orden.observaciones" class="w-12 form-textarea" rows="4" placeholder="Ej: Entregar en portería antes de las 10:00"></textarea>
+        </div>
+
+        <!-- Ruta de despacho (solo al crear) -->
+        <div class="form-section" *ngIf="esNueva">
+            <div class="form-section__head">
+                <span class="form-section__icon"><i class="pi pi-truck"></i></span>
+                <div>
+                    <h3 class="form-section__title">Ruta de despacho</h3>
+                    <p class="form-section__desc">Opcional: deja la orden asignada a una ruta al guardarla.</p>
+                </div>
+            </div>
+
+            <p-selectbutton [options]="modosRuta" [(ngModel)]="modoRuta" (ngModelChange)="onModoRutaChange($event)" optionLabel="label" optionValue="value" [allowEmpty]="false" class="ruta-modos">
+                <ng-template #item let-item>
+                    <i [class]="item.icon"></i>
+                    <span>{{ item.label }}</span>
+                </ng-template>
+            </p-selectbutton>
+
+            <!-- Ruta existente -->
+            <div class="form-grid ruta-opciones" *ngIf="modoRuta === 'existente'">
+                <div class="form-field ruta-opciones__full">
+                    <label>Ruta pendiente <span class="form-field__req">*</span></label>
+                    <app-rutas-modal-select [(ruta)]="rutaSeleccionada" [escuela]="orden.escuela" [validar]="validarRuta" />
+                    <small class="form-field__hint" *ngIf="rutaSeleccionada?.enTransito"> <i class="pi pi-exclamation-triangle"></i> Esta ruta ya está en tránsito; el chofer verá la nueva orden al refrescar su ruta. </small>
+                </div>
+            </div>
+
+            <!-- Nueva ruta -->
+            <div class="form-grid ruta-opciones" *ngIf="modoRuta === 'nueva'">
+                <div class="form-field form-field--span-2">
+                    <label>Chofer <span class="form-field__req">*</span></label>
+                    <app-usuarios-select [rol]="'repartidor'" [validar]="validarRuta" [(usuario)]="nuevaRutaChofer" [showClear]="true" [showFilter]="true" class="w-12"></app-usuarios-select>
+                </div>
+                <div class="form-field form-field--span-2">
+                    <label>Fecha de la ruta <span class="form-field__req">*</span></label>
+                    <p-datepicker dateFormat="dd/mm/yy" [(ngModel)]="nuevaRutaFecha" [minDate]="minFechaRuta" [showIcon]="true" [fluid]="true" appendTo="body" [ngClass]="{ 'ng-invalid ng-dirty': validarRuta && !nuevaRutaFecha }" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= Imágenes / respaldo de entrega ================= -->
+    <section class="card form-card" *ngIf="orden.id > 0 && imagenes">
+        <div class="page-header">
+            <div class="page-panel-title-group">
+                <span class="page-panel-title-chip"><i class="pi pi-images"></i></span>
+                <div class="page-panel-title-text">
+                    <h2 class="page-header__title">Respaldo de entrega</h2>
+                    <span class="page-panel-subtitle">
+                        Imágenes o PDF de la recepción
+                        <span class="page-panel-count" *ngIf="imagenes.length">{{ imagenes.length }} archivos</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <p-galleria *ngIf="imagenes && imagenes.length > 0" [value]="imagenes" (onItemChange)="onImagenChange($event)" [responsiveOptions]="responsiveOptions" [numVisible]="5" containerClass="orden-galeria">
+                <ng-template #item let-item>
+                    <img [src]="item.itemImageSrc" class="orden-galeria__img" />
+                </ng-template>
+                <ng-template #caption let-item>
+                    <div class="flex flex-row justify-content-end items-center w-12">
+                        <p-button label="Eliminar imagen" severity="danger" icon="pi pi-trash" (click)="confirmarEliminar(item.id)" [disabled]="!imagenSeleccionada" />
                     </div>
-                </div>
-            </ng-template>
-            <ng-template #content let-files let-uploadedFiles="uploadedFiles" let-removeFileCallback="removeFileCallback" let-removeUploadedFileCallback="removeUploadedFileCallback">
-                <div class="flex flex-col gap-2 pt-4">
-                    <div *ngIf="files?.length > 0">
-                        <h5>Pendiente</h5>
-                        <div class="flex flex-wrap gap-4">
-                            <div *ngFor="let file of files; let i = index" class="p-8 rounded-border flex flex-col border border-surface items-center gap-4">
-                                <div>
-                                    <ng-container *ngIf="file.type.startsWith('image/'); else pdfPreview">
-                                        <img role="presentation" [alt]="file.name" [src]="file.objectURL" width="100" height="50" />
-                                    </ng-container>
-                                    <ng-template #pdfPreview>
-                                        <i class="pi pi-file-pdf text-4xl text-red-600"></i>
-                                    </ng-template>
-                                </div>
-                                <span class="font-semibold text-ellipsis max-w-60 whitespace-nowrap overflow-hidden">{{ file.name }}</span>
-                                <div>{{ formatSize(file.size) }}</div>
-                                <p-badge value="Pending" severity="warn" />
-                                <p-button icon="pi pi-times" (click)="onRemoveTemplatingFile($event, file, removeFileCallback, i)" [outlined]="true" [rounded]="true" severity="danger" />
+                </ng-template>
+                <ng-template #thumbnail let-item>
+                    <img [src]="item.thumbnailImageSrc" style="width: 56px; height: 56px; object-fit: cover; border-radius: 8px" />
+                </ng-template>
+            </p-galleria>
+
+            <p-fileupload
+                *ngIf="orden.id > 0 && imagenes && imagenes.length == 0"
+                name="myfile[]"
+                url="https://www.primefaces.org/cdn/api/upload.php"
+                class="upload-panel"
+                [multiple]="true"
+                accept="application/pdf, image/*"
+                maxFileSize="1000000"
+                (onUpload)="onTemplatedUpload()"
+                (onSelect)="onSelectedFiles($event)"
+            >
+                <ng-template #header let-files let-chooseCallback="chooseCallback" let-clearCallback="clearCallback" let-uploadCallback="uploadCallback">
+                    <div class="flex justify-between items-center flex-1 gap-2">
+                        <p-button (onClick)="choose($event, chooseCallback)" icon="pi pi-plus" label="Elegir archivos" class="page-panel-header-action" />
+                        <p-button (onClick)="clearCallback()" icon="pi pi-trash" label="Limpiar" [text]="true" severity="danger" [disabled]="!files || files.length === 0" />
+                    </div>
+                </ng-template>
+                <ng-template #content let-files let-uploadedFiles="uploadedFiles" let-removeFileCallback="removeFileCallback" let-removeUploadedFileCallback="removeUploadedFileCallback">
+                    <div class="flex flex-col gap-2 pt-3" *ngIf="files?.length > 0">
+                        <span class="form-field__hint">Pendientes de subir</span>
+                        <div class="upload-grid">
+                            <div *ngFor="let file of files; let i = index" class="upload-file">
+                                <ng-container *ngIf="file.type.startsWith('image/'); else pdfPreview">
+                                    <img role="presentation" [alt]="file.name" [src]="file.objectURL" class="upload-file__thumb" />
+                                </ng-container>
+                                <ng-template #pdfPreview>
+                                    <span class="upload-file__pdf"><i class="pi pi-file-pdf"></i></span>
+                                </ng-template>
+                                <span class="upload-file__name">{{ file.name }}</span>
+                                <span class="upload-file__size">{{ formatSize(file.size) }}</span>
+                                <p-button icon="pi pi-times" (click)="onRemoveTemplatingFile($event, file, removeFileCallback, i)" [text]="true" [rounded]="true" severity="danger" pTooltip="Quitar" />
                             </div>
                         </div>
                     </div>
-                </div>
-            </ng-template>
-            <ng-template #file></ng-template>
-            <ng-template #empty>
-                <div class="flex items-center justify-center flex-col">
-                    <i class="pi pi-cloud-upload !border-2 !rounded-full !p-8 !text-4xl !text-muted-color"></i>
-                    <p class="mt-6 mb-0">Arrastre la Imagen aquí.</p>
-                </div>
-            </ng-template>
-        </p-fileupload>
+                </ng-template>
+                <ng-template #file></ng-template>
+                <ng-template #empty>
+                    <div class="page-empty">
+                        <i class="pi pi-cloud-upload"></i>
+                        <strong>Arrastra aquí las imágenes o el PDF</strong>
+                        <span>O usa "Elegir archivos". Máximo 1 MB por archivo.</span>
+                    </div>
+                </ng-template>
+            </p-fileupload>
+        </div>
+    </section>
+
+    <!-- ================= Acciones ================= -->
+    <div class="form-actions" *ngIf="puedeDetallar">
+        <span class="form-actions__hint"><i class="pi pi-info-circle"></i> Al guardar se generan los movimientos en bodega.</span>
+        <div class="form-actions__buttons">
+            <p-button label="Volver" icon="pi pi-arrow-left" severity="secondary" [text]="true" [routerLink]="['/ordenes-servicios']" />
+            <p-button *ngIf="!esNueva" label="Subir imágenes" icon="pi pi-upload" class="page-panel-header-action" (onClick)="uploadImagenes()" />
+            <p-button *ngIf="esNueva" label="Guardar orden" icon="pi pi-save" class="page-panel-primary-action" (onClick)="confirmarGuardar()" />
+            <p-button *ngIf="!esNueva" label="Guardar cambios" icon="pi pi-save" class="page-panel-primary-action" (onClick)="guardar()" />
+        </div>
     </div>
-</div>
-<div class="flex flex-column md:flex-row gap-2 card w-12" *ngIf="(orden.bodega && orden.bodega.id != 4 && orden.escuela) || (orden.bodega && orden.bodega.id == 4 && orden.documento.id > 0 && orden.escuela)">
-    <p-button class="w-12" size="large" [fluid]="true" label="Volver" severity="secondary" icon="pi pi-times" [routerLink]="['/ordenes-servicios']" />
-    <p-button *ngIf="orden.id == 0 || !orden.id" class="w-12" size="large" [fluid]="true" [label]="'Guardar'" severity="success" icon="pi pi-save" (click)="confirmarGuardar()" />
-    <p-button *ngIf="orden.id != 0 && orden.id" class="w-12" size="large" [fluid]="true" [label]="'Actualizar'" severity="success" icon="pi pi-save" (click)="guardar()" />
-    <p-button *ngIf="orden.id != 0 && orden.id" class="w-12" size="large" [fluid]="true" [outlined]="true" [label]="'Subir Imagenes'" severity="success" icon="pi pi-file" (click)="uploadImagenes()" />
-    <p-button *ngIf="orden.id && orden.id > 0" class="w-12" size="large" [fluid]="true" label="Descargar PDF" severity="danger" icon="pi pi-file-pdf" (click)="obtenerPdf()" />
 </div>
 <p-confirmdialog #eliminarImage>
     <ng-template #message let-message>
@@ -257,10 +387,20 @@
                 <td class="text-center">{{ producto.cantidad }}</td>
             </tr>
         </ng-template>
-        <ng-template #emptymesage>
+        <ng-template #emptymessage>
             <div class="flex items-center w-12 p-2 text-center justify-between">Sin Items</div>
         </ng-template>
     </p-table>
+    <div class="form-note ruta-resumen" *ngIf="modoRuta !== 'ninguna'">
+        <i class="pi pi-truck"></i>
+        <span *ngIf="modoRuta === 'existente'"
+            >Se agregará a la <b>{{ rutaLabel(rutaSeleccionada) }}</b
+            >.</span
+        >
+        <span *ngIf="modoRuta === 'nueva'"
+            >Se creará una ruta nueva para el <b>{{ nuevaRutaFecha | date: 'dd/MM/yyyy' }}</b> con {{ nuevaRutaChofer?.nombre }} {{ nuevaRutaChofer?.apellidos }}.</span
+        >
+    </div>
     <ng-template #footer>
         <p-button label="Cancelar" [text]="true" severity="secondary" class="w-12" [fluid]="true" (click)="cerrardialogConfirmacion()" />
         <p-button label="Guardar" severity="success" class="w-12" [fluid]="true" (click)="guardar()" />

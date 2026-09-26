@@ -1,0 +1,129 @@
+<p-toast />
+
+<!-- Disparador: muestra la ruta elegida o invita a buscar -->
+<div
+    class="ruta-trigger"
+    [ngClass]="{ 'ruta-trigger--vacio': !ruta, 'ruta-trigger--invalido': validar && !ruta, 'ruta-trigger--disabled': disabled }"
+    role="button"
+    tabindex="0"
+    (click)="abrir()"
+    (keydown.enter)="abrir()"
+>
+    <span class="ruta-trigger__icon"><i class="pi" [ngClass]="ruta ? 'pi-directions' : 'pi-search'"></i></span>
+    <div class="ruta-trigger__body" *ngIf="ruta; else vacio">
+        <span class="ruta-trigger__title">Ruta N° {{ ruta.id }} · {{ fechaCorta(ruta.fecha) }} <span class="ruta-trigger__rel">({{ fechaRelativa(ruta.fecha) }})</span></span>
+        <span class="ruta-trigger__meta">
+            <span><i class="pi pi-user"></i>{{ nombreChofer(ruta) }}</span>
+            <span><i class="pi pi-box"></i>{{ ruta.ordenes?.length ?? 0 }} OS</span>
+            <p-tag *ngIf="ruta.enTransito" severity="warn" value="En tránsito" />
+        </span>
+    </div>
+    <ng-template #vacio>
+        <div class="ruta-trigger__body">
+            <span class="ruta-trigger__title">Buscar ruta pendiente</span>
+            <span class="ruta-trigger__meta">Filtra por fecha, chofer o número de ruta</span>
+        </div>
+    </ng-template>
+    <div class="ruta-trigger__actions">
+        <p-button *ngIf="ruta && !disabled" icon="pi pi-times" [rounded]="true" [text]="true" severity="secondary" pTooltip="Quitar" (onClick)="quitar($event)" />
+        <p-button [label]="ruta ? 'Cambiar' : 'Buscar'" icon="pi pi-search" [outlined]="true" [disabled]="disabled" (onClick)="abrir()" />
+    </div>
+</div>
+
+<p-dialog header="Seleccionar ruta" [modal]="true" [(visible)]="visible" [style]="{ width: '72rem' }" [breakpoints]="{ '1199px': '92vw', '575px': '96vw' }" [draggable]="false" appendTo="body">
+    <!-- Filtros -->
+    <div class="rms-filtros">
+        <p-selectbutton [options]="rangos" [(ngModel)]="rango" (ngModelChange)="onRangoChange()" optionLabel="label" optionValue="value" [allowEmpty]="false" class="rms-rangos" />
+        <div class="rms-filtros__campos">
+            <p-inputnumber [(ngModel)]="numeroRuta" placeholder="N° de ruta" [useGrouping]="false" (keydown.enter)="buscar()" (onClear)="buscar()" [showClear]="true" class="rms-numero" />
+            <app-usuarios-select [rol]="'repartidor'" [usuario]="chofer" (usuarioChange)="onChoferChange($event)" [showClear]="true" [showFilter]="true" class="rms-chofer" />
+            <p-button icon="pi pi-search" label="Buscar" (onClick)="buscar()" />
+            <p-button icon="pi pi-filter-slash" [text]="true" severity="secondary" pTooltip="Limpiar filtros" (onClick)="limpiar()" />
+        </div>
+    </div>
+
+    <div class="rms-leyenda" *ngIf="escuela?.comuna">
+        <i class="pi pi-star-fill"></i>
+        Se destacan las rutas que ya pasan por <b>{{ escuela?.nombre }}</b> o por la comuna de <b>{{ escuela?.comuna }}</b>.
+    </div>
+
+    <p-table
+        [value]="rutas"
+        dataKey="id"
+        [lazy]="true"
+        (onLazyLoad)="onLazyLoad($event)"
+        [paginator]="true"
+        [rows]="filtro.size"
+        [first]="filtro.page * filtro.size"
+        [totalRecords]="data?.totalElements ?? 0"
+        [rowsPerPageOptions]="[10, 20, 30]"
+        [loading]="loading"
+        selectionMode="single"
+        [(selection)]="seleccion"
+        [tableStyle]="{ 'min-width': '52rem' }"
+        class="rms-tabla"
+    >
+        <ng-template #header>
+            <tr>
+                <th style="width: 3rem"></th>
+                <th style="width: 6rem">N°</th>
+                <th>Fecha</th>
+                <th>Chofer</th>
+                <th class="text-center">OS</th>
+                <th>Comunas que recorre</th>
+                <th>Estado</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-r>
+            <tr [pSelectableRow]="r" (dblclick)="seleccionarDirecto(r)" [ngClass]="{ 'rms-row--match': coincidencia(r) }">
+                <td><p-tableRadioButton [value]="r" /></td>
+                <td class="font-semibold">{{ r.id }}</td>
+                <td>
+                    <div class="rms-fecha">
+                        <span>{{ fechaCorta(r.fecha) }}</span>
+                        <small>{{ fechaRelativa(r.fecha) }}</small>
+                    </div>
+                </td>
+                <td>{{ nombreChofer(r) }}</td>
+                <td class="text-center">{{ r.ordenes?.length ?? 0 }}</td>
+                <td>
+                    <div class="rms-comunas">
+                        <span class="rms-comuna" *ngFor="let c of comunas(r).slice(0, 3)" [ngClass]="{ 'rms-comuna--match': c.trim().toLowerCase() === escuela?.comuna?.trim()?.toLowerCase() }">{{ c }}</span>
+                        <span class="rms-comuna rms-comuna--mas" *ngIf="comunas(r).length > 3" [pTooltip]="comunas(r).slice(3).join(', ')">+{{ comunas(r).length - 3 }}</span>
+                        <span class="rms-vacio" *ngIf="comunas(r).length === 0">Sin OS</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="rms-estado">
+                        <p-tag *ngIf="r.enTransito" severity="warn" value="En tránsito" />
+                        <p-tag *ngIf="!r.enTransito" severity="info" value="Pendiente" />
+                        <p-tag *ngIf="coincidencia(r) === 'escuela'" severity="success" icon="pi pi-star-fill" value="Misma escuela" />
+                        <p-tag *ngIf="coincidencia(r) === 'comuna'" severity="success" icon="pi pi-star" value="Misma comuna" />
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="7">
+                    <div class="page-empty">
+                        <i class="pi pi-directions"></i>
+                        <strong>No hay rutas pendientes con estos filtros</strong>
+                        <span>Prueba con "Todas" o crea una ruta nueva desde el formulario.</span>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+
+    <ng-template #footer>
+        <div class="rms-footer">
+            <span class="rms-footer__sel" *ngIf="seleccion"><i class="pi pi-check-circle"></i> Ruta N° {{ seleccion.id }} · {{ fechaCorta(seleccion.fecha) }} · {{ nombreChofer(seleccion) }}</span>
+            <span class="rms-footer__sel rms-footer__sel--hint" *ngIf="!seleccion">Haz clic en una fila para elegirla (doble clic para confirmar).</span>
+            <div class="rms-footer__buttons">
+                <p-button label="Cancelar" [text]="true" severity="secondary" (onClick)="cerrar()" />
+                <p-button label="Seleccionar" icon="pi pi-check" severity="success" [disabled]="!seleccion" (onClick)="confirmar()" />
+            </div>
+        </div>
+    </ng-template>
+</p-dialog>

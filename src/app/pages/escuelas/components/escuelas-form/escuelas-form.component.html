@@ -1,45 +1,142 @@
 <p-toast />
-<div class="card flex flex-column gap-2 py-1">
-    <p-breadcrumb class="max-w-full" [model]="items" />
+<div class="page-breadcrumb-bar flex flex-column">
+    <p-breadcrumb class="app-breadcrumb max-w-full" [model]="items" />
 </div>
-<div class="flex flex-column gap-2 card">
-    <div class="flex flex-col md:flex-row gap-2 w-12">
-        <div class="flex flex-col gap-2 w-12">
-            <label for="nombre">Nombre</label>
-            <input pInputText id="nombre" type="text" [(ngModel)]="escuela.nombre" class="w-12" />
+
+<div class="form-page">
+    <section class="card form-card">
+        <div class="page-header">
+            <div class="page-panel-title-group">
+                <span class="page-panel-title-chip"><i class="pi pi-graduation-cap"></i></span>
+                <div class="page-panel-title-text">
+                    <h2 class="page-header__title">{{ esNuevo ? 'Nuevo establecimiento' : 'Editar establecimiento' }}</h2>
+                    <span class="page-panel-subtitle">
+                        <ng-container *ngIf="esNuevo">Completa los datos para registrar el establecimiento</ng-container>
+                        <ng-container *ngIf="!esNuevo">{{ escuela.nombre }}</ng-container>
+                    </span>
+                </div>
+            </div>
+            <div class="page-header__actions" *ngIf="!esNuevo">
+                <p-button label="Ver ficha" icon="pi pi-eye" class="page-panel-header-action" [routerLink]="['/establecimientos/dashboard/' + escuela.id]" />
+            </div>
         </div>
-        <div class="flex flex-col gap-2 w-12">
-            <label for="age1">RBD</label>
-            <input pInputText id="age1" type="text" [(ngModel)]="escuela.rbd" class="w-12" />
+
+        <!-- Identificación -->
+        <div class="form-section">
+            <div class="form-section__head">
+                <span class="form-section__icon"><i class="pi pi-id-card"></i></span>
+                <div>
+                    <h3 class="form-section__title">Identificación</h3>
+                    <p class="form-section__desc">Datos oficiales del establecimiento.</p>
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-field form-field--span-2">
+                    <label for="nombre">Nombre <span class="form-field__req">*</span></label>
+                    <input pInputText id="nombre" type="text" [(ngModel)]="escuela.nombre" placeholder="Ej: Escuela Anexa" [class.ng-invalid]="intentoGuardar && !escuela.nombre" [class.ng-dirty]="intentoGuardar && !escuela.nombre" />
+                    <small class="form-field__error" *ngIf="intentoGuardar && !escuela.nombre">El nombre es obligatorio.</small>
+                </div>
+                <div class="form-field">
+                    <label for="rbd">RBD <span class="form-field__req">*</span></label>
+                    <p-inputgroup>
+                        <p-inputgroup-addon class="form-rbd-addon">RBD</p-inputgroup-addon>
+                        <input pInputText id="rbd" type="text" inputmode="numeric" [(ngModel)]="escuela.rbd" placeholder="8107" class="form-rbd-input" [class.ng-invalid]="intentoGuardar && !escuela.rbd" [class.ng-dirty]="intentoGuardar && !escuela.rbd" />
+                    </p-inputgroup>
+                    <small class="form-field__hint" *ngIf="!(intentoGuardar && !escuela.rbd)">Rol Base de Datos del Mineduc.</small>
+                    <small class="form-field__error" *ngIf="intentoGuardar && !escuela.rbd">El RBD es obligatorio.</small>
+                </div>
+                <div class="form-field">
+                    <label for="comuna">Comuna</label>
+                    <p-iconfield>
+                        <p-inputicon class="pi pi-map" />
+                        <input pInputText id="comuna" type="text" [(ngModel)]="escuela.comuna" placeholder="Ej: Ancud" />
+                    </p-iconfield>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contacto -->
+        <div class="form-section">
+            <div class="form-section__head">
+                <span class="form-section__icon"><i class="pi pi-users"></i></span>
+                <div>
+                    <h3 class="form-section__title">Contacto</h3>
+                    <p class="form-section__desc">Responsable y medios para coordinar entregas.</p>
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-field form-field--span-2">
+                    <label for="director">Director(a)</label>
+                    <p-iconfield>
+                        <p-inputicon class="pi pi-user" />
+                        <input pInputText id="director" type="text" [(ngModel)]="escuela.director" placeholder="Nombre y apellido" />
+                    </p-iconfield>
+                </div>
+                <div class="form-field">
+                    <label for="telefono">Teléfono</label>
+                    <p-iconfield>
+                        <p-inputicon class="pi pi-phone" />
+                        <input pInputText id="telefono" type="tel" [(ngModel)]="escuela.telefono" placeholder="9 1234 5678" />
+                    </p-iconfield>
+                </div>
+                <div class="form-field">
+                    <label for="email">Email</label>
+                    <p-iconfield>
+                        <p-inputicon class="pi pi-envelope" />
+                        <input pInputText id="email" type="email" [(ngModel)]="escuela.email" placeholder="correo@escuela.cl" [class.ng-invalid]="escuela.email && !emailValido" [class.ng-dirty]="escuela.email && !emailValido" />
+                    </p-iconfield>
+                    <small class="form-field__error" *ngIf="escuela.email && !emailValido">El email no tiene un formato válido.</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ubicación -->
+        <div class="form-section">
+            <div class="form-section__head">
+                <span class="form-section__icon"><i class="pi pi-map-marker"></i></span>
+                <div>
+                    <h3 class="form-section__title">Ubicación</h3>
+                    <p class="form-section__desc">La latitud y longitud se usan para mostrar el establecimiento en el mapa.</p>
+                </div>
+                <div class="form-section__head-action">
+                    <p-button
+                        label="Verificar en Google Maps"
+                        icon="pi pi-external-link"
+                        class="page-panel-header-action"
+                        [disabled]="!tieneCoordenadas"
+                        [pTooltip]="tieneCoordenadas ? 'Abre las coordenadas en una pestaña nueva' : 'Ingresa latitud y longitud para verificar'"
+                        tooltipPosition="left"
+                        (onClick)="verificarEnMapa()"
+                    />
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-field form-field--span-2">
+                    <label for="direccion">Dirección</label>
+                    <p-iconfield>
+                        <p-inputicon class="pi pi-home" />
+                        <input pInputText id="direccion" type="text" [(ngModel)]="escuela.direccion" placeholder="Calle, número" />
+                    </p-iconfield>
+                </div>
+                <div class="form-field">
+                    <label for="latitud">Latitud</label>
+                    <input pInputText id="latitud" type="text" inputmode="decimal" [(ngModel)]="escuela.latitud" placeholder="-41.8697" />
+                </div>
+                <div class="form-field">
+                    <label for="longitud">Longitud</label>
+                    <input pInputText id="longitud" type="text" inputmode="decimal" [(ngModel)]="escuela.longitud" placeholder="-73.8203" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Acciones -->
+    <div class="form-actions">
+        <span class="form-actions__hint"><span class="form-field__req">*</span> Campos obligatorios</span>
+        <div class="form-actions__buttons">
+            <p-button label="Cancelar" icon="pi pi-times" severity="secondary" [text]="true" [routerLink]="['/establecimientos']" />
+            <p-button [label]="esNuevo ? 'Crear establecimiento' : 'Guardar cambios'" icon="pi pi-check" class="page-panel-primary-action" [loading]="loading" (onClick)="guardar()" />
         </div>
     </div>
-    <div class="flex flex-col md:flex-row gap-2 w-12">
-        <div class="flex flex-col gap-2 w-12">
-            <label for="nombre">Dirección</label>
-            <input pInputText id="nombre" type="text" [(ngModel)]="escuela.direccion" class="w-12" />
-        </div>
-        <div class="flex flex-col gap-2 w-12">
-            <label for="age1">Telefono</label>
-            <input pInputText id="age1" type="text" [(ngModel)]="escuela.telefono" class="w-12" />
-        </div>
-        <div class="flex flex-col gap-2 w-12">
-            <label for="age1">Email</label>
-            <input pInputText id="age1" type="text" [(ngModel)]="escuela.email" class="w-12" />
-        </div>
-    </div>
-    <div class="flex flex-col md:flex-row gap-2 w-12">
-        <div class="flex flex-col gap-2 w-12">
-            <label for="nombre">Comuna</label>
-            <input pInputText id="nombre" type="text" [(ngModel)]="escuela.comuna" class="w-12" />
-        </div>
-        <div class="flex flex-col gap-2 w-12">
-            <label for="age1">Director</label>
-            <input pInputText id="age1" type="text" [(ngModel)]="escuela.director" class="w-12" />
-        </div>
-    </div>
-</div>
-<div class="flex flex-column md:flex-row gap-2 card w-12">
-    <p-button class="w-12" size="large" [fluid]="true" label="Volver" severity="secondary" icon="pi pi-times" [routerLink]="['/establecimientos']" />
-    <p-button class="w-12" size="large" [fluid]="true" [label]="escuela.id == 0 ? 'Guardar' : 'Editar'" severity="success" icon="pi pi-check" (click)="guardar()" />
 </div>
 <app-modal-loading [visible]="loading"></app-modal-loading>

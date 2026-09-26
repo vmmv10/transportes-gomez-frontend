@@ -3,3 +3,1480 @@
 @use './assets/layout/layout.scss';
 @use 'primeicons/primeicons.css';
 @use './assets/demo/demo.scss';
+
+/* ---------- Breadcrumb: estilo chevron (flechas) ----------
+   PrimeNG 19: la clase .app-breadcrumb queda en el host <p-breadcrumb>
+   y el <nav class="p-breadcrumb"> es su hijo, por eso el selector es descendiente. */
+.app-breadcrumb .p-breadcrumb {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+}
+
+.app-breadcrumb .p-breadcrumb .p-breadcrumb-list {
+    gap: 0;
+    flex-wrap: nowrap;
+    filter: drop-shadow(0 4px 8px rgba(15, 23, 42, 0.08));
+}
+
+.app-breadcrumb .p-breadcrumb .p-breadcrumb-separator {
+    display: none;
+}
+
+.app-breadcrumb .p-breadcrumb .p-breadcrumb-item,
+.app-breadcrumb .p-breadcrumb .p-breadcrumb-home-item {
+    margin-right: -6px;
+}
+
+.app-breadcrumb .p-breadcrumb .p-breadcrumb-item-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    height: 2.25rem;
+    padding: 0 1.125rem 0 1.625rem;
+    border-radius: 0;
+    background: var(--surface-card);
+    color: var(--text-color-secondary);
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%, 12px 50%);
+    transition:
+        color var(--element-transition-duration),
+        background-color var(--element-transition-duration);
+}
+
+/* el tema pinta label e ícono directamente: forzamos que hereden del link */
+.app-breadcrumb .p-breadcrumb .p-breadcrumb-item-link .p-breadcrumb-item-label,
+.app-breadcrumb .p-breadcrumb .p-breadcrumb-item-link .p-breadcrumb-item-icon {
+    color: inherit;
+    line-height: 1;
+}
+
+.app-breadcrumb .p-breadcrumb .p-breadcrumb-item-link .p-breadcrumb-item-icon {
+    font-size: 0.9rem;
+}
+
+.app-breadcrumb .p-breadcrumb .p-breadcrumb-item-link:hover {
+    background: var(--surface-hover);
+    color: #2178bd;
+}
+
+.app-breadcrumb .p-breadcrumb .p-breadcrumb-item-link:focus-visible {
+    outline: none;
+    box-shadow: none;
+    background: color-mix(in srgb, #2178bd 12%, var(--surface-card));
+    color: #2178bd;
+}
+
+/* primer segmento: borde izquierdo redondeado, sin muesca */
+.app-breadcrumb .p-breadcrumb .p-breadcrumb-list > li:first-child .p-breadcrumb-item-link {
+    padding-left: 1rem;
+    border-radius: 10px 0 0 10px;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%);
+}
+
+/* página actual */
+.app-breadcrumb .p-breadcrumb .p-breadcrumb-list > li:last-child .p-breadcrumb-item-link,
+.app-breadcrumb .p-breadcrumb .p-breadcrumb-list > li:last-child .p-breadcrumb-item-link:hover {
+    background: #2178bd;
+    color: #fff;
+    font-weight: 700;
+}
+
+@media (max-width: 767px) {
+    .app-breadcrumb .p-breadcrumb {
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .app-breadcrumb .p-breadcrumb .p-breadcrumb-item-link {
+        height: 2rem;
+        padding: 0 0.875rem 0 1.375rem;
+        font-size: 0.8125rem;
+    }
+}
+
+.page-breadcrumb-bar {
+    align-self: flex-start;
+    max-width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    margin-bottom: 1rem;
+}
+
+/* ================= Dashboard (opción A: coherente con los listados) ================= */
+.dashboard-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0.25rem 0 1rem;
+    min-width: 0;
+    max-width: 100%;
+}
+
+/* evita que un gráfico (canvas) ensanche la página en móvil */
+.dashboard-page > *,
+.dashboard-analytics-card,
+.entregas-table-shell {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.dashboard-analytics-card {
+    overflow: hidden;
+}
+
+/* tarjeta base del dashboard: mismo lenguaje que .card / page-panel */
+.dash-card,
+.dashboard-driver,
+.dashboard-analytics-card,
+.entregas-table-shell {
+    position: relative;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid color-mix(in srgb, var(--surface-border) 70%, transparent);
+    border-radius: 14px;
+    background: var(--surface-card);
+    box-shadow: 0 4px 8px rgba(15, 23, 42, 0.08);
+}
+
+/* ----- encabezado + filtros ----- */
+.dash-header {
+    padding: 0;
+    overflow: hidden;
+}
+
+.dash-header__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-top: 3px solid #2178bd;
+}
+
+.dash-header__title {
+    margin: 0 !important;
+    font-family: 'Montserrat', 'Lato', sans-serif;
+    font-size: clamp(1.15rem, 0.95rem + 0.8vw, 1.45rem) !important;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    color: var(--text-color);
+}
+
+.dash-header__date {
+    display: block;
+    color: var(--text-color-secondary);
+    font-size: 0.875rem;
+}
+
+.dash-header__date::first-letter {
+    text-transform: uppercase;
+}
+
+.dash-filters {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+    gap: 0.6rem;
+    align-items: center;
+    padding: 0.85rem 1.25rem;
+    border-top: 1px solid color-mix(in srgb, var(--surface-border) 80%, transparent);
+    background: color-mix(in srgb, var(--surface-hover) 45%, var(--surface-card));
+}
+
+.dash-filters .p-inputtext,
+.dash-filters .p-select,
+.dash-filters .p-datepicker-input {
+    border-radius: 10px;
+}
+
+/* ----- fila de 6 indicadores ----- */
+.dash-tiles {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0.85rem;
+}
+
+/* los grupos internos no crean su propia grilla: sus tarjetas caen en .dash-tiles */
+.dash-tiles app-entregas-kpi,
+.dash-tiles .entregas-kpi-grid,
+.dash-tiles .entregas-status-grid {
+    display: contents;
+}
+
+.entregas-kpi-card,
+.entregas-status-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.4rem;
+    min-height: 6.25rem;
+    padding: 0.95rem 1rem;
+    border: 1px solid color-mix(in srgb, var(--surface-border) 70%, transparent);
+    border-radius: 14px;
+    background: var(--surface-card);
+    box-shadow: 0 4px 8px rgba(15, 23, 42, 0.08);
+}
+
+.entregas-kpi-label,
+.entregas-status-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--text-color-secondary);
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.entregas-kpi-label i {
+    color: #2178bd;
+    font-size: 0.85rem;
+}
+
+.entregas-kpi-value-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+}
+
+.entregas-kpi-value,
+.entregas-status-value {
+    font-family: 'Montserrat', 'Lato', sans-serif;
+    font-size: clamp(1.4rem, 1rem + 1vw, 1.85rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--text-color);
+}
+
+.entregas-kpi-unit {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-color-secondary);
+}
+
+.entregas-kpi-loading,
+.entregas-status-loading {
+    margin: auto;
+    font-size: 1.5rem;
+    color: var(--text-color-secondary);
+}
+
+/* contadores de entregas: borde de estado + clicables */
+.entregas-status-card {
+    --status: #2178bd;
+    border-left: 4px solid var(--status);
+    cursor: pointer;
+    transition:
+        transform var(--element-transition-duration),
+        box-shadow var(--element-transition-duration),
+        background-color var(--element-transition-duration);
+}
+
+.entregas-status-card:hover {
+    transform: translateY(-2px);
+}
+
+.entregas-status-card:focus-visible {
+    outline: 2px solid var(--status);
+    outline-offset: 2px;
+}
+
+.entregas-status-card .entregas-status-label i {
+    color: var(--status);
+    font-size: 0.85rem;
+}
+
+.entregas-status-card-info { --status: #2178bd; }
+.entregas-status-card-warning { --status: #d97706; }
+.entregas-status-card-success { --status: #059669; }
+
+.entregas-status-card.is-active {
+    background: color-mix(in srgb, var(--status) 8%, var(--surface-card));
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--status) 45%, transparent), 0 6px 14px -6px color-mix(in srgb, var(--status) 55%, transparent);
+}
+
+.entregas-status-hint {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--status);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* ----- gráficos y tabla ----- */
+.dashboard-analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.dashboard-analytics-card-full {
+    grid-column: 1 / -1;
+}
+
+.dashboard-card-header,
+.entregas-table-header,
+.dashboard-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.9rem;
+}
+
+.dashboard-card-header h3,
+.entregas-table-header h3,
+.dashboard-section-heading h2 {
+    margin: 0 !important;
+    font-family: 'Montserrat', 'Lato', sans-serif;
+    font-size: 1rem !important;
+    font-weight: 800;
+    line-height: 1.25;
+    color: var(--text-color);
+}
+
+.dashboard-card-kicker,
+.entregas-table-kicker,
+.dashboard-section-kicker {
+    display: block;
+    margin-bottom: 0.15rem;
+    color: var(--text-color-secondary);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.dashboard-section-heading p {
+    margin: 0;
+    color: var(--text-color-secondary);
+}
+
+.dashboard-card-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 10px;
+    background: color-mix(in srgb, #2178bd 10%, var(--surface-card));
+    color: #2178bd;
+    font-size: 0.9rem;
+    flex: 0 0 auto;
+}
+
+.dashboard-card-body-center {
+    display: flex;
+    justify-content: center;
+}
+
+@media (max-width: 1200px) {
+    .dash-tiles {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .dash-filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767px) {
+    .dash-tiles {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dash-filters,
+    .dashboard-analytics-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .dashboard-analytics-card-full {
+        grid-column: auto;
+    }
+
+    .dash-filters .p-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .dash-header__top {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .dash-card,
+    .dashboard-driver,
+    .dashboard-analytics-card,
+    .entregas-table-shell {
+        padding: 0.95rem;
+    }
+}
+
+//Panel
+/* Acento de marca disponible en toda la app (encabezados .page-header, dashboards, etc.),
+   no solo dentro de <p-panel class="page-panel"> */
+:root {
+    --panel-accent: #2178bd;
+    --panel-accent-soft: color-mix(in srgb, #2178bd 8%, var(--surface-card));
+}
+
+/* PrimeNG 19: la clase .page-panel queda en el host <p-panel>; el contenedor real es .p-panel */
+.page-panel {
+    display: block;
+    --panel-accent: #2178bd;
+    --panel-accent-soft: color-mix(in srgb, var(--panel-accent) 8%, var(--surface-card));
+}
+
+.page-panel .p-panel {
+    border: 0;
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--surface-card);
+    box-shadow: 0 4px 8px rgba(15, 23, 42, 0.08);
+}
+
+.page-panel .p-panel-header {
+    position: relative;
+    background: var(--surface-card);
+    color: var(--text-color);
+    border: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--surface-border) 80%, transparent);
+    padding: 1rem 1.5rem;
+    gap: 1rem;
+}
+
+.page-panel .p-panel-header::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    height: 3px;
+    background: var(--panel-accent);
+}
+
+.page-panel .p-panel-header .p-panel-title {
+    font-family: 'Montserrat', 'Lato', sans-serif;
+    font-size: clamp(1.05rem, 0.9rem + 0.6vw, 1.3rem);
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    color: var(--text-color);
+}
+
+.page-panel-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-width: 0;
+}
+
+.page-panel-title-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.page-panel-subtitle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+}
+
+.page-panel-count {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.1rem 0.55rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--panel-accent) 12%, var(--surface-card));
+    color: var(--panel-accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.page-panel-title-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.9rem;
+    height: 2.5rem;
+    padding-right: 0.45rem;
+    flex: 0 0 auto;
+    border-radius: 10px 0 0 10px;
+    background: var(--panel-accent);
+    color: #fff;
+    font-size: 1.1rem;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%);
+    filter: drop-shadow(0 4px 8px rgba(15, 23, 42, 0.08));
+}
+
+.page-panel .p-panel-content {
+    border: 0;
+    padding: 1.25rem 1.5rem 1rem;
+    background: var(--surface-card);
+}
+
+.page-panel__summary {
+    margin-bottom: 1rem;
+}
+
+.page-panel__eyebrow {
+    display: inline-block;
+    margin-bottom: 0.35rem;
+    color: #2178bd;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.page-panel__name {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.page-panel__description {
+    margin: 0.35rem 0 0;
+    color: var(--text-color-secondary);
+    font-size: 0.95rem;
+}
+
+/* ----- filtros ----- */
+.page-filters {
+    padding: 1rem;
+    border-radius: 10px;
+    border: 1px solid color-mix(in srgb, var(--surface-border) 85%, transparent);
+    border-left: 3px solid #2178bd;
+    background: color-mix(in srgb, var(--surface-hover) 55%, var(--surface-card));
+    align-items: center;
+}
+
+.page-filters .p-inputtext,
+.page-filters .p-button {
+    border-radius: 10px;
+}
+
+/* ----- botones del header ----- */
+.page-panel-header-action.p-button,
+.page-panel-header-action .p-button {
+    color: var(--text-color-secondary);
+    border: 1px solid color-mix(in srgb, var(--surface-border) 90%, transparent);
+    background: var(--surface-card);
+    padding: 0.5rem 0.95rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+}
+
+.page-panel-header-action.p-button:hover,
+.page-panel-header-action .p-button:not(:disabled):hover {
+    color: #2178bd;
+    background: var(--surface-hover);
+    border-color: color-mix(in srgb, #2178bd 30%, var(--surface-border));
+}
+
+.page-panel-header-action .p-button:focus-visible,
+.page-panel-primary-action.p-button:focus-visible,
+.page-panel-primary-action .p-button:focus-visible {
+    outline: 2px solid color-mix(in srgb, #2178bd 55%, transparent);
+    outline-offset: 2px;
+}
+
+.page-panel-primary-action.p-button,
+.page-panel-primary-action .p-button {
+    padding: 0.5rem 1.05rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    border-radius: 10px;
+    border: 0;
+    color: #fff;
+    background: #2178bd;
+    box-shadow: 0 4px 10px -4px rgba(33, 120, 189, 0.6);
+    transition:
+        transform var(--element-transition-duration),
+        box-shadow var(--element-transition-duration);
+}
+
+.page-panel-primary-action.p-button:not(:disabled):hover,
+.page-panel-primary-action .p-button:not(:disabled):hover {
+    color: #fff;
+    background: #185f97;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px -4px rgba(33, 120, 189, 0.65);
+}
+
+/* ----- tabla dentro del panel ----- */
+.layout-main .p-datatable .p-datatable-thead > tr > th {
+    background: color-mix(in srgb, var(--surface-hover) 70%, var(--surface-card));
+    color: var(--text-color-secondary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.8rem 1rem;
+    border-width: 0 0 1px 0;
+}
+
+.layout-main .p-datatable .p-datatable-thead > tr > th:first-child {
+    border-top-left-radius: 12px;
+}
+
+.layout-main .p-datatable .p-datatable-thead > tr > th:last-child {
+    border-top-right-radius: 12px;
+}
+
+.layout-main .p-datatable .p-datatable-tbody > tr {
+    transition: background-color var(--element-transition-duration);
+}
+
+.layout-main .p-datatable .p-datatable-tbody > tr > td {
+    padding: 0.85rem 1rem;
+    font-size: 0.925rem;
+    border-color: color-mix(in srgb, var(--surface-border) 70%, transparent);
+}
+
+.layout-main .p-datatable .p-datatable-tbody > tr:hover {
+    background: color-mix(in srgb, #2178bd 5%, var(--surface-card));
+}
+
+.layout-main .p-datatable .p-datatable-tbody > tr:last-child > td {
+    border-bottom: 0;
+}
+
+.layout-main .p-datatable-footer {
+    background: transparent;
+    border: 0;
+    padding: 0;
+}
+
+.page-cell-strong {
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.page-cell-muted {
+    color: var(--text-color-secondary);
+}
+
+.page-cell-empty {
+    color: color-mix(in srgb, var(--text-color-secondary) 60%, transparent);
+}
+
+.page-cell-code {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--surface-hover) 80%, var(--surface-card));
+    font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.page-cell-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+
+    i {
+        font-size: 0.8rem;
+        color: #2178bd;
+    }
+}
+
+.page-row-action.p-button,
+.page-row-action .p-button {
+    color: #2178bd;
+}
+
+.page-row-action .p-button:not(:disabled):hover {
+    background: color-mix(in srgb, #2178bd 12%, transparent);
+    color: #185f97;
+}
+
+.page-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 2.5rem 1rem;
+    color: var(--text-color-secondary);
+    text-align: center;
+
+    i {
+        font-size: 1.75rem;
+        color: color-mix(in srgb, #2178bd 50%, var(--text-color-secondary));
+        margin-bottom: 0.25rem;
+    }
+
+    strong {
+        color: var(--text-color);
+    }
+}
+
+.page-paginator.p-paginator {
+    padding: 0.85rem 0.5rem 0.25rem;
+    border: 0;
+    border-top: 1px solid color-mix(in srgb, var(--surface-border) 85%, transparent);
+    background: transparent;
+    gap: 0.35rem;
+}
+
+.page-paginator.p-paginator .p-paginator-first,
+.page-paginator.p-paginator .p-paginator-prev,
+.page-paginator.p-paginator .p-paginator-page,
+.page-paginator.p-paginator .p-paginator-next,
+.page-paginator.p-paginator .p-paginator-last {
+    min-width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    color: var(--text-color-secondary);
+    transition:
+        background-color var(--element-transition-duration),
+        border-color var(--element-transition-duration),
+        color var(--element-transition-duration);
+}
+
+.page-paginator.p-paginator .p-paginator-first:not(.p-disabled):hover,
+.page-paginator.p-paginator .p-paginator-prev:not(.p-disabled):hover,
+.page-paginator.p-paginator .p-paginator-page:not(.p-disabled):not(.p-paginator-page-selected):hover,
+.page-paginator.p-paginator .p-paginator-next:not(.p-disabled):hover,
+.page-paginator.p-paginator .p-paginator-last:not(.p-disabled):hover {
+    background: color-mix(in srgb, #2178bd 10%, transparent);
+    border-color: color-mix(in srgb, #2178bd 20%, transparent);
+    color: #2178bd;
+}
+
+.page-paginator.p-paginator .p-paginator-page.p-paginator-page-selected {
+    background: linear-gradient(135deg, #2178bd, #155a91);
+    border-color: transparent;
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 8px 16px -8px rgba(33, 120, 189, 0.65);
+}
+
+.page-paginator.p-paginator .p-paginator-current {
+    color: var(--text-color-secondary);
+    font-size: 0.85rem;
+}
+
+.page-paginator.p-paginator .p-paginator-rpp-dropdown {
+    border-radius: 999px;
+    min-height: 2.25rem;
+    border-color: color-mix(in srgb, var(--surface-border) 85%, transparent);
+}
+
+.page-paginator.p-paginator .p-paginator-rpp-dropdown .p-select-label {
+    display: flex;
+    align-items: center;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+/* p-select renders its open panel in an overlay appended to <body>, outside the
+   component's own DOM, so it can't be scoped per-instance (e.g. to .page-paginator).
+   This restyles every p-select dropdown panel in the app to match the teal theme. */
+.p-select-overlay {
+    border-radius: 14px;
+    border-color: color-mix(in srgb, var(--surface-border) 85%, transparent);
+    box-shadow: 0 16px 32px -20px rgba(15, 23, 42, 0.35);
+}
+
+.p-select-option {
+    border-radius: 10px;
+}
+
+.p-select-option:not(.p-select-option-selected):not(.p-disabled).p-focus {
+    background: color-mix(in srgb, #2178bd 10%, transparent);
+    color: #2178bd;
+}
+
+.p-select-option.p-select-option-selected,
+.p-select-option.p-select-option-selected.p-focus {
+    background: linear-gradient(135deg, #2178bd, #155a91);
+    color: #fff;
+}
+
+.filters-collapse {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition:
+        max-height 0.3s ease,
+        opacity 0.25s ease;
+}
+
+.filters-collapse--open {
+    max-height: 12rem;
+    opacity: 1;
+    overflow: visible;
+}
+
+@media (max-width: 768px) {
+    .filters-collapse--open {
+        max-height: 40rem;
+    }
+}
+
+/* caption vacío de p-table (cuando los filtros viven fuera de la tabla) */
+.layout-main .p-datatable-header:empty {
+    display: none;
+}
+
+/* ---------- Tarjetas y encabezados de página (estilo unificado) ---------- */
+.layout-main .card {
+    border: 1px solid color-mix(in srgb, var(--surface-border) 70%, transparent);
+    border-radius: 14px;
+    background: var(--surface-card);
+    box-shadow: 0 4px 8px rgba(15, 23, 42, 0.08);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.page-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    padding: 0 0 1rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--surface-border) 80%, transparent);
+}
+
+/* dentro de una tarjeta, el encabezado ocupa todo el ancho superior */
+.card > .page-header {
+    margin: -1.25rem -1.5rem 0;
+    width: calc(100% + 3rem);
+    padding: 1rem 1.5rem;
+    border-radius: 14px 14px 0 0;
+    overflow: hidden;
+}
+
+.card > .page-header::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    height: 3px;
+    background: #2178bd;
+}
+
+/* cuando el encabezado es lo único de la tarjeta, no hay borde inferior */
+.page-header:only-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.card > .page-header:only-child {
+    padding-bottom: 1rem;
+    margin-bottom: -1.25rem;
+}
+
+.page-header__title {
+    margin: 0 !important;
+    font-family: 'Montserrat', 'Lato', sans-serif;
+    font-size: clamp(1.05rem, 0.9rem + 0.6vw, 1.3rem) !important;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    color: var(--text-color);
+}
+
+.page-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+    .layout-main .card {
+        padding: 1rem;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .card > .page-header {
+        margin: -1rem -1rem 0;
+        width: calc(100% + 2rem);
+        padding: 1rem;
+    }
+
+    .card > .page-header:only-child {
+        margin-bottom: -1rem;
+    }
+
+    .page-header__actions {
+        justify-content: stretch;
+    }
+
+    .page-header__actions > * {
+        flex: 1 1 auto;
+    }
+}
+
+.cliente-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.9rem;
+}
+
+.cliente-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-height: 105px;
+    padding: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #ffffff;
+}
+
+.cliente-card--accent {
+    background: linear-gradient(135deg, rgba(15, 118, 110, 0.08), rgba(21, 94, 117, 0.14));
+    border-color: rgba(15, 118, 110, 0.2);
+}
+
+.cliente-card--wide {
+    grid-column: span 2;
+}
+
+.cliente-card__label {
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.cliente-card__value {
+    color: #0f172a;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.45;
+    word-break: break-word;
+}
+
+@media (max-width: 768px) {
+    .section-card,
+    .action-bar,
+    .page-filters {
+        border-radius: 10px;
+    }
+
+    .action-bar {
+        position: static;
+        backdrop-filter: none;
+    }
+
+    .cliente-card--wide {
+        grid-column: span 1;
+    }
+
+    .page-panel__name {
+        font-size: 1.15rem;
+    }
+
+    .page-panel .p-panel {
+        border-radius: 12px;
+        box-shadow: 0 10px 24px -18px rgba(15, 23, 42, 0.5);
+    }
+
+    .page-panel .p-panel-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+        padding: 1rem;
+    }
+
+    .page-panel .p-panel-content {
+        padding: 1rem;
+    }
+
+    .page-panel .p-panel-header .p-panel-icons {
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .page-panel .p-panel-header .p-panel-icons > div {
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+/* ================= Mapa del establecimiento (Leaflet) ================= */
+.escuela-mapa .leaflet-container {
+    font-family: 'Lato', sans-serif;
+    background: var(--surface-hover);
+}
+
+/* mosaicos OSM con tono más suave (menos saturación, un poco más claros) */
+.escuela-mapa .escuela-mapa__tiles {
+    filter: saturate(0.55) brightness(1.04) contrast(0.95);
+}
+
+/* modo oscuro: se invierte el mapa y se corrige el tono para que el agua/parques no queden fosforescentes */
+.app-dark .escuela-mapa .escuela-mapa__tiles {
+    filter: invert(1) hue-rotate(180deg) saturate(0.4) brightness(0.9) contrast(0.9);
+}
+
+/* marcador: pin azul con ícono y pulso */
+.escuela-marker {
+    background: transparent;
+    border: 0;
+}
+
+.escuela-marker__pin {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    transform: translateX(-50%) rotate(-45deg);
+    border-radius: 50% 50% 50% 0;
+    background: #2178bd;
+    border: 3px solid #fff;
+    box-shadow: 0 6px 14px rgba(24, 95, 151, 0.45);
+
+    i {
+        transform: rotate(45deg);
+        color: #fff;
+        font-size: 15px;
+    }
+}
+
+.escuela-marker__pulso {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 18px;
+    height: 8px;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    background: rgba(33, 120, 189, 0.35);
+    animation: escuela-pulso 2s ease-out infinite;
+}
+
+@keyframes escuela-pulso {
+    0% {
+        box-shadow: 0 0 0 0 rgba(33, 120, 189, 0.45);
+    }
+    100% {
+        box-shadow: 0 0 0 18px rgba(33, 120, 189, 0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .escuela-marker__pulso {
+        animation: none;
+    }
+}
+
+/* popup */
+.escuela-popup .leaflet-popup-content-wrapper {
+    border-radius: 12px;
+    background: var(--surface-card);
+    color: var(--text-color);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.22);
+    border-top: 3px solid #2178bd;
+}
+
+.escuela-popup .leaflet-popup-tip {
+    background: var(--surface-card);
+}
+
+.escuela-popup .leaflet-popup-content {
+    margin: 0.8rem 1rem;
+}
+
+.escuela-popup a.leaflet-popup-close-button {
+    color: var(--text-color-secondary);
+    top: 6px;
+    right: 6px;
+}
+
+.escuela-popup__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.escuela-popup__titulo {
+    font-family: 'Montserrat', 'Lato', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 800;
+    line-height: 1.25;
+    padding-right: 1rem;
+}
+
+.escuela-popup__direccion {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: var(--text-color-secondary);
+}
+
+.escuela-popup__link {
+    align-self: flex-start;
+    margin-top: 0.15rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #2178bd !important;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+/* controles de zoom */
+.escuela-mapa .leaflet-bar {
+    border: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.18);
+}
+
+.escuela-mapa .leaflet-bar a {
+    width: 34px;
+    height: 34px;
+    line-height: 34px;
+    background: var(--surface-card);
+    color: #2178bd;
+    border-bottom-color: var(--surface-border);
+    font-weight: 700;
+
+    &:hover {
+        background: #2178bd;
+        color: #fff;
+    }
+}
+
+.escuela-mapa .leaflet-control-attribution {
+    border-radius: 8px 0 0 0;
+    background: color-mix(in srgb, var(--surface-card) 85%, transparent);
+    color: var(--text-color-secondary);
+    font-size: 10px;
+
+    a {
+        color: var(--text-color-secondary);
+    }
+}
+
+/* ================= RBD (identificador oficial del establecimiento, "el RUT del colegio") ================= */
+.rbd-badge {
+    display: inline-flex;
+    align-items: stretch;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, #2178bd 35%, var(--surface-border));
+    border-radius: 8px;
+    background: var(--surface-card);
+    font: inherit;
+    line-height: 1;
+    padding: 0;
+    vertical-align: middle;
+}
+
+button.rbd-badge {
+    cursor: pointer;
+    transition: box-shadow var(--element-transition-duration);
+
+    &:hover {
+        box-shadow: 0 0 0 3px color-mix(in srgb, #2178bd 15%, transparent);
+    }
+
+    &:focus-visible {
+        outline: 2px solid #2178bd;
+        outline-offset: 2px;
+    }
+
+    > .pi {
+        display: grid;
+        place-items: center;
+        padding: 0 0.55rem;
+        font-size: 0.8rem;
+        color: #2178bd;
+        border-left: 1px solid color-mix(in srgb, #2178bd 20%, var(--surface-border));
+    }
+}
+
+.rbd-badge__label {
+    display: grid;
+    place-items: center;
+    padding: 0.35rem 0.5rem;
+    background: #2178bd;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+}
+
+.rbd-badge__valor {
+    display: grid;
+    place-items: center;
+    padding: 0.35rem 0.65rem;
+    font-family: 'Montserrat', 'Lato', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: var(--text-color);
+    font-variant-numeric: tabular-nums;
+}
+
+/* versión compacta para tablas */
+.rbd-badge--sm .rbd-badge__label {
+    padding: 0.25rem 0.4rem;
+    font-size: 0.62rem;
+}
+
+.rbd-badge--sm .rbd-badge__valor {
+    padding: 0.25rem 0.55rem;
+    font-size: 0.9rem;
+}
+
+/* ================= Formularios (reutilizable: .form-page, .form-section, .form-grid, .form-field, .form-actions) ================= */
+.form-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-card {
+    padding-bottom: 0.5rem;
+}
+
+.form-section {
+    padding: 1.25rem 0 1.1rem;
+}
+
+.form-section + .form-section {
+    border-top: 1px dashed color-mix(in srgb, var(--surface-border) 90%, transparent);
+}
+
+.form-section__head {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.form-section__head-action {
+    margin-left: auto;
+    flex: 0 0 auto;
+}
+
+.form-section__icon {
+    display: inline-grid;
+    place-items: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    flex: 0 0 auto;
+    border-radius: 10px;
+    background: color-mix(in srgb, #2178bd 10%, var(--surface-card));
+    color: #2178bd;
+    font-size: 0.95rem;
+}
+
+.form-section__title {
+    margin: 0 !important;
+    font-family: 'Montserrat', 'Lato', sans-serif;
+    font-size: 1rem !important;
+    font-weight: 800;
+    line-height: 1.3;
+    color: var(--text-color);
+}
+
+.form-section__desc {
+    margin: 0.1rem 0 0;
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem 1rem;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 0;
+
+    > label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-color);
+    }
+
+    .p-inputtext,
+    .p-iconfield,
+    .p-inputgroup,
+    .p-select,
+    .p-datepicker {
+        width: 100%;
+    }
+
+    .p-inputtext {
+        border-radius: 10px;
+    }
+}
+
+.form-field--span-2 {
+    grid-column: span 2;
+}
+
+.form-field--full {
+    grid-column: 1 / -1;
+}
+
+.form-field__req {
+    color: #dc2626;
+}
+
+.form-field__hint {
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+}
+
+.form-field__error {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #dc2626;
+}
+
+/* RBD: prefijo destacado y número legible */
+.form-rbd-addon {
+    background: #2178bd !important;
+    color: #fff !important;
+    border-color: #2178bd !important;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+}
+
+.form-field .p-inputgroup .form-rbd-input {
+    border-radius: 0 10px 10px 0;
+    font-family: 'Montserrat', 'Lato', sans-serif;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+}
+
+.form-map-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.85rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #2178bd;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+/* barra de acciones fija al pie */
+.form-actions {
+    position: sticky;
+    bottom: 1rem;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1rem 0.75rem 1.25rem;
+    border: 1px solid color-mix(in srgb, var(--surface-border) 70%, transparent);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--surface-card) 92%, transparent);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 24px -12px rgba(15, 23, 42, 0.3);
+}
+
+.form-actions__hint {
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+}
+
+.form-actions__buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+@media (max-width: 991px) {
+    .form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767px) {
+    .form-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .form-section__head {
+        flex-wrap: wrap;
+    }
+
+    .form-section__head-action {
+        width: 100%;
+        margin-left: 0;
+
+        .p-button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    .form-field--span-2 {
+        grid-column: auto;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+        bottom: 0.5rem;
+    }
+
+    .form-actions__buttons {
+        flex-direction: column-reverse;
+
+        > * {
+            width: 100%;
+        }
+
+        .p-button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    .form-actions__hint {
+        text-align: center;
+    }
+}

@@ -1,0 +1,226 @@
+:host {
+    display: block;
+}
+
+/* ---------- Disparador ---------- */
+.ruta-trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--surface-border);
+    border-radius: 12px;
+    background: var(--surface-card);
+    cursor: pointer;
+    transition:
+        border-color 0.15s,
+        background 0.15s;
+
+    &:hover,
+    &:focus-visible {
+        border-color: #2178bd;
+        outline: none;
+    }
+}
+
+.ruta-trigger--vacio {
+    border-style: dashed;
+    background: color-mix(in srgb, var(--surface-hover) 40%, var(--surface-card));
+}
+
+.ruta-trigger--invalido {
+    border-color: var(--p-red-500, #ef4444);
+}
+
+.ruta-trigger--disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.ruta-trigger__icon {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: color-mix(in srgb, #2178bd 12%, var(--surface-card));
+    color: #2178bd;
+    font-size: 1.1rem;
+}
+
+.ruta-trigger__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.ruta-trigger__title {
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.ruta-trigger__rel {
+    font-weight: 400;
+    color: var(--text-color-secondary);
+    text-transform: capitalize;
+}
+
+.ruta-trigger__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 1rem;
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+
+    i {
+        margin-right: 0.3rem;
+    }
+}
+
+.ruta-trigger__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+}
+
+/* ---------- Modal ---------- */
+.rms-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.rms-filtros__campos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rms-numero {
+    width: 9rem;
+}
+
+.rms-chofer {
+    width: 16rem;
+}
+
+:host ::ng-deep .rms-numero input {
+    width: 100%;
+}
+
+:host ::ng-deep .rms-rangos.p-selectbutton,
+:host ::ng-deep .rms-rangos .p-selectbutton {
+    flex-wrap: wrap;
+}
+
+.rms-leyenda {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding: 0.55rem 0.8rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    background: color-mix(in srgb, #10b981 8%, var(--surface-card));
+    border-left: 3px solid #10b981;
+
+    i {
+        color: #10b981;
+    }
+}
+
+.rms-fecha {
+    display: flex;
+    flex-direction: column;
+
+    small {
+        color: var(--text-color-secondary);
+        text-transform: capitalize;
+    }
+}
+
+.rms-comunas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+}
+
+.rms-comuna {
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    background: var(--surface-hover);
+    color: var(--text-color);
+}
+
+.rms-comuna--match {
+    background: color-mix(in srgb, #10b981 18%, var(--surface-card));
+    color: #047857;
+    font-weight: 700;
+}
+
+.rms-comuna--mas {
+    cursor: help;
+    font-weight: 700;
+}
+
+.rms-vacio {
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+}
+
+.rms-estado {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+}
+
+:host ::ng-deep .rms-tabla .rms-row--match > td {
+    background: color-mix(in srgb, #10b981 5%, transparent);
+}
+
+:host ::ng-deep .rms-tabla tr.p-datatable-row-selected > td,
+:host ::ng-deep .rms-tabla tr.p-highlight > td {
+    background: color-mix(in srgb, #2178bd 14%, var(--surface-card));
+}
+
+.rms-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.rms-footer__sel {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 600;
+
+    i {
+        color: #10b981;
+    }
+}
+
+.rms-footer__sel--hint {
+    font-weight: 400;
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+}
+
+.rms-footer__buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+}

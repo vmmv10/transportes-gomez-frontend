@@ -24,6 +24,8 @@ export const appConfig: ApplicationConfig = {
             AuthModule.forRoot({
                 domain: environment.domain,
                 clientId: environment.production ? environment.clientId : environment.clientIdQa,
+                cacheLocation: 'localstorage',
+                useRefreshTokens: true,
                 authorizationParams: {
                     redirect_uri: window.location.origin,
                     audience: environment.production ? 'https://www.transportesgv.cl/api' : 'http://localhost:8081'

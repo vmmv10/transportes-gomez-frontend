@@ -1,31 +1,39 @@
-<div class="flex w-12 flex-column gap-4">
-    <div class="flex w-12 flex-column md:flex-row gap-4">
-        <app-entregas-kpi class="flex w-12 flex-column md:flex-row" [filtro]="filtro"></app-entregas-kpi>
+<div class="entregas-dashboard-shell flex flex-column gap-3">
+    <div class="dash-tiles">
+        <app-entregas-kpi [filtro]="filtro"></app-entregas-kpi>
+
+        <div class="entregas-status-grid">
+            <div class="entregas-status-card entregas-status-card-info" role="button" tabindex="0" (click)="changeFiltro('hoy')" (keydown.enter)="changeFiltro('hoy')" [ngClass]="{ 'is-active': hoySeleccionado }" pTooltip="Ver entregas de hoy" tooltipPosition="bottom">
+                <span class="entregas-status-label"><i class="pi pi-calendar"></i>Entregas hoy</span>
+                <span *ngIf="!loading" class="entregas-status-value">{{ data.entregasHoy | number }}</span>
+                <i *ngIf="loading" class="pi pi-spin pi-spinner entregas-status-loading"></i>
+                <span class="entregas-status-hint" *ngIf="hoySeleccionado">Mostrando</span>
+            </div>
+
+            <div class="entregas-status-card entregas-status-card-warning" role="button" tabindex="0" (click)="changeFiltro('Pendientes')" (keydown.enter)="changeFiltro('Pendientes')" [ngClass]="{ 'is-active': pendientesSeleccionado }" pTooltip="Ver entregas pendientes" tooltipPosition="bottom">
+                <span class="entregas-status-label"><i class="pi pi-hourglass"></i>Pendientes</span>
+                <span *ngIf="!loading" class="entregas-status-value">{{ data.entregasPendientes | number }}</span>
+                <i *ngIf="loading" class="pi pi-spin pi-spinner entregas-status-loading"></i>
+                <span class="entregas-status-hint" *ngIf="pendientesSeleccionado">Mostrando</span>
+            </div>
+
+            <div class="entregas-status-card entregas-status-card-success" role="button" tabindex="0" (click)="changeFiltro('Realizadas')" (keydown.enter)="changeFiltro('Realizadas')" [ngClass]="{ 'is-active': realizadasSeleccionado }" pTooltip="Ver entregas realizadas" tooltipPosition="bottom">
+                <span class="entregas-status-label"><i class="pi pi-check-circle"></i>Realizadas</span>
+                <span *ngIf="!loading" class="entregas-status-value">{{ data.entregasRealizadas | number }}</span>
+                <i *ngIf="loading" class="pi pi-spin pi-spinner entregas-status-loading"></i>
+                <span class="entregas-status-hint" *ngIf="realizadasSeleccionado">Mostrando</span>
+            </div>
+        </div>
     </div>
-    <div class="flex w-12 flex-column md:flex-row gap-4">
-        <div class="card flex w-12 flex-column text-center gap-2 mb-0 justify-content-between cursor-pointer" (click)="changeFiltro('hoy')" [ngClass]="{ 'shadow-2': hoySeleccionado }">
-            <ng-container *ngIf="!loading">
-                <span class="text-lg font-semibold">Entregas Hoy</span>
-                <span class="text-6xl font-bold text-center text-blue-500">{{ data.entregasHoy }}</span>
-            </ng-container>
-            <i *ngIf="loading" class="pi pi-spin pi-cog" style="font-size: 4rem"></i>
+
+    <div class="entregas-table-shell">
+        <div class="entregas-table-header">
+            <div>
+                <span class="entregas-table-kicker">Seguimiento</span>
+                <h3>{{ hoySeleccionado ? 'Entregas de hoy' : pendientesSeleccionado ? 'Entregas pendientes' : 'Últimas entregas realizadas' }}</h3>
+            </div>
+            <span class="dashboard-card-icon"><i class="pi pi-envelope"></i></span>
         </div>
-        <div class="card flex w-12 flex-column mb-0 text-center gap-2 justify-content-between cursor-pointer" (click)="changeFiltro('Pendientes')" [ngClass]="{ 'shadow-2': pendientesSeleccionado }">
-            <ng-container *ngIf="!loading">
-                <span class="text-lg font-semibold">Entregas Pendientes</span>
-                <span class="text-6xl font-bold text-center text-yellow-500">{{ data.entregasPendientes }}</span>
-            </ng-container>
-            <i *ngIf="loading" class="pi pi-spin pi-cog" style="font-size: 4rem"></i>
-        </div>
-        <div class="card flex w-12 flex-column text-center gap-2 justify-content-between cursor-pointer" (click)="changeFiltro('Realizadas')" [ngClass]="{ 'shadow-2': realizadasSeleccionado }">
-            <ng-container *ngIf="!loading">
-                <span class="text-lg font-semibold">Entregas Realizadas</span>
-                <span class="text-6xl font-bold text-center text-green-500">{{ data.entregasRealizadas }}</span>
-            </ng-container>
-            <i *ngIf="loading" class="pi pi-spin pi-cog" style="font-size: 4rem"></i>
-        </div>
-    </div>
-    <div class="card flex w-12 flex-column text-center gap-2 justify-content-between">
         <app-entregas-table [oc]="true" [categoria]="true" [dashboard]="true" [filtros]="true" [orden]="true" [escuela]="true" class="w-12" [filtro]="filtro" [card]="false"></app-entregas-table>
     </div>
 </div>

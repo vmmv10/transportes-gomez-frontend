@@ -36,9 +36,21 @@ import { BodegasSelectComponent } from '../../../bodegas/components/bodegas-sele
 import { AutocompleteSelectComponent } from '../../../inventario/components/autocomplete-select/autocomplete-select.component';
 import { SaldoBodegaFiltro } from '../../../inventario/models/saldo-bodega-filtro.model';
 import { SaldoBodegaService } from '../../../inventario/services/saldo-bodega.service';
+import { TagModule } from 'primeng/tag';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 import { OrdenesServicioCategoriasSelectComponent } from '../../../ordenes-servicios-categorias/components/ordenes-servicio-categorias-select/ordenes-servicio-categorias-select.component';
-import e from 'cors';
 import { timeout } from 'rxjs';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { DatePickerModule } from 'primeng/datepicker';
+import { UsuariosSelectComponent } from '../../../usuarios/components/usuarios-select/usuarios-select.component';
+import { RutasService } from '../../../rutas/services/rutas.service';
+import { Ruta } from '../../../rutas/models/ruta.model';
+import { RutasModalSelectComponent } from '../../../rutas/components/rutas-modal-select/rutas-modal-select.component';
+import { Usuario } from '../../../usuarios/models/usuario.model';
+
+/** Qué hacer con la OS recién creada respecto a las rutas. */
+export type ModoRuta = 'ninguna' | 'existente' | 'nueva';
 
 @Component({
     standalone: true,
@@ -70,7 +82,14 @@ import { timeout } from 'rxjs';
         DocumentosModalSelectComponent,
         BodegasSelectComponent,
         AutocompleteSelectComponent,
-        OrdenesServicioCategoriasSelectComponent
+        OrdenesServicioCategoriasSelectComponent,
+        TagModule,
+        IconFieldModule,
+        InputIconModule,
+        SelectButtonModule,
+        DatePickerModule,
+        UsuariosSelectComponent,
+        RutasModalSelectComponent
     ],
     templateUrl: './ordenes-servicios-form.component.html',
     styleUrl: './ordenes-servicios-form.component.scss',
@@ -95,6 +114,19 @@ export class OrdenesServiciosFormComponent {
     indexDetalle: number = -1;
     ingreso: number | undefined;
 
+    // ---- Asignación a ruta (solo al crear) ----
+    modoRuta: ModoRuta = 'ninguna';
+    modosRuta: { label: string; value: ModoRuta; icon: string }[] = [
+        { label: 'Sin ruta', value: 'ninguna', icon: 'pi pi-ban' },
+        { label: 'Agregar a ruta existente', value: 'existente', icon: 'pi pi-directions' },
+        { label: 'Crear nueva ruta', value: 'nueva', icon: 'pi pi-plus-circle' }
+    ];
+    rutaSeleccionada: Ruta | undefined;
+    nuevaRutaChofer: Usuario | undefined;
+    nuevaRutaFecha: Date = new Date(new Date().setHours(0, 0, 0, 0));
+    minFechaRuta: Date = new Date(new Date().setHours(0, 0, 0, 0));
+    validarRuta: boolean = false;
+
     responsiveOptions: any[] = [
         {
             breakpoint: '1300px',
@@ -116,13 +148,27 @@ export class OrdenesServiciosFormComponent {
         private documentosService: DocumentosService,
         private router: Router,
         private documentosTiposService: DocumentosTiposService,
-        private saldoBodegaService: SaldoBodegaService
+        private saldoBodegaService: SaldoBodegaService,
+        private rutasService: RutasService
     ) {
         this.menus = [
             { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
             { label: 'Ordenes de Servicios', routerLink: '/ordenes-servicios' },
-            { label: 'Formulario', routerLink: '/ordenes-servicios/formulario' }
+            { label: 'Nueva' }
         ];
+    }
+
+    get esNueva(): boolean {
+        return !this.orden.id;
+    }
+
+    /** Se puede trabajar el detalle cuando hay destino y, si la bodega es la de documentos (4), ya hay documento elegido. */
+    get puedeDetallar(): boolean {
+        const o = this.orden;
+        if (!o.bodega || !o.escuela) {
+            return false;
+        }
+        return o.bodega.id != 4 || !!(o.documento && o.documento.id > 0);
     }
 
     async ngOnInit() {
@@ -131,6 +177,7 @@ export class OrdenesServiciosFormComponent {
         const doc = this.route.snapshot.paramMap.get('documento');
         const tipo = this.route.snapshot.paramMap.get('tipo');
         if (id) {
+            this.menus = [...this.menus.slice(0, 2), { label: 'Orden N° ' + id }];
             this.loading = true;
             await this.getOrden(id);
             await this.getImagenes(id);
@@ -244,9 +291,17 @@ export class OrdenesServiciosFormComponent {
                 }
             });
         } else {
+            this.displayConfirmacion = false;
             this.ordenesServiciosService.create(this.orden).subscribe({
-                next: (data) => {
+                next: async (data) => {
                     this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Orden de Servicio creada' });
+                    if (data && data.id && this.modoRuta !== 'ninguna') {
+                        const ok = await this.asignarOrdenARuta(data);
+                        if (!ok) {
+                            // Dar tiempo a leer el aviso antes de salir del formulario
+                            await new Promise((r) => setTimeout(r, 3500));
+                        }
+                    }
                     this.loading = false;
                     this.router.navigate(['/ordenes-servicios']);
                 },
@@ -482,9 +537,90 @@ export class OrdenesServiciosFormComponent {
         }
     }
 
+    // ================= Asignación a ruta =================
+
+    onModoRutaChange(modo: ModoRuta) {
+        this.validarRuta = false;
+    }
+
+    rutaLabel(ruta: Ruta | undefined): string {
+        if (!ruta) {
+            return '';
+        }
+        const chofer = ruta.chofer ? `${ruta.chofer.nombre ?? ''} ${ruta.chofer.apellidos ?? ''}`.trim() : 'Sin chofer';
+        return `Ruta N° ${ruta.id} · ${this.formatearFechaRuta(ruta.fecha)} · ${chofer}`;
+    }
+
+    formatearFechaRuta(fecha: string | undefined): string {
+        if (!fecha) {
+            return '';
+        }
+        const [anio, mes, dia] = fecha.split('-');
+        return `${dia}/${mes}/${anio}`;
+    }
+
+    /** yyyy-MM-dd en hora local (evita el desfase de toISOString en la tarde/noche en Chile). */
+    private fechaLocalISO(fecha: Date): string {
+        const y = fecha.getFullYear();
+        const m = String(fecha.getMonth() + 1).padStart(2, '0');
+        const d = String(fecha.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
+    private validarAsignacionRuta(): boolean {
+        this.validarRuta = true;
+        if (this.modoRuta === 'existente' && !this.rutaSeleccionada) {
+            this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Debe seleccionar la ruta a la que se agregará la orden' });
+            return false;
+        }
+        if (this.modoRuta === 'nueva' && (!this.nuevaRutaChofer || !this.nuevaRutaFecha)) {
+            this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Debe indicar chofer y fecha para la nueva ruta' });
+            return false;
+        }
+        this.validarRuta = false;
+        return true;
+    }
+
+    /** Se llama después de crear la OS. Si falla, la OS queda creada y se avisa. */
+    private async asignarOrdenARuta(orden: OrdenServicio): Promise<boolean> {
+        try {
+            if (this.modoRuta === 'existente' && this.rutaSeleccionada) {
+                // Se trae la ruta completa para no perder las OS que ya tiene (el PUT elimina las que no vengan).
+                const ruta = await this.rutasService.get(this.rutaSeleccionada.id.toString()).toPromise();
+                if (!ruta) {
+                    throw new Error('Ruta no encontrada');
+                }
+                ruta.ordenes = [...(ruta.ordenes ?? []), orden];
+                await this.rutasService.update(ruta).toPromise();
+                this.messageService.add({ severity: 'success', summary: 'Ruta', detail: `Orden agregada a la ruta N° ${ruta.id}` });
+            }
+            if (this.modoRuta === 'nueva') {
+                const ruta = new Ruta();
+                ruta.chofer = this.nuevaRutaChofer;
+                ruta.fecha = this.fechaLocalISO(this.nuevaRutaFecha);
+                ruta.ordenes = [orden];
+                const creada = await this.rutasService.create(ruta).toPromise();
+                this.messageService.add({ severity: 'success', summary: 'Ruta', detail: `Ruta N° ${creada?.id ?? ''} creada con la orden` });
+            }
+            return true;
+        } catch (error) {
+            console.error('Error asignando orden a ruta:', error);
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Orden creada sin ruta',
+                detail: `La orden N° ${orden.id} se creó, pero no se pudo asignar a la ruta. Asígnela desde Rutas.`,
+                life: 6000
+            });
+            return false;
+        }
+    }
+
     confirmarGuardar() {
         if (this.orden.detalles.length === 0) {
             this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Debe agregar al menos un detalle a la orden de servicio' });
+            return;
+        }
+        if (this.esNueva && !this.validarAsignacionRuta()) {
             return;
         }
         if (this.orden && this.orden.bodega && this.orden.bodega.id === 4) {

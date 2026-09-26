@@ -1,40 +1,80 @@
-<div class="card flex flex-column gap-2 py-1">
-    <p-breadcrumb class="max-w-full" [model]="items" />
-</div>
 <div class="flex flex-column gap-2">
-    <div class="card flex w-12 flex-column md:flex-row gap-2">
-        <input type="text" class="w-12" pInputText placeholder="Nombre" [(ngModel)]="filtro.nombre" />
-        <input type="text" class="w-12" placeholder="Comuna" pInputText [(ngModel)]="filtro.comuna" />
-        <div class="flex w-12 flex-row gap-2">
-            <p-button label="Buscar" [fluid]="true" class="w-12" severity="info" icon="pi pi-search" [outlined]="true" (onClick)="getEscuelas()" />
-            <p-button label="Agregar" [fluid]="true" class="w-12" severity="info" icon="pi pi-plus" [routerLink]="['/establecimientos/formulario']" />
-        </div>
+    <div class="page-breadcrumb-bar flex flex-column">
+        <p-breadcrumb class="app-breadcrumb max-w-full" [model]="items" />
     </div>
-    <p-table class="hidden md:block card" [value]="escuelas ? escuelas.content : []" #dt1 key="id">
-        <ng-template #header>
-            <tr>
-                <th>Nombre</th>
-                <th>Comuna</th>
-                <th>Dirección</th>
-                <th>Rbd</th>
-                <th>Telefono</th>
-                <th></th>
-            </tr>
+    <p-panel class="w-12 page-panel">
+        <ng-template pTemplate="header">
+            <div class="page-panel-title-group">
+                <span class="page-panel-title-chip"><i class="pi pi-graduation-cap"></i></span>
+                <div class="page-panel-title-text">
+                    <span class="p-panel-title">Establecimientos</span>
+                    <span class="page-panel-subtitle">
+                        Escuelas y centros de entrega
+                        <span class="page-panel-count" *ngIf="escuelas">{{ escuelas.totalElements }} registros</span>
+                    </span>
+                </div>
+            </div>
         </ng-template>
-        <ng-template #body let-item>
-            <tr>
-                <td>{{ item.nombre }}</td>
-                <td>{{ item.comuna }}</td>
-                <td>{{ item.direccion }}</td>
-                <td>{{ item.rbd }}</td>
-                <td>{{ item.telefono }}</td>
-                <td><p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="help" [routerLink]="['/establecimientos/dashboard/' + item.id]" /></td>
-            </tr>
+        <ng-template pTemplate="icons">
+            <div class="flex w-12 gap-2">
+                <p-button [label]="filtrosVisibles ? 'Ocultar Filtros' : 'Mostrar Filtros'" [icon]="filtrosVisibles ? 'pi pi-chevron-up' : 'pi pi-filter'" class="page-panel-header-action" (onClick)="filtrosVisibles = !filtrosVisibles" />
+                <p-button label="Agregar" icon="pi pi-plus" class="page-panel-primary-action" [routerLink]="['/establecimientos/formulario']" />
+            </div>
         </ng-template>
-        <ng-template #summary >
-            <p-paginator (onPageChange)="pageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="escuelas ? escuelas.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
-        </ng-template>
-    </p-table>
+        <div class="filters-collapse" [class.filters-collapse--open]="filtrosVisibles">
+            <div class="page-filters flex w-12 flex-column md:flex-row gap-2 mb-3">
+                <input type="text" class="w-12" pInputText placeholder="Nombre" [(ngModel)]="filtro.nombre" (keyup.enter)="getEscuelas()" />
+                <input type="text" class="w-12" placeholder="Comuna" pInputText [(ngModel)]="filtro.comuna" (keyup.enter)="getEscuelas()" />
+                <p-button label="Buscar" [fluid]="true" class="w-12 md:w-3" severity="info" icon="pi pi-search" [outlined]="true" (onClick)="getEscuelas()" />
+                <p-button label="Limpiar" [fluid]="true" class="w-12 md:w-3" severity="secondary" icon="pi pi-filter-slash" [outlined]="true" (onClick)="limpiarFiltros()" />
+            </div>
+        </div>
+        <div class="hidden md:block">
+            <p-table [value]="escuelas ? escuelas.content : []" #dt1 key="id">
+                <ng-template #header>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Comuna</th>
+                        <th>Dirección</th>
+                        <th>Rbd</th>
+                        <th>Telefono</th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template #body let-item>
+                    <tr>
+                        <td class="page-cell-strong">{{ item.nombre }}</td>
+                        <td>
+                            <span class="page-cell-icon"><i class="pi pi-map-marker"></i>{{ item.comuna || '—' }}</span>
+                        </td>
+                        <td [class.page-cell-empty]="!item.direccion" [class.page-cell-muted]="item.direccion">{{ item.direccion || '—' }}</td>
+                        <td><span class="rbd-badge rbd-badge--sm"><span class="rbd-badge__label">RBD</span><span class="rbd-badge__valor">{{ item.rbd }}</span></span></td>
+                        <td>
+                            <span class="page-cell-icon" *ngIf="item.telefono; else sinTelefono"><i class="pi pi-phone"></i>{{ item.telefono }}</span>
+                            <ng-template #sinTelefono><span class="page-cell-empty">—</span></ng-template>
+                        </td>
+                        <td class="text-right">
+                            <p-button icon="pi pi-eye" [rounded]="true" [text]="true" class="page-row-action" pTooltip="Ver establecimiento" tooltipPosition="left" [routerLink]="['/establecimientos/dashboard/' + item.id]" />
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template #emptymessage>
+                    <tr>
+                        <td colspan="6">
+                            <div class="page-empty">
+                                <i class="pi pi-search"></i>
+                                <strong>No se encontraron establecimientos</strong>
+                                <span>Prueba con otro nombre o comuna.</span>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template #summary>
+                    <p-paginator styleClass="page-paginator" (onPageChange)="pageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="escuelas ? escuelas.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
+                </ng-template>
+            </p-table>
+        </div>
+    </p-panel>
     <ng-container *ngIf="escuelas && escuelas.content">
         <app-table-mobile [acciones]="acciones" [page]="filtro.page" [size]="filtro.size" [totalElements]="escuelas ? escuelas.totalElements : 0" [data]="escuelas.content" (pageChange)="pageChange($event)" [campos]="campos"></app-table-mobile>
     </ng-container>
