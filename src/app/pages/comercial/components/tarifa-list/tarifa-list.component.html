@@ -1,0 +1,233 @@
+<p-toast />
+<div class="page-breadcrumb-bar flex flex-column">
+    <p-breadcrumb class="app-breadcrumb max-w-full" [model]="breadcrumb" />
+</div>
+<div class="card flex flex-column gap-3">
+    <div class="page-header">
+        <div class="page-panel-title-group">
+            <span class="page-panel-title-chip"><i class="pi pi-tag"></i></span>
+            <div class="page-panel-title-text">
+                <h2 class="page-header__title">Tarifas</h2>
+                <span class="page-panel-subtitle">
+                    Precios por servicio, comuna, unidad y período, con vigencia
+                    <span class="page-panel-count" *ngIf="data">{{ data.totalElements }} registros</span>
+                </span>
+            </div>
+        </div>
+        <div class="page-header__actions" *ngIf="esAdmin$ | async">
+            <button pButton icon="pi pi-plus" label="Agregar" class="page-panel-primary-action" (click)="nueva()"></button>
+        </div>
+    </div>
+
+    <div class="cm-toolbar">
+        <p-select [options]="servicios" [(ngModel)]="filtro.servicio" (ngModelChange)="buscar()" optionLabel="nombre" optionValue="id" placeholder="Todos los servicios" [showClear]="true" class="cm-toolbar__grow" />
+        <p-select [options]="clientes" [(ngModel)]="filtro.cliente" (ngModelChange)="buscar()" optionLabel="nombre" optionValue="id" placeholder="Generales y de clientes" [showClear]="true" [filter]="true" filterBy="nombre" class="cm-toolbar__grow" />
+        <p-select [options]="comunas" [(ngModel)]="filtro.comuna" (ngModelChange)="buscar()" optionLabel="nombre" optionValue="id" placeholder="Todas las comunas" [showClear]="true" [filter]="true" filterBy="nombre" class="cm-toolbar__grow" />
+        <label class="cm-toolbar__check" for="soloVigentes">
+            <p-checkbox inputId="soloVigentes" [binary]="true" [(ngModel)]="filtro.vigente" (ngModelChange)="buscar()" />
+            Solo vigentes
+        </label>
+        <p-selectbutton [options]="estados" [(ngModel)]="filtro.activo" (ngModelChange)="buscar()" optionLabel="label" optionValue="value" [allowEmpty]="false" />
+    </div>
+
+    <p-table [value]="data?.content ?? []" [loading]="loading" [scrollable]="true" [tableStyle]="{ 'min-width': '56rem' }">
+        <ng-template #header>
+            <tr>
+                <th>Servicio</th>
+                <th>Trayecto</th>
+                <th class="text-right">Precio</th>
+                <th>Vigencia</th>
+                <th></th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-t>
+            <tr [class.opacity-60]="!t.activo">
+                <td>
+                    <div class="flex align-items-center gap-2">
+                        <span class="cm-icon-chip"><i class="pi pi-truck"></i></span>
+                        <div class="flex flex-column gap-1">
+                            <span class="page-cell-strong">{{ t.servicioTipoNombre }}</span>
+                            <span *ngIf="t.clienteNombre; else general" class="cm-muted"><i class="pi pi-building text-xs"></i> {{ t.clienteNombre }}</span>
+                            <ng-template #general><span class="cm-muted">Tarifa general</span></ng-template>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="cm-route">
+                        <span [class.cm-any]="!t.comunaOrigenNombre">{{ t.comunaOrigenNombre || 'Cualquiera' }}</span>
+                        <i class="pi pi-arrow-right"></i>
+                        <span [class.cm-any]="!t.comunaDestinoNombre">{{ t.comunaDestinoNombre || 'Cualquiera' }}</span>
+                    </span>
+                </td>
+                <td class="text-right">
+                    <div class="cm-money">$ {{ t.precio | number: '1.0-2' }}</div>
+                    <div class="cm-muted">por {{ t.unidadMedidaNombre | lowercase }} · {{ periodoTexto(t.periodo) | lowercase }}</div>
+                    <div class="cm-muted" *ngIf="t.minimo">mínimo $ {{ t.minimo | number: '1.0-0' }}</div>
+                </td>
+                <td class="white-space-nowrap">
+                    <div class="flex flex-column gap-1 align-items-start">
+                        <p-tag *ngIf="t.vigente" value="Vigente" severity="success" icon="pi pi-check" />
+                        <p-tag *ngIf="!t.vigente && t.activo" value="No vigente" severity="warn" icon="pi pi-clock" />
+                        <p-tag *ngIf="!t.activo" value="Inactiva" severity="secondary" />
+                        <span class="cm-muted">{{ fecha(t.vigenteDesde) }} — {{ t.vigenteHasta ? fecha(t.vigenteHasta) : 'sin término' }}</span>
+                    </div>
+                </td>
+                <td class="text-right white-space-nowrap">
+                    <ng-container *ngIf="esAdmin$ | async">
+                        <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="success" (click)="editar(t)" />
+                        <p-button pTooltip="Nueva vigencia (copia)" icon="pi pi-copy" [rounded]="true" [text]="true" severity="info" (click)="duplicar(t)" />
+                        <p-button [pTooltip]="t.activo ? 'Desactivar' : 'Activar'" [icon]="t.activo ? 'pi pi-power-off' : 'pi pi-replay'" [rounded]="true" [text]="true" [severity]="t.activo ? 'danger' : 'info'" (click)="cambiarActivo(t)" />
+                        <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminar(t)" />
+                    </ng-container>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="5">
+                    <div class="page-empty">
+                        <i class="pi pi-tag"></i>
+                        <strong>No hay tarifas</strong>
+                        <span>Registra los precios para calcular cotizaciones automáticamente.</span>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #summary>
+            <p-paginator styleClass="page-paginator" (onPageChange)="pageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="data ? data.totalElements : 0" [rowsPerPageOptions]="[20, 50, 100]" />
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog [header]="tarifa.id ? 'Editar tarifa' : 'Agregar tarifa'" [modal]="true" [(visible)]="dialogoVisible" [style]="{ width: '50rem' }" [breakpoints]="{ '640px': '95vw' }">
+    <div class="cm-block">
+        <header class="cm-section__head">
+            <span class="cm-section__icon"><i class="pi pi-map"></i></span>
+            <div>
+                <h3 class="cm-section__title">Servicio y trayecto</h3>
+                <span class="cm-section__hint">Sin cliente es la tarifa general; sin comuna vale para cualquiera</span>
+            </div>
+        </header>
+        <div class="cm-fields">
+            <div class="cm-field">
+                <label>Servicio <span class="cm-req">*</span></label>
+                <p-select
+                    [options]="servicios"
+                    [(ngModel)]="tarifa.servicioTipoId"
+                    optionLabel="nombre"
+                    optionValue="id"
+                    placeholder="Elige el servicio"
+                    appendTo="body"
+                    class="w-full"
+                    [class.ng-invalid]="intentoGuardar && !tarifa.servicioTipoId"
+                    [class.ng-dirty]="intentoGuardar"
+                />
+            </div>
+            <div class="cm-field">
+                <label>Cliente</label>
+                <p-select [options]="clientesDialogo" [(ngModel)]="tarifa.clienteId" optionLabel="nombre" optionValue="id" placeholder="Tarifa general (todos)" [showClear]="true" [filter]="true" filterBy="nombre" appendTo="body" class="w-full" />
+            </div>
+            <div class="cm-field">
+                <label>Comuna de origen</label>
+                <p-select [options]="comunas" [(ngModel)]="tarifa.comunaOrigenId" optionLabel="nombre" optionValue="id" placeholder="Cualquiera" [showClear]="true" [filter]="true" filterBy="nombre" appendTo="body" class="w-full" />
+            </div>
+            <div class="cm-field">
+                <label>Comuna de destino</label>
+                <p-select [options]="comunas" [(ngModel)]="tarifa.comunaDestinoId" optionLabel="nombre" optionValue="id" placeholder="Cualquiera" [showClear]="true" [filter]="true" filterBy="nombre" appendTo="body" class="w-full" />
+            </div>
+        </div>
+    </div>
+
+    <div class="cm-block">
+        <header class="cm-section__head">
+            <span class="cm-section__icon"><i class="pi pi-dollar"></i></span>
+            <div>
+                <h3 class="cm-section__title">Precio</h3>
+                <span class="cm-section__hint">Valores netos, en pesos</span>
+            </div>
+        </header>
+        <div class="cm-fields cm-fields--3">
+            <div class="cm-field">
+                <label>Precio <span class="cm-req">*</span></label>
+                <p-inputnumber
+                    [(ngModel)]="tarifa.precio"
+                    mode="currency"
+                    currency="CLP"
+                    locale="es-CL"
+                    [minFractionDigits]="0"
+                    [maxFractionDigits]="2"
+                    [min]="0"
+                    [fluid]="true"
+                    [class.ng-invalid]="intentoGuardar && tarifa.precio == null"
+                    [class.ng-dirty]="intentoGuardar"
+                />
+            </div>
+            <div class="cm-field">
+                <label>Por unidad <span class="cm-req">*</span></label>
+                <p-select
+                    [options]="unidades"
+                    [(ngModel)]="tarifa.unidadMedidaId"
+                    optionLabel="nombre"
+                    optionValue="id"
+                    placeholder="Kg, m³, bulto, pallet..."
+                    [filter]="true"
+                    filterBy="nombre"
+                    appendTo="body"
+                    class="w-full"
+                    [class.ng-invalid]="intentoGuardar && !tarifa.unidadMedidaId"
+                    [class.ng-dirty]="intentoGuardar"
+                />
+            </div>
+            <div class="cm-field">
+                <label>Cobro mínimo</label>
+                <p-inputnumber [(ngModel)]="tarifa.minimo" mode="currency" currency="CLP" locale="es-CL" [minFractionDigits]="0" [min]="0" [fluid]="true" placeholder="Sin mínimo" />
+            </div>
+            <div class="cm-field cm-field--full">
+                <label>Período</label>
+                <p-selectbutton [options]="periodos" [(ngModel)]="tarifa.periodo" optionLabel="label" optionValue="value" [allowEmpty]="false" />
+            </div>
+        </div>
+        <div class="cm-preview" *ngIf="tarifa.precio != null">
+            <i class="pi pi-calculator"></i>
+            <span>
+                Se cobrará <b>$ {{ tarifa.precio | number: '1.0-2' }}</b> {{ unidadTexto }}, {{ periodoTexto(tarifa.periodo) | lowercase }}<ng-container *ngIf="tarifa.minimo">, con un mínimo de <b>$ {{ tarifa.minimo | number: '1.0-0' }}</b></ng-container>.
+            </span>
+        </div>
+    </div>
+
+    <div class="cm-block">
+        <header class="cm-section__head">
+            <span class="cm-section__icon"><i class="pi pi-calendar"></i></span>
+            <div>
+                <h3 class="cm-section__title">Vigencia</h3>
+                <span class="cm-section__hint">Para cambiar un precio, usa "Nueva vigencia" y así queda el historial</span>
+            </div>
+        </header>
+        <div class="cm-fields">
+            <div class="cm-field">
+                <label>Vigente desde</label>
+                <p-datepicker [(ngModel)]="desde" dateFormat="dd/mm/yy" [showIcon]="true" [fluid]="true" appendTo="body" />
+            </div>
+            <div class="cm-field">
+                <label>Vigente hasta</label>
+                <p-datepicker [(ngModel)]="hasta" dateFormat="dd/mm/yy" [showIcon]="true" [showClear]="true" [fluid]="true" appendTo="body" placeholder="Sin término" />
+            </div>
+            <div class="cm-field cm-field--full">
+                <label>Observaciones</label>
+                <textarea pTextarea rows="2" class="w-full" [(ngModel)]="tarifa.observaciones" [autoResize]="true"></textarea>
+            </div>
+        </div>
+        <div class="cm-note"><i class="pi pi-info-circle"></i> Al cotizar se usa la tarifa más específica: primero la del cliente, luego la general; y la de la comuna exacta antes que la de "cualquiera".</div>
+    </div>
+    <ng-template #footer>
+        <p-button label="Cancelar" severity="secondary" [text]="true" (click)="dialogoVisible = false" />
+        <p-button label="Guardar" icon="pi pi-check" severity="success" [loading]="guardando" (click)="guardar()" />
+    </ng-template>
+</p-dialog>
+<p-confirmdialog #cTarifa key="cTarifa">
+    <ng-template #footer>
+        <p-button label="Cancelar" variant="text" icon="pi pi-times" class="w-12" [fluid]="true" severity="secondary" (click)="cTarifa.onReject()" />
+        <p-button label="Confirmar" icon="pi pi-check" class="w-12" [fluid]="true" severity="danger" (click)="cTarifa.onAccept()" />
+    </ng-template>
+</p-confirmdialog>
+<app-modal-loading [visible]="loading" />

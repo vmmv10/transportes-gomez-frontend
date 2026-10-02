@@ -11,6 +11,7 @@ export class RutaFiltro {
     sort: string = 'desc';
     key: string = 'fecha';
     conductor: boolean = false;
+    vehiculo: number | undefined;
 
     constructor() {
         this.fechaDesde = null;

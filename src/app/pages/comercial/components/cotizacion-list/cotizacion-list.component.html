@@ -1,0 +1,75 @@
+<p-toast />
+<div class="page-breadcrumb-bar flex flex-column">
+    <p-breadcrumb class="app-breadcrumb max-w-full" [model]="breadcrumb" />
+</div>
+<div class="card flex flex-column gap-2 md:gap-4">
+    <div class="page-header">
+        <div class="page-panel-title-group">
+            <span class="page-panel-title-chip"><i class="pi pi-calculator"></i></span>
+            <div class="page-panel-title-text">
+                <h2 class="page-header__title">Cotizaciones</h2>
+                <span class="page-panel-subtitle">
+                    Solicitudes de la página web y cotizaciones del equipo
+                    <span class="page-panel-count" *ngIf="pendientes">{{ pendientes.cotizaciones }} por atender</span>
+                </span>
+            </div>
+        </div>
+        <div class="page-header__actions flex gap-2">
+            <button pButton icon="pi pi-envelope" [label]="'Mensajes web' + (pendientes?.mensajes ? ' (' + pendientes?.mensajes + ')' : '')" severity="secondary" [outlined]="true" [routerLink]="['/comercial/mensajes']"></button>
+            <button pButton icon="pi pi-plus" label="Nueva" class="page-panel-primary-action" [routerLink]="['/comercial/cotizaciones/nueva']"></button>
+        </div>
+    </div>
+
+    <div class="flex flex-column md:flex-row gap-2 md:align-items-center">
+        <input pInputText (keydown.enter)="buscar()" [(ngModel)]="filtro.texto" placeholder="Código, nombre, empresa o correo" class="w-12" />
+        <p-select [options]="opcionesEstado" [(ngModel)]="estadoSeleccionado" (ngModelChange)="onEstadoChange()" optionLabel="label" optionValue="value" class="w-12 md:w-4" />
+        <p-button label="Buscar" icon="pi pi-search" severity="info" [outlined]="true" class="md:w-3 w-12" [fluid]="true" (onClick)="buscar()" />
+    </div>
+
+    <p-table [value]="data?.content ?? []" [loading]="loading" [scrollable]="true" [tableStyle]="{ 'min-width': '60rem' }">
+        <ng-template #header>
+            <tr>
+                <th>Código</th>
+                <th>Fecha</th>
+                <th>Solicitante</th>
+                <th>Servicio</th>
+                <th>Origen → Destino</th>
+                <th class="text-right">Monto</th>
+                <th>Estado</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-c>
+            <tr class="cursor-pointer" (click)="abrir(c)">
+                <td>
+                    <span class="page-cell-code">{{ c.codigo }}</span>
+                    <div>
+                        <small class="page-cell-muted">{{ c.canal === 'WEB' ? 'Web' : 'Interna' }}</small>
+                    </div>
+                </td>
+                <td class="white-space-nowrap">{{ c.fechaCreacion | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>
+                    <div class="page-cell-strong">{{ c.nombre }}</div>
+                    <small class="page-cell-muted">{{ c.empresa || c.email }}</small>
+                </td>
+                <td>{{ c.servicioTipoNombre || c.servicioTexto || '—' }}</td>
+                <td>{{ c.comunaOrigenNombre || c.origen || '—' }} → {{ c.comunaDestinoNombre || c.destino || '—' }}</td>
+                <td class="text-right white-space-nowrap">{{ c.monto != null ? '$ ' + (c.monto | number: '1.0-0') : '—' }}</td>
+                <td><p-tag [value]="estado(c.estado).label" [severity]="estado(c.estado).severidad" /></td>
+            </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="7">
+                    <div class="page-empty">
+                        <i class="pi pi-calculator"></i>
+                        <strong>No hay cotizaciones</strong>
+                        <span>Las solicitudes de la página web aparecen aquí.</span>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #summary>
+            <p-paginator styleClass="page-paginator" (onPageChange)="pageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="data ? data.totalElements : 0" [rowsPerPageOptions]="[20, 50]" />
+        </ng-template>
+    </p-table>
+</div>

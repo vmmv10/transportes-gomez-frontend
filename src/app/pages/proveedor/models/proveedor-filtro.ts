@@ -4,5 +4,5 @@ export class ProveedorFiltro {
     size: number = 10;
     page: number = 0;
     sort: string = 'id,desc';
-    activo: boolean | undefined;
+    activo: boolean | undefined = true;
 }

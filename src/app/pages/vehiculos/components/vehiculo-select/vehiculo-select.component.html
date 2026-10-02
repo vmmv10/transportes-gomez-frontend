@@ -1,0 +1,33 @@
+<p-select
+    *ngIf="!loading"
+    [options]="vehiculos"
+    [ngModel]="seleccionado"
+    optionLabel="descripcion"
+    dataKey="id"
+    [placeholder]="placeholder"
+    [showClear]="true"
+    [filter]="vehiculos.length > 8"
+    filterBy="descripcion"
+    class="w-12"
+    appendTo="body"
+    [disabled]="disabled"
+    emptyMessage="No hay vehículos registrados"
+    (ngModelChange)="onChangeSelect($event)"
+>
+    <ng-template #selectedItem let-item>
+        <span *ngIf="item"><i [class]="icono(item)" class="mr-2"></i>{{ item.descripcion }}</span>
+    </ng-template>
+    <ng-template #item let-item>
+        <div class="flex align-items-center gap-2">
+            <i [class]="icono(item)"></i>
+            <div class="flex flex-column">
+                <span>{{ item.descripcion }}</span>
+                <small class="text-color-secondary"
+                    >{{ tipoTexto(item) }}<ng-container *ngIf="item.propiedad === 'ARRENDADO'"> · arrendado{{ item.proveedorNombre ? ' a ' + item.proveedorNombre : '' }}</ng-container
+                    ><ng-container *ngIf="item.estado !== 'OPERATIVO'"> · {{ item.estado === 'EN_MANTENCION' ? 'en mantención' : 'fuera de servicio' }}</ng-container></small
+                >
+            </div>
+        </div>
+    </ng-template>
+</p-select>
+<p-skeleton *ngIf="loading" class="w-12" height="2.5rem" />

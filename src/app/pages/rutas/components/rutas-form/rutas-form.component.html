@@ -19,14 +19,14 @@
                 <th class="text-center">N° Orden de Servicio</th>
                 <th class="text-center">Escuela</th>
                 <th class="text-center">Comuna</th>
-                <th *ngIf="ruta.enTransito" class="text-center">Estado</th>
+                <th *ngIf="mostrarEstado" class="text-center">Estado</th>
                 <th></th>
             </tr>
         </ng-template>
         <ng-template #body let-rowData let-columns="columns" let-index="rowIndex">
             <tr [pReorderableRow]="index">
-                <td *ngIf="ruta && ruta.estado != 'FINALIZADA'">
-                    <span class="pi pi-bars" pReorderableRowHandle></span>
+                <td>
+                    <span *ngIf="ruta && ruta.estado != 'FINALIZADA'" class="pi pi-bars" pReorderableRowHandle></span>
                 </td>
                 <td class="text-center">
                     {{ rowData.id }}
@@ -37,17 +37,14 @@
                 <td class="text-center">
                     {{ rowData.escuela.comuna }}
                 </td>
-                <td *ngIf="ruta.enTransito" class="text-center">
-                    <p-chip
-                        class="text-center text-gray-50 font-semibold text-md"
-                        [label]="rowData.entregado ? 'ENTREGADO' : 'EN RUTA'"
-                        [ngClass]="{
-                            'bg-green-500': rowData.entregado == true,
-                            'bg-orange-400': rowData.entregado == false
-                        }"
-                    ></p-chip>
+                <td *ngIf="mostrarEstado" class="text-center">
+                    <div class="flex flex-column align-items-center gap-1">
+                        <p-chip class="text-center text-gray-50 font-semibold text-md" [label]="estadoEntrega(rowData).texto" [ngClass]="estadoEntrega(rowData).clase"></p-chip>
+                        <small *ngIf="estadoEntrega(rowData).motivo" class="text-red-500">{{ estadoEntrega(rowData).motivo }}</small>
+                    </div>
                 </td>
-                <td class="text-center">
+                <td class="text-center white-space-nowrap">
+                    <p-button *ngIf="ruta.id > 0" pTooltip="Historial de la orden" icon="pi pi-history" [rounded]="true" [text]="true" severity="secondary" (click)="verSeguimiento(rowData)" />
                     <p-button [disabled]="ruta.estado == 'FINALIZADA'" pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="warn" (click)="confirmarEliminar(rowData)" />
                 </td>
             </tr>
@@ -66,12 +63,52 @@
         <label for="chofer">Fecha</label>
         <p-datepicker dateFormat="dd/mm/yy" [disabled]="ruta.estado == 'FINALIZADA'" [fluid]="true" [showIcon]="true" [ngClass]="{ 'ng-invalid ng-dirty': validar && !ruta.fechaJS }" class="w-12" [(ngModel)]="ruta.fechaJS" />
     </div>
+    <div class="flex flex-column gap-1 w-12">
+        <label>Vehículo</label>
+        <app-vehiculo-select [(vehiculo)]="ruta.vehiculo" class="w-12" />
+    </div>
+</div>
+<div *ngIf="ruta.ordenes.length > 0 && ruta.id > 0" class="card flex flex-column md:flex-row gap-3 w-12">
+    <div class="flex flex-column gap-1 w-12">
+        <label for="kmSalida">Odómetro al salir</label>
+        <p-inputnumber inputId="kmSalida" suffix=" km" [min]="0" [fluid]="true" [(ngModel)]="ruta.kmSalida" />
+    </div>
+    <div class="flex flex-column gap-1 w-12">
+        <label for="kmLlegada">Odómetro al llegar</label>
+        <p-inputnumber inputId="kmLlegada" suffix=" km" [min]="0" [fluid]="true" [(ngModel)]="ruta.kmLlegada" />
+    </div>
+    <div class="flex flex-column gap-1 w-12">
+        <label for="kilometros">Kilómetros recorridos</label>
+        <p-inputnumber *ngIf="kmCalculados === null" inputId="kilometros" suffix=" km" [min]="0" [fluid]="true" [(ngModel)]="ruta.kilometros" />
+        <span *ngIf="kmCalculados !== null" class="text-xl font-semibold mt-2" [class.text-red-500]="kmCalculados < 0">{{ kmCalculados }} km <small class="text-color-secondary font-normal">(calculado)</small></span>
+    </div>
+</div>
+<div *ngIf="ruta.id > 0 && (puedeVerCostos$ | async)" class="card">
+    <app-ruta-costos [rutaId]="ruta.id" [rutaFecha]="ruta.fecha" [kilometros]="kmCalculados ?? ruta.kilometros" />
 </div>
 <div *ngIf="ruta.ordenes.length > 0" class="card flex flex-row gap-1">
     <p-button label="Cancelar" severity="secondary" [text]="true" [routerLink]="['/rutas']" [fluid]="true" class="w-12" />
     <p-button [disabled]="ruta.estado == 'FINALIZADA'" [label]="ruta.id > 0 ? 'Actualizar' : 'Guardar'" severity="success" (click)="guardarRuta()" [fluid]="true" class="w-12" />
 </div>
 <app-modal-loading [visible]="loading" />
+<p-dialog [header]="'Historial de la orden ' + (seguimientoOrden ?? '')" [modal]="true" [(visible)]="seguimientoVisible" [style]="{ width: '40rem' }" [breakpoints]="{ '640px': '95vw' }">
+    <div *ngIf="!seguimiento.length" class="text-color-secondary">{{ cargandoSeguimiento ? 'Cargando...' : 'Esta orden aún no tiene eventos.' }}</div>
+    <div class="flex flex-column gap-3">
+        <div *ngFor="let e of seguimiento" class="flex gap-3 align-items-start">
+            <i [class]="tipoSeguimiento(e).icono" [style.color]="tipoSeguimiento(e).color" class="text-xl mt-1"></i>
+            <div class="flex flex-column">
+                <span class="font-semibold">{{ tipoSeguimiento(e).texto }}</span>
+                <span *ngIf="e.descripcion && e.descripcion !== tipoSeguimiento(e).texto">{{ e.descripcion }}</span>
+                <small class="text-color-secondary">
+                    {{ e.fecha | date: 'dd/MM/yyyy HH:mm' }}<ng-container *ngIf="e.usuarioNombre"> · {{ e.usuarioNombre }}</ng-container
+                    ><ng-container *ngIf="e.rutaId"> · ruta {{ e.rutaId }}</ng-container
+                    ><ng-container *ngIf="e.distanciaKm"> · a {{ e.distanciaKm | number: '1.0-1' }} km</ng-container>
+                </small>
+                <a *ngIf="e.latitud && e.longitud" class="text-sm" target="_blank" rel="noopener" [href]="'https://www.google.com/maps?q=' + e.latitud + ',' + e.longitud">Ver ubicación</a>
+            </div>
+        </div>
+    </div>
+</p-dialog>
 <p-confirmdialog #eliminarEntrega key="eliminarEntrega">
     <ng-template #message let-message>
         <div class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700">

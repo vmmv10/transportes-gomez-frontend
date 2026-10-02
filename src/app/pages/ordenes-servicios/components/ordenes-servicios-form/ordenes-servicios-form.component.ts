@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { environment } from '../../../../../environments';
 import { OrdenServicio } from '../../models/orden-servicio.model';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Imagen } from '../../../uikit/models/imagen.model';
@@ -531,6 +532,19 @@ export class OrdenesServiciosFormComponent {
         } catch (error) {
             console.error('Error fetching saldo bodega:', error);
         }
+    }
+
+    /** Copia el enlace de seguimiento público (página web) para enviárselo al destinatario. */
+    copiarSeguimiento() {
+        const codigo = this.orden.codigoSeguimiento;
+        if (!codigo) {
+            return;
+        }
+        const enlace = `${environment.landingUrl}/seguimiento?codigo=${codigo}`;
+        navigator.clipboard?.writeText(enlace).then(
+            () => this.messageService.add({ severity: 'success', summary: 'Enlace copiado', detail: enlace }),
+            () => this.messageService.add({ severity: 'info', summary: 'Código de seguimiento', detail: enlace, life: 10000 })
+        );
     }
 
     obtenerPdf() {

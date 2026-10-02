@@ -17,6 +17,14 @@
                             <p-tag *ngIf="!orden.entregado" severity="warn" value="Pendiente" icon="pi pi-clock" />
                             <span *ngIf="orden.escuela">{{ orden.escuela.nombre }}</span>
                             <span *ngIf="orden.cliente">· {{ orden.cliente.nombreCorto || orden.cliente.razonSocial }}</span>
+                            <span
+                                *ngIf="orden.codigoSeguimiento"
+                                class="page-panel-count cursor-pointer"
+                                pTooltip="Código para seguir el envío en la página web. Clic para copiar el enlace."
+                                tooltipPosition="bottom"
+                                (click)="copiarSeguimiento()"
+                                ><i class="pi pi-map-marker mr-1"></i>Seguimiento {{ orden.codigoSeguimiento }}</span
+                            >
                         </ng-container>
                     </span>
                 </div>

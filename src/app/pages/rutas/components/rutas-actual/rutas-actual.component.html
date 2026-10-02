@@ -4,6 +4,13 @@
     </ng-container>
     <div *ngIf="entrega" class="card flex flex-column gap-2">
         <h2 class="text-center text-3xl">Entregas de la Ruta</h2>
+        <div *ngIf="sinComenzar || faltaKmSalida" class="flex flex-column md:flex-row md:align-items-end gap-2 p-3 border-round surface-100">
+            <div class="flex flex-column gap-1 w-12">
+                <label for="kmSalida" class="font-semibold">{{ sinComenzar ? 'Odómetro de salida para comenzar la ruta' : 'Falta registrar el odómetro de salida' }}</label>
+                <p-inputnumber inputId="kmSalida" [(ngModel)]="kmSalida" suffix=" km" [min]="0" [useGrouping]="true" locale="es-CL" [fluid]="true" placeholder="Ej: 125.430" />
+            </div>
+            <p-button [label]="sinComenzar ? 'Comenzar ruta' : 'Guardar'" [icon]="sinComenzar ? 'pi pi-play' : 'pi pi-check'" class="md:w-4 w-12" [fluid]="true" (onClick)="comenzarRuta()" />
+        </div>
         <p-accordion value="0" *ngIf="entrega">
             <ng-container *ngFor="let entrega of ruta.entregas; let i = index">
                 <p-accordion-panel [value]="i">
@@ -28,7 +35,8 @@
                                     <p class="text-left font-bold w-12 mb-0">Comuna: {{ entrega.ordenServicio.escuela?.comuna }}</p>
                                     <p *ngIf="entrega.ordenServicio.escuela?.direccion" class="text-left font-bold w-12 mb-0">Dirección: {{ entrega.ordenServicio.escuela?.direccion }}</p>
                                 </div>
-                                <app-entregas-button-recepcion *ngIf="ruta && !entrega.entregado" [entregaId]="entrega.id" (onRecepcionada)="recepcionado()"></app-entregas-button-recepcion>
+                                <app-entregas-button-recepcion *ngIf="ruta && !entrega.entregado && !sinComenzar" [entregaId]="entrega.id" (onRecepcionada)="recepcionado()"></app-entregas-button-recepcion>
+                                <small *ngIf="!entrega.entregado && sinComenzar" class="text-color-secondary">Comienza la ruta para registrar esta entrega.</small>
                                 <span *ngIf="entrega.entregado" class="text-center text-2xl text-green-500">Entregado</span>
                             </ng-container>
                         </div>

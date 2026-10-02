@@ -7,6 +7,7 @@ export class Proveedor {
     fechaCreacion: Date;
     rut: string;
     representante: string;
+    activo?: boolean;
 
     constructor(
     ) {

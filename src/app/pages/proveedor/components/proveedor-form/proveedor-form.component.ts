@@ -10,6 +10,8 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ProveedoresService } from '../../services/proveedores.service';
 import { ModalLoadingComponent } from '../../../uikit/components/modal-loading/modal-loading.component';
 import { ToastModule } from 'primeng/toast';
+import { mensajeError } from '../../../uikit/utils/error-mensaje';
+import { normalizarRut, rutValido } from '../../../uikit/utils/rut';
 
 @Component({
     selector: 'app-proveedor-form',
@@ -60,7 +62,27 @@ export class ProveedorFormComponent {
         });
     }
 
+    /** El RUT es opcional; si se escribe, debe ser válido. */
+    get rutOk(): boolean {
+        return !this.proveedor.rut?.trim() || rutValido(this.proveedor.rut);
+    }
+
+    normalizarRut() {
+        if (this.proveedor.rut?.trim()) {
+            this.proveedor.rut = normalizarRut(this.proveedor.rut);
+        }
+    }
+
     guardarProveedor() {
+        this.normalizarRut();
+        if (!this.proveedor.nombre?.trim()) {
+            this.messageService.add({ severity: 'warn', summary: 'Faltan datos', detail: 'La razón social es obligatoria' });
+            return;
+        }
+        if (!this.rutOk) {
+            this.messageService.add({ severity: 'warn', summary: 'RUT inválido', detail: 'Revisa el dígito verificador o deja el RUT en blanco' });
+            return;
+        }
         this.loading = true;
         if (this.proveedor.id) {
             this.proveedorServices.updateProveedor(this.proveedor).subscribe({
@@ -69,7 +91,7 @@ export class ProveedorFormComponent {
                     this.loading = false;
                 },
                 error: (error) => {
-                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al actualizar proveedor' });
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: mensajeError(error, 'Error al actualizar proveedor') });
                     console.error('Error updating proveedor:', error);
                     this.loading = false;
                 }
@@ -81,7 +103,7 @@ export class ProveedorFormComponent {
                     this.loading = false;
                 },
                 error: (error) => {
-                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al crear proveedor' });
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: mensajeError(error, 'Error al crear proveedor') });
                     console.error('Error creating proveedor:', error);
                     this.loading = false;
                 }

@@ -1,0 +1,139 @@
+<div class="page-breadcrumb-bar flex flex-column">
+    <p-breadcrumb class="app-breadcrumb max-w-full" [model]="breadcrumb" />
+</div>
+<div class="card flex flex-column gap-2 md:gap-4">
+    <div class="page-header">
+        <div class="page-panel-title-group">
+            <span class="page-panel-title-chip"><i class="pi pi-users"></i></span>
+            <div class="page-panel-title-text">
+                <h2 class="page-header__title">Usuarios</h2>
+                <span class="page-panel-subtitle">
+                    Quién puede entrar al sistema y qué puede hacer
+                    <span class="page-panel-count">{{ usuarios.length }} usuarios</span>
+                </span>
+            </div>
+        </div>
+        <div class="page-header__actions">
+            <button pButton icon="pi pi-plus" label="Nuevo usuario" class="page-panel-primary-action" (click)="nuevo()"></button>
+        </div>
+    </div>
+    <p-iconfield>
+        <p-inputicon class="pi pi-search" />
+        <input pInputText [(ngModel)]="busqueda" (ngModelChange)="filtrar()" placeholder="Buscar por nombre, correo, rol o cliente" class="w-12" />
+    </p-iconfield>
+    <p-table [value]="filtrados" [loading]="loading" [responsive]="true" [tableStyle]="{ 'min-width': '50rem' }">
+        <ng-template #header>
+            <tr>
+                <th>Usuario</th>
+                <th>Roles</th>
+                <th>Cliente</th>
+                <th>Último ingreso</th>
+                <th>Estado</th>
+                <th></th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-u>
+            <tr [class.opacity-60]="u.bloqueado">
+                <td>
+                    <div class="flex flex-column">
+                        <span class="page-cell-strong">{{ nombreCompleto(u) || '(sin nombre)' }}</span>
+                        <small class="page-cell-muted">{{ u.email }}</small>
+                    </div>
+                </td>
+                <td>
+                    <div class="flex flex-wrap gap-1">
+                        <p-tag *ngFor="let r of u.roles" [value]="r" [severity]="severidadRol(r)" />
+                        <span class="text-orange-500 text-sm" *ngIf="!u.roles?.length"><i class="pi pi-exclamation-triangle"></i> Sin rol</span>
+                    </div>
+                </td>
+                <td [class.page-cell-empty]="!u.clienteNombre">{{ u.clienteNombre || '—' }}</td>
+                <td class="white-space-nowrap">
+                    <span *ngIf="u.ultimoIngreso; else nunca">{{ u.ultimoIngreso | date: 'dd-MM-yyyy HH:mm' }}</span>
+                    <ng-template #nunca><span class="page-cell-muted">Nunca</span></ng-template>
+                </td>
+                <td>
+                    <p-tag [value]="u.bloqueado ? 'Bloqueado' : 'Activo'" [severity]="u.bloqueado ? 'danger' : 'success'" />
+                </td>
+                <td class="text-right white-space-nowrap">
+                    <p-button pTooltip="Editar" tooltipPosition="left" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="success" (click)="editar(u)" />
+                    <p-button pTooltip="Enviar correo de contraseña" tooltipPosition="left" icon="pi pi-envelope" [rounded]="true" [text]="true" severity="info" (click)="confirmarCorreo(u)" />
+                    <p-button
+                        [pTooltip]="u.bloqueado ? 'Desbloquear' : 'Bloquear'"
+                        tooltipPosition="left"
+                        [icon]="u.bloqueado ? 'pi pi-lock-open' : 'pi pi-lock'"
+                        [rounded]="true"
+                        [text]="true"
+                        [severity]="u.bloqueado ? 'info' : 'danger'"
+                        (click)="confirmarBloqueo(u)"
+                    />
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="6">
+                    <div class="page-empty">
+                        <i class="pi pi-users"></i>
+                        <strong>No hay usuarios</strong>
+                        <span *ngIf="busqueda">Prueba con otra búsqueda.</span>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog [header]="esNuevo ? 'Nuevo usuario' : 'Editar usuario'" [modal]="true" [(visible)]="dialogoVisible" [style]="{ width: '42rem' }" [breakpoints]="{ '640px': '95vw' }">
+    <div class="flex flex-column gap-3">
+        <div class="flex flex-column gap-1">
+            <label for="email" class="font-semibold">Correo <span class="text-red-500">*</span></label>
+            <input pInputText id="email" type="email" [(ngModel)]="usuario.email" [disabled]="!esNuevo" placeholder="nombre@empresa.cl" [class.ng-invalid]="intentoGuardar && !emailOk" [class.ng-dirty]="intentoGuardar && !emailOk" />
+            <small class="text-color-secondary" *ngIf="esNuevo">Le llegará un correo para crear su contraseña.</small>
+            <small class="text-color-secondary" *ngIf="!esNuevo">El correo no se cambia: si es otro, crea un usuario nuevo y bloquea este.</small>
+        </div>
+        <div class="flex flex-column md:flex-row gap-3">
+            <div class="flex flex-column gap-1 w-12">
+                <label for="nombre" class="font-semibold">Nombre</label>
+                <input pInputText id="nombre" [(ngModel)]="usuario.nombre" />
+            </div>
+            <div class="flex flex-column gap-1 w-12">
+                <label for="apellidos" class="font-semibold">Apellidos</label>
+                <input pInputText id="apellidos" [(ngModel)]="usuario.apellidos" />
+            </div>
+        </div>
+        <div class="flex flex-column gap-1">
+            <label for="telefono" class="font-semibold">Teléfono</label>
+            <input pInputText id="telefono" type="tel" [(ngModel)]="usuario.telefono" placeholder="9 1234 5678" />
+        </div>
+        <div class="flex flex-column gap-2">
+            <label class="font-semibold">Roles <span class="text-red-500">*</span></label>
+            <div class="flex align-items-start gap-2" *ngFor="let rol of rolesDisponibles">
+                <p-checkbox [inputId]="'rol-' + rol" [value]="rol" [(ngModel)]="usuario.roles" />
+                <label [for]="'rol-' + rol" class="flex flex-column cursor-pointer">
+                    <span>{{ rol }}</span>
+                    <small class="text-color-secondary" *ngIf="descripcion[rol]">{{ descripcion[rol] }}</small>
+                </label>
+            </div>
+            <small class="text-red-500" *ngIf="intentoGuardar && !usuario.roles.length">Asigna al menos un rol.</small>
+            <small class="text-color-secondary">Un usuario puede tener varios roles. Los cambios se aplican la próxima vez que inicie sesión.</small>
+        </div>
+        <div class="flex flex-column gap-1" *ngIf="tieneRolCliente">
+            <label class="font-semibold">Organización (cliente) <span class="text-red-500">*</span></label>
+            <app-cliente-select [cliente]="cliente" (clienteChange)="onClienteChange($event)" [validar]="intentoGuardar" />
+            <small class="text-color-secondary">El usuario solo verá la información de este cliente.</small>
+        </div>
+    </div>
+    <ng-template #footer>
+        <p-button label="Cancelar" severity="secondary" [text]="true" (click)="dialogoVisible = false" />
+        <p-button [label]="esNuevo ? 'Crear y enviar correo' : 'Guardar'" icon="pi pi-check" severity="success" [loading]="guardando" (click)="guardar()" />
+    </ng-template>
+</p-dialog>
+
+<app-modal-loading [visible]="loading" />
+<p-toast />
+<p-confirmdialog #cUsuario key="cUsuario">
+    <ng-template #footer>
+        <p-button label="Cancelar" variant="text" icon="pi pi-times" class="w-12" [fluid]="true" severity="secondary" (click)="cUsuario.onReject()" />
+        <p-button label="Confirmar" icon="pi pi-check" class="w-12" [fluid]="true" severity="danger" (click)="cUsuario.onAccept()" />
+    </ng-template>
+</p-confirmdialog>

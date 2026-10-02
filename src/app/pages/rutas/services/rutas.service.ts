@@ -29,6 +29,9 @@ export class RutasService {
         if (filtro.chofer) {
             link += `&chofer=${filtro.chofer.id}`;
         }
+        if (filtro.vehiculo) {
+            link += `&vehiculo=${filtro.vehiculo}`;
+        }
         if (filtro.estado !== undefined) {
             if (filtro.estado === true) {
                 link += `&estado=FINALIZADA`;
@@ -71,11 +74,13 @@ export class RutasService {
         return this.authHttp.get<Ruta>(`${this.url}/fecha-hoy`);
     }
 
-    comenzarRuta(ruta: number): Observable<Ruta> {
-        return this.authHttp.put<Ruta>(`${this.url}/${ruta}/comenzar`, {});
+    /** El odómetro de salida es obligatorio para comenzar. */
+    comenzarRuta(ruta: number, kmSalida: number): Observable<Ruta> {
+        return this.authHttp.put<Ruta>(`${this.url}/${ruta}/comenzar`, { kmSalida });
     }
 
-    asignarKilometros(ruta: Ruta): Observable<Ruta> {
-        return this.authHttp.put<Ruta>(`${this.url}/${ruta.id}/kilometros`, ruta);
+    /** Kilómetros recorridos, u odómetro de salida y llegada (el backend calcula los kilómetros). */
+    asignarKilometros(ruta: Pick<Ruta, 'id' | 'kilometros' | 'kmSalida' | 'kmLlegada'>): Observable<Ruta> {
+        return this.authHttp.put<Ruta>(`${this.url}/${ruta.id}/kilometros`, { kilometros: ruta.kilometros, kmSalida: ruta.kmSalida, kmLlegada: ruta.kmLlegada });
     }
 }

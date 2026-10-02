@@ -6,6 +6,7 @@ import { Page } from '../../uikit/models/page.model';
 import { OrdenServicioFiltro } from '../models/orden-servicio-filtro.model';
 import { Reporte } from '../../uikit/models/reporte.model';
 import { OrdenServicioDetalle } from '../models/orden-servicio-detalle.model';
+import { SeguimientoEvento } from '../models/seguimiento-evento.model';
 
 @Injectable({
     providedIn: 'root'
@@ -57,6 +58,11 @@ export class OrdenesServiciosService {
 
     get(id: string): Observable<OrdenServicio> {
         return this.authHttp.get<OrdenServicio>(`${this.url}/${id}`);
+    }
+
+    /** Historial de la orden: en ruta, cerca del destino, entregada, no entregada... */
+    getSeguimiento(id: number | string): Observable<SeguimientoEvento[]> {
+        return this.authHttp.get<SeguimientoEvento[]>(`${this.url}/${id}/seguimiento`);
     }
 
     create(orden: OrdenServicio): Observable<OrdenServicio> {

@@ -94,7 +94,8 @@ export class Dashboard {
     constructor(private rolService: RolService) {}
 
     ngOnInit() {
-        this.esAdmin$ = this.rolService.tieneRol('Administrador');
+        // Tablero general: Administrador, Operaciones y Bodega
+        this.esAdmin$ = this.rolService.tieneAlgunRol(['Administrador', 'Operaciones', 'Bodega']);
         this.esConductor$ = this.rolService.tieneRol('Conductor');
         this.esCliente$ = this.rolService.tieneRol('Cliente');
 

@@ -1,0 +1,124 @@
+<p-toast />
+<div class="flex flex-column gap-3">
+    <div class="flex flex-column md:flex-row md:align-items-center justify-content-between gap-2">
+        <div class="flex flex-column">
+            <span class="text-xl font-semibold">Costos de la ruta</span>
+            <small class="text-color-secondary">Combustible, peajes, transbordador de Chacao, barcazas, arriendo de lancha y viáticos.</small>
+        </div>
+        <p-button *ngIf="editable" label="Agregar costo" icon="pi pi-plus" [outlined]="true" (onClick)="nuevo()" />
+    </div>
+    <p-table [value]="costos" [loading]="cargando" [responsive]="true" showGridlines>
+        <ng-template #header>
+            <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Detalle</th>
+                <th>Pagado a</th>
+                <th class="text-right">Monto</th>
+                <th *ngIf="editable"></th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-item>
+            <tr>
+                <td class="white-space-nowrap">{{ fechaTexto(item.fecha) }}</td>
+                <td class="white-space-nowrap">
+                    <span class="page-cell-icon"><i [class]="icono(item.tipo)"></i>{{ tipoTexto(item.tipo) }}</span>
+                </td>
+                <td>
+                    <div class="flex flex-column">
+                        <span *ngIf="item.descripcion">{{ item.descripcion }}</span>
+                        <small class="page-cell-muted" *ngIf="item.litros">{{ item.litros | number: '1.0-2' }} litros</small>
+                        <small class="page-cell-muted" *ngIf="item.vehiculoDescripcion"><i class="pi pi-truck text-xs"></i> {{ item.vehiculoDescripcion }}</small>
+                        <small class="page-cell-muted" *ngIf="item.comprobante">Comprobante {{ item.comprobante }}</small>
+                        <span class="page-cell-empty" *ngIf="!item.descripcion && !item.litros && !item.vehiculoDescripcion && !item.comprobante">—</span>
+                    </div>
+                </td>
+                <td [class.page-cell-empty]="!item.proveedorNombre">{{ item.proveedorNombre || '—' }}</td>
+                <td class="text-right white-space-nowrap font-semibold">$ {{ item.monto | number: '1.0-0' }}</td>
+                <td *ngIf="editable" class="text-right white-space-nowrap">
+                    <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="success" (click)="editar(item)" />
+                    <p-button pTooltip="Eliminar" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminar(item)" />
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #footer>
+            <tr *ngIf="costos.length">
+                <td colspan="4" class="text-right">
+                    Total<ng-container *ngIf="costoPorKm"> · $ {{ costoPorKm | number: '1.0-0' }} por km</ng-container>
+                </td>
+                <td class="text-right white-space-nowrap font-bold">$ {{ total | number: '1.0-0' }}</td>
+                <td *ngIf="editable"></td>
+            </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td [attr.colspan]="editable ? 6 : 5" class="text-center text-color-secondary">Esta ruta no tiene costos registrados.</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog [header]="costo.id ? 'Editar costo' : 'Agregar costo'" [modal]="true" [(visible)]="dialogoVisible" [style]="{ width: '40rem' }" [breakpoints]="{ '640px': '95vw' }">
+    <div class="flex flex-column gap-3">
+        <div class="flex flex-column md:flex-row gap-3">
+            <div class="flex flex-column gap-1 w-12">
+                <label class="font-semibold">Tipo *</label>
+                <p-select
+                    [options]="tipos"
+                    [(ngModel)]="costo.tipo"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Elige el tipo"
+                    appendTo="body"
+                    class="w-12"
+                    [class.ng-invalid]="intentoGuardar && !costo.tipo"
+                    [class.ng-dirty]="intentoGuardar"
+                />
+            </div>
+            <div class="flex flex-column gap-1 w-12">
+                <label class="font-semibold">Fecha</label>
+                <p-datepicker [(ngModel)]="fecha" dateFormat="dd/mm/yy" [showIcon]="true" [fluid]="true" appendTo="body" />
+            </div>
+        </div>
+        <div class="flex flex-column md:flex-row gap-3">
+            <div class="flex flex-column gap-1 w-12">
+                <label for="monto" class="font-semibold">Monto *</label>
+                <p-inputnumber inputId="monto" [(ngModel)]="costo.monto" mode="currency" currency="CLP" locale="es-CL" [min]="0" [fluid]="true" [class.ng-invalid]="intentoGuardar && !costo.monto" [class.ng-dirty]="intentoGuardar" />
+            </div>
+            <div class="flex flex-column gap-1 w-12" *ngIf="costo.tipo === 'COMBUSTIBLE'">
+                <label for="litros" class="font-semibold">Litros</label>
+                <p-inputnumber inputId="litros" [(ngModel)]="costo.litros" mode="decimal" [maxFractionDigits]="2" [min]="0" [fluid]="true" locale="es-CL" />
+            </div>
+        </div>
+        <div class="flex flex-column gap-1">
+            <label for="descripcion" class="font-semibold">Detalle</label>
+            <input pInputText id="descripcion" [(ngModel)]="costo.descripcion" [placeholder]="costo.tipo === 'ARRIENDO_LANCHA' ? 'Tramo, ej: Achao - Isla Llingua' : 'Ej: Chacao ida y vuelta'" />
+        </div>
+        <div class="flex flex-column gap-1" *ngIf="costo.tipo === 'ARRIENDO_LANCHA' || costo.tipo === 'COMBUSTIBLE' || costo.vehiculoId">
+            <label class="font-semibold">{{ costo.tipo === 'ARRIENDO_LANCHA' ? 'Lancha' : 'Vehículo' }}</label>
+            <app-vehiculo-select [(vehiculoId)]="costo.vehiculoId" [tipo]="costo.tipo === 'ARRIENDO_LANCHA' ? 'LANCHA' : undefined" [placeholder]="costo.tipo === 'ARRIENDO_LANCHA' ? 'Elige la lancha' : 'El de la ruta'" />
+            <small class="text-color-secondary" *ngIf="costo.tipo === 'ARRIENDO_LANCHA'">Si no eliges a quién se pagó, se usa el arrendador de la lancha.</small>
+        </div>
+        <div class="flex flex-column md:flex-row gap-3">
+            <div class="flex flex-column gap-1 w-12">
+                <label class="font-semibold">Pagado a</label>
+                <app-proveedor-select [(proveedor)]="proveedor" [showClear]="true" [showFilter]="true" />
+            </div>
+            <div class="flex flex-column gap-1 md:w-6 w-12">
+                <label for="comprobante" class="font-semibold">N° comprobante</label>
+                <input pInputText id="comprobante" [(ngModel)]="costo.comprobante" placeholder="Opcional" />
+            </div>
+        </div>
+    </div>
+    <ng-template #footer>
+        <p-button label="Cancelar" severity="secondary" [text]="true" (click)="dialogoVisible = false" />
+        <p-button *ngIf="!costo.id" label="Guardar y agregar otro" severity="secondary" [outlined]="true" [loading]="guardando" (click)="guardar(true)" />
+        <p-button label="Guardar" icon="pi pi-check" severity="success" [loading]="guardando" (click)="guardar(false)" />
+    </ng-template>
+</p-dialog>
+<p-confirmdialog #cCosto key="cCosto">
+    <ng-template #footer>
+        <p-button label="Cancelar" variant="text" icon="pi pi-times" class="w-12" [fluid]="true" severity="secondary" (click)="cCosto.onReject()" />
+        <p-button label="Eliminar" icon="pi pi-check" class="w-12" [fluid]="true" severity="danger" (click)="cCosto.onAccept()" />
+    </ng-template>
+</p-confirmdialog>

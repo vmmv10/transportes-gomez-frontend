@@ -111,7 +111,8 @@ export class InventarioComponent {
     }
 
     ngOnInit() {
-        this.esAdmin$ = this.rolService.tieneRol('Administrador');
+        // Ajustar saldos: Administrador, Operaciones y Bodega
+        this.esAdmin$ = this.rolService.tieneAlgunRol(['Administrador', 'Operaciones', 'Bodega']);
         // Solo la pantalla principal (con selector de bodega) usa la URL
         if (this.conBodega) {
             this.leerQueryParams();

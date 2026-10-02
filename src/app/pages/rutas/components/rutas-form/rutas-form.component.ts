@@ -23,6 +23,14 @@ import { environment } from '../../../../../environments';
 import 'leaflet-routing-machine';
 import { DatePickerModule } from 'primeng/datepicker';
 import { ChipModule } from 'primeng/chip';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { Observable } from 'rxjs';
+import { VehiculoSelectComponent } from '../../../vehiculos/components/vehiculo-select/vehiculo-select.component';
+import { RutaCostosComponent } from '../ruta-costos/ruta-costos.component';
+import { RolService } from '../../../uikit/services/rol.service';
+import { mensajeError } from '../../../uikit/utils/error-mensaje';
+import { OrdenesServiciosService } from '../../../ordenes-servicios/services/ordenes-servicios.service';
+import { SeguimientoEvento, TIPOS_SEGUIMIENTO } from '../../../ordenes-servicios/models/seguimiento-evento.model';
 
 declare module 'leaflet' {
     namespace Routing {
@@ -53,7 +61,10 @@ declare module 'leaflet' {
         DialogModule,
         ConfirmDialogModule,
         DatePickerModule,
-        ChipModule
+        ChipModule,
+        InputNumberModule,
+        VehiculoSelectComponent,
+        RutaCostosComponent
     ],
     templateUrl: './rutas-form.component.html',
     styleUrl: './rutas-form.component.scss',
@@ -68,14 +79,19 @@ export class RutasFormComponent {
     private controlRouting: any;
     ruta: Ruta = new Ruta();
     minFecha: Date = new Date(new Date().setHours(0, 0, 0, 0));
+    /** Los costos los registran Administrador y Operaciones */
+    puedeVerCostos$: Observable<boolean>;
 
     constructor(
         private messageService: MessageService,
         private route: ActivatedRoute,
         private router: Router,
         private rutasService: RutasService,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private rolService: RolService,
+        private ordenesServiciosService: OrdenesServiciosService
     ) {
+        this.puedeVerCostos$ = this.rolService.tieneAlgunRol(['Administrador', 'Operaciones']);
         this.breadcrumb = [
             { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
             { label: 'Rutas', routerLink: '/rutas' }
@@ -113,6 +129,58 @@ export class RutasFormComponent {
         }
     }
 
+    // Historial de una orden
+    seguimientoVisible = false;
+    cargandoSeguimiento = false;
+    seguimientoOrden: number | undefined;
+    seguimiento: SeguimientoEvento[] = [];
+
+    /** La columna Estado se muestra cuando la ruta ya salió */
+    get mostrarEstado(): boolean {
+        return !!this.ruta.enTransito || this.ruta.estado === 'FINALIZADA' || (this.ruta.entregas ?? []).some((e) => e.estado && e.estado !== 'PENDIENTE');
+    }
+
+    /** Estado de la entrega de una orden de esta ruta. */
+    estadoEntrega(os: OrdenServicio): { texto: string; clase: string; motivo?: string | null } {
+        const entrega = (this.ruta.entregas ?? []).find((e) => e.ordenServicio?.id === os.id);
+        switch (entrega?.estado) {
+            case 'ENTREGADO':
+                return { texto: 'ENTREGADO', clase: 'bg-green-500' };
+            case 'NO_ENTREGADO':
+                return { texto: 'NO ENTREGADO', clase: 'bg-red-500', motivo: entrega.motivo };
+            case 'RECHAZADO':
+                return { texto: 'RECHAZADO', clase: 'bg-red-600', motivo: entrega.motivo };
+            default:
+                return os.entregado ? { texto: 'ENTREGADO', clase: 'bg-green-500' } : { texto: 'EN RUTA', clase: 'bg-orange-400' };
+        }
+    }
+
+    tipoSeguimiento(e: SeguimientoEvento) {
+        return TIPOS_SEGUIMIENTO[e.tipo] ?? { texto: e.tipo, icono: 'pi pi-circle', color: '#64748b' };
+    }
+
+    verSeguimiento(os: OrdenServicio) {
+        this.seguimientoOrden = os.id;
+        this.seguimiento = [];
+        this.seguimientoVisible = true;
+        this.cargandoSeguimiento = true;
+        this.ordenesServiciosService.getSeguimiento(os.id).subscribe({
+            next: (eventos) => {
+                this.seguimiento = eventos;
+                this.cargandoSeguimiento = false;
+            },
+            error: (error) => {
+                this.cargandoSeguimiento = false;
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: mensajeError(error, 'No se pudo obtener el historial') });
+            }
+        });
+    }
+
+    /** Con odómetro de salida y llegada, los kilómetros se calculan. */
+    get kmCalculados(): number | null {
+        return this.ruta.kmSalida != null && this.ruta.kmLlegada != null ? this.ruta.kmLlegada - this.ruta.kmSalida : null;
+    }
+
     guardarRuta() {
         this.validar = true;
         if (!this.ruta.chofer) {
@@ -127,6 +195,10 @@ export class RutasFormComponent {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Debe seleccionar una fecha.' });
             return;
         }
+        if (this.kmCalculados !== null && this.kmCalculados < 0) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'El odómetro al llegar no puede ser menor que al salir.' });
+            return;
+        }
         this.validar = false;
         this.loading = true;
         this.ruta.fecha = this.ruta.fechaJS.toISOString().split('T')[0];
@@ -138,7 +210,7 @@ export class RutasFormComponent {
                     this.ngOnInit();
                 },
                 error: (error) => {
-                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al actualizar la ruta.' });
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: mensajeError(error, 'Error al actualizar la ruta') });
                     this.loading = false;
                     console.error('Error updating ruta:', error);
                 }
@@ -151,7 +223,7 @@ export class RutasFormComponent {
                     this.router.navigate(['/rutas']);
                 },
                 error: (error) => {
-                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al crear la ruta.' });
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: mensajeError(error, 'Error al crear la ruta') });
                     this.loading = false;
                     console.error('Error creating ruta:', error);
                 }

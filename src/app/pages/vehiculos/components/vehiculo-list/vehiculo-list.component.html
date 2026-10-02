@@ -1,0 +1,203 @@
+<div class="page-breadcrumb-bar flex flex-column">
+    <p-breadcrumb class="app-breadcrumb max-w-full" [model]="breadcrumb" />
+</div>
+<div class="card flex flex-column gap-2 md:gap-4">
+    <div class="page-header">
+        <div class="page-panel-title-group">
+            <span class="page-panel-title-chip"><i class="pi pi-truck"></i></span>
+            <div class="page-panel-title-text">
+                <h2 class="page-header__title">Vehículos</h2>
+                <span class="page-panel-subtitle">
+                    Flota propia y lanchas arrendadas para llegar a las islas
+                    <span class="page-panel-count" *ngIf="data">{{ data.totalElements }} registros</span>
+                </span>
+            </div>
+        </div>
+        <div class="page-header__actions">
+            <button pButton icon="pi pi-plus" label="Agregar" class="page-panel-primary-action" (click)="nuevo()"></button>
+        </div>
+    </div>
+    <div class="flex flex-column md:flex-row gap-2 md:align-items-center">
+        <input pInputText (keydown.enter)="buscar()" [(ngModel)]="filtro.texto" placeholder="Nombre, patente, marca o modelo" class="w-12" />
+        <p-select [options]="tipos" [(ngModel)]="filtro.tipo" (ngModelChange)="buscar()" optionLabel="label" optionValue="value" placeholder="Todos los tipos" [showClear]="true" class="w-12" />
+        <p-select [options]="propiedades" [(ngModel)]="filtro.propiedad" (ngModelChange)="buscar()" optionLabel="label" optionValue="value" placeholder="Propios y arrendados" [showClear]="true" class="w-12" />
+        <p-selectbutton [options]="activos" [(ngModel)]="filtro.activo" (ngModelChange)="buscar()" optionLabel="label" optionValue="value" [allowEmpty]="false" />
+        <p-button label="Buscar" icon="pi pi-search" severity="info" [outlined]="true" class="md:w-3 w-12" [fluid]="true" (onClick)="buscar()" />
+        <p-button label="Limpiar" icon="pi pi-filter-slash" severity="secondary" [outlined]="true" class="md:w-3 w-12" [fluid]="true" (onClick)="limpiarFiltros()" />
+    </div>
+    <p-table class="hidden md:block w-12" [value]="data?.content ?? []" [loading]="loading" [tableStyle]="{ 'min-width': '50rem' }">
+        <ng-template #header>
+            <tr>
+                <th>Vehículo</th>
+                <th>Tipo</th>
+                <th>Patente / matrícula</th>
+                <th>Propiedad</th>
+                <th>Capacidad</th>
+                <th>Estado</th>
+                <th></th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-item>
+            <tr [class.opacity-60]="item.activo === false">
+                <td class="page-cell-strong">
+                    <div class="flex flex-column">
+                        <span>{{ item.nombre }}</span>
+                        <small class="page-cell-muted" *ngIf="item.marca || item.modelo"
+                            >{{ item.marca }} {{ item.modelo }}<ng-container *ngIf="item.anio"> · {{ item.anio }}</ng-container></small
+                        >
+                    </div>
+                </td>
+                <td>
+                    <span class="page-cell-icon"><i [class]="icono(item)"></i>{{ tipoTexto(item) }}</span>
+                </td>
+                <td>
+                    <span class="page-cell-code" *ngIf="item.patente; else sinPatente">{{ item.patente }}</span>
+                    <ng-template #sinPatente><span class="page-cell-empty">—</span></ng-template>
+                </td>
+                <td>
+                    <span *ngIf="item.propiedad !== 'ARRENDADO'">Propio</span>
+                    <div class="flex flex-column" *ngIf="item.propiedad === 'ARRENDADO'">
+                        <span>Arrendado</span>
+                        <small class="page-cell-muted">{{ item.proveedorNombre }}</small>
+                    </div>
+                </td>
+                <td class="page-cell-muted white-space-nowrap">{{ capacidad(item) || '—' }}</td>
+                <td>
+                    <div class="flex gap-1 flex-wrap">
+                        <p-tag [value]="estado(item).label" [severity]="estado(item).severidad" />
+                        <p-tag *ngIf="item.activo === false" value="Inactivo" severity="secondary" />
+                    </div>
+                </td>
+                <td class="text-right white-space-nowrap">
+                    <p-button pTooltip="Editar" tooltipPosition="left" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="success" (click)="editar(item)" />
+                    <p-button
+                        [pTooltip]="item.activo === false ? 'Activar' : 'Desactivar'"
+                        tooltipPosition="left"
+                        [icon]="item.activo === false ? 'pi pi-replay' : 'pi pi-power-off'"
+                        [rounded]="true"
+                        [text]="true"
+                        [severity]="item.activo === false ? 'info' : 'danger'"
+                        (click)="confirmarCambioActivo(item)"
+                    />
+                    <p-button pTooltip="Eliminar" tooltipPosition="left" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="confirmarEliminar(item)" />
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #summary>
+            <p-paginator styleClass="page-paginator" (onPageChange)="pageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="data ? data.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="7">
+                    <div class="page-empty">
+                        <i class="pi pi-truck"></i>
+                        <strong>No hay vehículos</strong>
+                        <span>Registra las camionetas, camiones, furgones y lanchas con "Agregar". Mientras tanto, las rutas funcionan sin vehículo.</span>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<app-table-mobile
+    [size]="filtro.size"
+    [page]="filtro.page"
+    [totalElements]="data ? data.totalElements : 0"
+    (pageChange)="pageChange($event)"
+    [card]="true"
+    [mostrarAcciones]="true"
+    (accion)="resolverAccion($event)"
+    [acciones]="acciones"
+    [data]="filas"
+    [campos]="campos"
+></app-table-mobile>
+
+<p-dialog [header]="vehiculo.id ? 'Editar vehículo' : 'Agregar vehículo'" [modal]="true" [(visible)]="dialogoVisible" [style]="{ width: '46rem' }" [breakpoints]="{ '640px': '95vw' }">
+    <div class="flex flex-column gap-3">
+        <div class="flex flex-column md:flex-row gap-3">
+            <div class="flex flex-column gap-1 w-12">
+                <label class="font-semibold">Tipo *</label>
+                <p-select
+                    [options]="tipos"
+                    [(ngModel)]="vehiculo.tipo"
+                    (ngModelChange)="onTipoChange()"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Elige el tipo"
+                    appendTo="body"
+                    class="w-12"
+                    [class.ng-invalid]="intentoGuardar && !vehiculo.tipo"
+                    [class.ng-dirty]="intentoGuardar"
+                />
+            </div>
+            <div class="flex flex-column gap-1 w-12">
+                <label for="nombre" class="font-semibold">Nombre *</label>
+                <input pInputText id="nombre" [(ngModel)]="vehiculo.nombre" placeholder="Ej: Hilux blanca, Lancha Don Lucho" [class.ng-invalid]="intentoGuardar && !vehiculo.nombre.trim()" [class.ng-dirty]="intentoGuardar" />
+            </div>
+        </div>
+        <div class="flex flex-column md:flex-row gap-3">
+            <div class="flex flex-column gap-1 w-12">
+                <label for="patente" class="font-semibold">{{ vehiculo.tipo === 'LANCHA' ? 'Matrícula' : 'Patente' }}</label>
+                <input pInputText id="patente" [(ngModel)]="vehiculo.patente" [placeholder]="vehiculo.tipo === 'LANCHA' ? 'Opcional' : 'Ej: ABCD12'" />
+            </div>
+            <div class="flex flex-column gap-1 w-12">
+                <label for="marca" class="font-semibold">Marca</label>
+                <input pInputText id="marca" [(ngModel)]="vehiculo.marca" />
+            </div>
+            <div class="flex flex-column gap-1 w-12">
+                <label for="modelo" class="font-semibold">Modelo</label>
+                <input pInputText id="modelo" [(ngModel)]="vehiculo.modelo" />
+            </div>
+            <div class="flex flex-column gap-1 md:w-6 w-12">
+                <label for="anio" class="font-semibold">Año</label>
+                <p-inputnumber inputId="anio" [(ngModel)]="vehiculo.anio" [useGrouping]="false" [min]="1950" [max]="2100" [fluid]="true" />
+            </div>
+        </div>
+        <div class="flex flex-column md:flex-row gap-3 md:align-items-end">
+            <div class="flex flex-column gap-1">
+                <label class="font-semibold">Propiedad</label>
+                <p-selectbutton [options]="propiedades" [(ngModel)]="vehiculo.propiedad" optionLabel="label" optionValue="value" [allowEmpty]="false" />
+            </div>
+            <div class="flex flex-column gap-1 w-12" *ngIf="vehiculo.propiedad === 'ARRENDADO'">
+                <label class="font-semibold">Arrendador *</label>
+                <app-proveedor-select [(proveedor)]="arrendador" [showClear]="true" [showFilter]="true" [validar]="intentoGuardar" />
+                <small class="text-color-secondary">Dueño de la lancha o del vehículo. Si no está, créalo en Proveedores.</small>
+            </div>
+        </div>
+        <div class="flex flex-column md:flex-row gap-3">
+            <div class="flex flex-column gap-1 w-12">
+                <label for="kg" class="font-semibold">Capacidad (kg)</label>
+                <p-inputnumber inputId="kg" [(ngModel)]="vehiculo.capacidadKg" mode="decimal" [maxFractionDigits]="2" [min]="0" [fluid]="true" locale="es-CL" />
+            </div>
+            <div class="flex flex-column gap-1 w-12">
+                <label for="m3" class="font-semibold">Capacidad (m³)</label>
+                <p-inputnumber inputId="m3" [(ngModel)]="vehiculo.capacidadM3" mode="decimal" [maxFractionDigits]="2" [min]="0" [fluid]="true" locale="es-CL" />
+            </div>
+            <div class="flex flex-column gap-1 w-12">
+                <label for="pasajeros" class="font-semibold">Pasajeros</label>
+                <p-inputnumber inputId="pasajeros" [(ngModel)]="vehiculo.capacidadPasajeros" [min]="0" [fluid]="true" />
+            </div>
+        </div>
+        <div class="flex flex-column gap-1">
+            <label class="font-semibold">Estado</label>
+            <p-selectbutton [options]="estadosVehiculo" [(ngModel)]="vehiculo.estado" optionLabel="label" optionValue="value" [allowEmpty]="false" />
+        </div>
+        <div class="flex flex-column gap-1">
+            <label for="obs" class="font-semibold">Observaciones</label>
+            <textarea pTextarea id="obs" rows="2" [(ngModel)]="vehiculo.observaciones" [autoResize]="true"></textarea>
+        </div>
+        <small class="text-color-secondary">Solo el tipo y el nombre son obligatorios; el resto se puede completar después.</small>
+    </div>
+    <ng-template #footer>
+        <p-button label="Cancelar" severity="secondary" [text]="true" (click)="dialogoVisible = false" />
+        <p-button label="Guardar" icon="pi pi-check" severity="success" [loading]="guardando" (click)="guardar()" />
+    </ng-template>
+</p-dialog>
+<app-modal-loading [visible]="loading" />
+<p-toast />
+<p-confirmdialog #cVehiculo key="cVehiculo">
+    <ng-template #footer>
+        <p-button label="Cancelar" variant="text" icon="pi pi-times" class="w-12" [fluid]="true" severity="secondary" (click)="cVehiculo.onReject()" />
+        <p-button label="Confirmar" icon="pi pi-check" class="w-12" [fluid]="true" severity="danger" (click)="cVehiculo.onAccept()" />
+    </ng-template>
+</p-confirmdialog>

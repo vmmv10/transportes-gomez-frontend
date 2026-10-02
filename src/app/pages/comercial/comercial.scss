@@ -1,0 +1,232 @@
+// Estilos compartidos del módulo Comercial (cotizaciones, tarifas, mensajes web):
+// tarjetas de sección, grilla de campos, notas y botón con el azul de la empresa.
+// Usan las variables del tema, así funcionan en modo claro y oscuro.
+
+// ---------- Secciones ----------
+.cm-section {
+    border: 1px solid color-mix(in srgb, var(--surface-border) 85%, transparent);
+    border-radius: 14px;
+    background: var(--surface-card);
+    padding: 1.1rem 1.25rem 1.25rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    &:focus-within {
+        border-color: color-mix(in srgb, var(--panel-accent) 45%, var(--surface-border));
+        box-shadow: 0 6px 18px -14px color-mix(in srgb, var(--panel-accent) 70%, transparent);
+    }
+}
+
+.cm-section__head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.cm-section__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    flex: 0 0 auto;
+    border-radius: 10px;
+    background: var(--panel-accent-soft);
+    color: var(--panel-accent);
+    font-size: 1rem;
+}
+
+.cm-section__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--text-color);
+}
+
+.cm-section__hint {
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+}
+
+// ---------- Campos ----------
+.cm-fields {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9rem 1rem;
+
+    @media (min-width: 640px) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.cm-fields--3 {
+    @media (min-width: 1200px) {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.cm-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 0;
+
+    > label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-color-secondary);
+    }
+}
+
+.cm-field--full {
+    grid-column: 1 / -1;
+}
+
+.cm-field--end {
+    justify-content: flex-end;
+}
+
+.cm-req {
+    color: var(--p-red-500, #ef4444);
+}
+
+.cm-help {
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+}
+
+.cm-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-top: 0.9rem;
+    padding: 0.65rem 0.85rem;
+    border-radius: 10px;
+    background: var(--panel-accent-soft);
+    color: var(--text-color);
+    font-size: 0.85rem;
+
+    i {
+        margin-top: 0.15rem;
+        color: var(--panel-accent);
+    }
+}
+
+// Botón principal con el azul de la empresa (el primario del tema es verde)
+:host ::ng-deep .cm-btn-marca.p-button {
+    background: var(--panel-accent);
+    border-color: var(--panel-accent);
+    color: #ffffff;
+
+    &:not(:disabled):hover {
+        background: #185f97;
+        border-color: #185f97;
+    }
+}
+
+
+// ---------- Barra de filtros ----------
+.cm-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid color-mix(in srgb, var(--surface-border) 85%, transparent);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--surface-ground) 55%, var(--surface-card));
+}
+
+.cm-toolbar--nowrap {
+    flex-wrap: nowrap;
+}
+
+.cm-toolbar__grow {
+    flex: 1 1 14rem;
+    min-width: 0;
+}
+
+.cm-toolbar__check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    font-size: 0.9rem;
+}
+
+// ---------- Chips e íconos en tablas ----------
+.cm-icon-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    flex: 0 0 auto;
+    border-radius: 10px;
+    background: var(--panel-accent-soft);
+    color: var(--panel-accent);
+}
+
+.cm-muted {
+    color: var(--text-color-secondary);
+    font-size: 0.82rem;
+}
+
+.cm-money {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--panel-accent);
+    white-space: nowrap;
+}
+
+.cm-route {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    font-weight: 600;
+
+    .pi {
+        font-size: 0.75rem;
+        color: var(--panel-accent);
+    }
+}
+
+.cm-any {
+    font-weight: 400;
+    font-style: italic;
+    color: var(--text-color-secondary);
+}
+
+// ---------- Bloques dentro de diálogos ----------
+.cm-block + .cm-block {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px dashed color-mix(in srgb, var(--surface-border) 90%, transparent);
+}
+
+.cm-block .cm-section__head {
+    margin-bottom: 0.85rem;
+}
+
+.cm-preview {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.9rem;
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    background: var(--panel-accent-soft);
+    font-size: 0.9rem;
+    color: var(--text-color);
+
+    > .pi {
+        font-size: 1.1rem;
+        color: var(--panel-accent);
+    }
+
+    b {
+        color: var(--panel-accent);
+    }
+}

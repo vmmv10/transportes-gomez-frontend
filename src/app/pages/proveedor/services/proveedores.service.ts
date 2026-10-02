@@ -35,6 +35,15 @@ export class ProveedoresService {
         return this.authHttp.put(`${this.url}/${id}/desactivar`, {});
     }
 
+    activarProveedor(id: number) {
+        return this.authHttp.put(`${this.url}/${id}/activar`, {});
+    }
+
+    /** Une el proveedor duplicado {id} con {destinoId}: sus órdenes, ingresos y códigos pasan al destino y {id} se elimina. */
+    fusionar(id: number, destinoId: number): Observable<Proveedor> {
+        return this.authHttp.post<Proveedor>(`${this.url}/${id}/fusionar?destino=${destinoId}`, {});
+    }
+
     getAll(filtro: ProveedorFiltro): Observable<Page<Proveedor>> {
         let link = `${this.url}?size=${filtro.size}&page=${filtro.page}&sort=${filtro.sort}`;
 

@@ -9,7 +9,8 @@
         </div>
         <div class="flex flex-column w-12 gap-1">
             <label for="rut">Rut</label>
-            <input pInputText id="rut" [(ngModel)]="proveedor.rut" placeholder="Ingrese el Rut" class="w-12" />
+            <input pInputText id="rut" [(ngModel)]="proveedor.rut" (blur)="normalizarRut()" placeholder="Ej: 76125907-5 (opcional)" class="w-12" [class.ng-invalid]="!rutOk" [class.ng-dirty]="!rutOk" />
+            <small class="text-red-500" *ngIf="!rutOk">RUT inválido: revisa el dígito verificador.</small>
         </div>
     </div>
     <div class="flex flex-column md:flex-row w-12 gap-1">

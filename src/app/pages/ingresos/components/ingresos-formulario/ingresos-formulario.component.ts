@@ -89,7 +89,8 @@ export class IngresosFormularioComponent {
             { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
             { label: 'Ingresos', routerLink: '/ingresos' }
         ];
-        this.esAdmin$ = this.rolService.tieneRol('Administrador');
+        // Guardar, cerrar, bultos y crear OS: Administrador, Operaciones y Bodega
+        this.esAdmin$ = this.rolService.tieneAlgunRol(['Administrador', 'Operaciones', 'Bodega']);
         this.esConductor$ = this.rolService.tieneRol('Conductor');
         this.esCliente$ = this.rolService.tieneRol('Cliente');
     }

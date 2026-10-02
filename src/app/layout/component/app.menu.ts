@@ -5,6 +5,7 @@ import { MenuItem } from 'primeng/api';
 import { AppMenuitem } from './app.menuitem';
 import { AuthService } from '@auth0/auth0-angular';
 import { ButtonModule } from 'primeng/button';
+import { puedeVer } from '../../pages/uikit/permisos';
 
 @Component({
     selector: 'app-menu',
@@ -38,6 +39,7 @@ export class AppMenu {
                     { label: 'Ordenes de Servicios', icon: 'pi pi-fw pi-file', routerLink: ['/ordenes-servicios'] },
                     { label: 'Documentos', icon: 'pi pi-fw pi-file-import', routerLink: ['/documents'] },
                     { label: 'Entregas', icon: 'pi pi-fw pi-envelope', routerLink: ['/entregas'] },
+                    { label: 'Devoluciones', icon: 'pi pi-fw pi-replay', routerLink: ['/devoluciones'] },
                     { label: 'Rutas', icon: 'pi pi-fw pi-map', routerLink: ['/rutas'] },
                     {
                         label: 'Articulos',
@@ -55,27 +57,33 @@ export class AppMenu {
                     { label: 'Contratos', icon: 'pi pi-fw pi-file-edit', routerLink: ['/contratos'] },
                     { label: 'Destinos', icon: 'pi pi-fw pi-map-marker', routerLink: ['/destinos'] },
                     { label: 'Proveedores', icon: 'pi pi-fw pi-user', routerLink: ['/proveedores'] },
-                    { label: 'Transportes', icon: 'pi pi-fw pi-truck', routerLink: ['/transportes'] }
+                    {
+                        label: 'Comercial',
+                        icon: 'pi pi-fw pi-dollar',
+                        items: [
+                            { label: 'Cotizaciones', icon: 'pi pi-fw pi-calculator', routerLink: ['/comercial/cotizaciones'] },
+                            { label: 'Tarifas', icon: 'pi pi-fw pi-tag', routerLink: ['/comercial/tarifas'] },
+                            { label: 'Mensajes web', icon: 'pi pi-fw pi-envelope', routerLink: ['/comercial/mensajes'] }
+                        ]
+                    },
+                    {
+                        label: 'Transportes',
+                        icon: 'pi pi-fw pi-truck',
+                        items: [
+                            { label: 'Vehículos', icon: 'pi pi-fw pi-car', routerLink: ['/vehiculos'] },
+                            { label: 'Costos de ruta', icon: 'pi pi-fw pi-wallet', routerLink: ['/costos-rutas'] }
+                        ]
+                    },
+                    { label: 'Usuarios', icon: 'pi pi-fw pi-users', routerLink: ['/usuarios'] }
                     //{ label: 'Mantencion', icon: 'pi pi-fw pi-wrench', items: [{ label: 'Categorías OS', routerLink: ['mantencion/categorias-os'] }] }
                 ].filter((item) => this.canAccess(item.label))
             }
         ];
     }
 
+    /** Según la tabla de permisos (pages/uikit/permisos.ts). */
     private canAccess(menuLabel: string): boolean {
-        if (!this.roles.length) return false;
-
-        if (this.roles.includes('Administrador')) return true;
-
-        if (this.roles.includes('Conductor')) {
-            return ['Entregas', 'Rutas'].includes(menuLabel);
-        }
-
-        if (this.roles.includes('Cliente')) {
-            return ['Establecimientos', 'Inventario', 'Ingresos'].includes(menuLabel);
-        }
-
-        return false;
+        return puedeVer(menuLabel, this.roles);
     }
 
     logout() {

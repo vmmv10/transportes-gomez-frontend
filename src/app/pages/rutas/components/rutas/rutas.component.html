@@ -33,6 +33,7 @@
             <div class="page-filters flex w-12 flex-column md:flex-row gap-2 mb-3">
                 <input type="number" class="w-12" pInputText placeholder="Número de ruta" [(ngModel)]="filtro.id" (keyup.enter)="buscar()" />
                 <app-usuarios-select class="w-12" [rol]="'repartidor'" [(usuario)]="filtro.chofer" [showClear]="true" [showFilter]="true" />
+                <app-vehiculo-select class="w-12" [(vehiculoId)]="filtro.vehiculo" placeholder="Todos los vehículos" />
                 <select-boolean class="w-12" [opciones]="opcionesSelectBoolean" [(variable)]="filtro.estado" [showClear]="true" [validar]="false" />
                 <input type="date" class="w-12" pInputText [(ngModel)]="desde" pTooltip="Desde" tooltipPosition="top" />
                 <input type="date" class="w-12" pInputText [(ngModel)]="hasta" pTooltip="Hasta" tooltipPosition="top" />
@@ -48,14 +49,18 @@
                         <th>Número</th>
                         <th>Fecha</th>
                         <th>Chofer</th>
+                        <th>Vehículo</th>
                         <th>Estado</th>
                         <th>Km</th>
+                        <th class="text-right">Costo</th>
                         <th *ngIf="esAdmin$ | async"></th>
                     </tr>
                 </ng-template>
                 <ng-template #body let-item>
                     <tr>
-                        <td><span class="page-cell-code">{{ item.id }}</span></td>
+                        <td>
+                            <span class="page-cell-code">{{ item.id }}</span>
+                        </td>
                         <td>
                             <span class="page-cell-icon"><i class="pi pi-calendar"></i>{{ item.fecha | fecha }}</span>
                         </td>
@@ -63,10 +68,15 @@
                             <span class="page-cell-icon"><i class="pi pi-user"></i>{{ item.chofer?.nombre }}</span>
                         </td>
                         <td>
+                            <span class="page-cell-icon" *ngIf="item.vehiculo; else sinVehiculo"><i class="pi pi-truck"></i>{{ item.vehiculo.descripcion }}</span>
+                            <ng-template #sinVehiculo><span class="page-cell-empty">Sin vehículo</span></ng-template>
+                        </td>
+                        <td>
                             <p-tag *ngIf="item.estado == 'FINALIZADA'" severity="success" value="Finalizada" />
                             <p-tag *ngIf="item.estado != 'FINALIZADA'" severity="warn" value="Pendiente" />
                         </td>
-                        <td class="page-cell-muted">{{ item.kilometros ? item.kilometros : 0 }} Km</td>
+                        <td class="page-cell-muted white-space-nowrap">{{ item.kilometros ? item.kilometros : 0 }} Km</td>
+                        <td class="text-right white-space-nowrap" [class.page-cell-empty]="!item.costoTotal">{{ item.costoTotal ? '$ ' + (item.costoTotal | number: '1.0-0') : '—' }}</td>
                         <td class="text-right" *ngIf="esAdmin$ | async">
                             <p-button pTooltip="Editar" icon="pi pi-pencil" [rounded]="true" [text]="true" class="page-row-action" [routerLink]="['/rutas/formulario/' + item.id]" />
                             <p-button pTooltip="Asignar Kilómetros" icon="pi pi-truck" [rounded]="true" [text]="true" severity="secondary" (click)="openModalAsignarKilometros(item)" />
@@ -76,7 +86,7 @@
                 </ng-template>
                 <ng-template #emptymessage>
                     <tr>
-                        <td colspan="6">
+                        <td colspan="8">
                             <div class="page-empty">
                                 <i class="pi pi-search"></i>
                                 <strong>No se encontraron rutas</strong>
@@ -86,7 +96,14 @@
                     </tr>
                 </ng-template>
                 <ng-template #summary>
-                    <p-paginator styleClass="page-paginator" (onPageChange)="onPageChange($event)" [first]="filtro.page * filtro.size" [rows]="filtro.size" [totalRecords]="data && data.totalElements ? data.totalElements : 0" [rowsPerPageOptions]="[10, 20, 30]" />
+                    <p-paginator
+                        styleClass="page-paginator"
+                        (onPageChange)="onPageChange($event)"
+                        [first]="filtro.page * filtro.size"
+                        [rows]="filtro.size"
+                        [totalRecords]="data && data.totalElements ? data.totalElements : 0"
+                        [rowsPerPageOptions]="[10, 20, 30]"
+                    />
                 </ng-template>
             </p-table>
         </div>
@@ -115,11 +132,23 @@
         <p-button label="Eliminar" icon="pi pi-check" class="w-12" [fluid]="true" severity="danger" (click)="eliminarRuta.onAccept()" />
     </ng-template>
 </p-confirmdialog>
-<p-dialog header="Asignar Kilómetros" *ngIf="ruta" [modal]="true" [(visible)]="displayAsignarKilometros" [style]="{ width: '45rem' }">
-    <div class="flex flex-col gap-2 w-12">
-        <div class="flex flex-col gap-2 w-12">
-            <label for="cantidad">Cantidad</label>
-            <p-inputnumber suffix=" Km" class="w-12 {{ ruta && ruta.kilometros >= 0 ? '' : 'ng-dirty ng-invalid' }}" inputId="cantidad" [(ngModel)]="ruta.kilometros" />
+<p-dialog [header]="'Kilómetros de la ruta ' + km.id" [modal]="true" [(visible)]="displayAsignarKilometros" [style]="{ width: '45rem' }" [breakpoints]="{ '640px': '95vw' }">
+    <div class="flex flex-column gap-3 w-12">
+        <small class="text-color-secondary">Anota el odómetro al salir y al llegar, o solo los kilómetros recorridos.</small>
+        <div class="flex flex-column md:flex-row gap-3 w-12">
+            <div class="flex flex-column gap-1 w-12">
+                <label for="kmSalida">Odómetro al salir</label>
+                <p-inputnumber inputId="kmSalida" suffix=" km" [min]="0" [fluid]="true" [(ngModel)]="km.kmSalida" />
+            </div>
+            <div class="flex flex-column gap-1 w-12">
+                <label for="kmLlegada">Odómetro al llegar</label>
+                <p-inputnumber inputId="kmLlegada" suffix=" km" [min]="0" [fluid]="true" [(ngModel)]="km.kmLlegada" [class.ng-invalid]="kmCalculados !== null && kmCalculados < 0" [class.ng-dirty]="kmCalculados !== null && kmCalculados < 0" />
+            </div>
+        </div>
+        <div class="flex flex-column gap-1 w-12">
+            <label for="cantidad">Kilómetros recorridos</label>
+            <p-inputnumber *ngIf="kmCalculados === null" suffix=" km" [min]="0" [fluid]="true" inputId="cantidad" [(ngModel)]="km.kilometros" />
+            <span *ngIf="kmCalculados !== null" class="text-xl font-semibold" [class.text-red-500]="kmCalculados < 0">{{ kmCalculados }} km <small class="text-color-secondary font-normal">(calculado)</small></span>
         </div>
     </div>
     <ng-template #footer>

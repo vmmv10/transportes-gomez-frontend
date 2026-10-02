@@ -4,7 +4,11 @@ export class Entrega {
     id: string;
     ordenServicio: OrdenServicio;
     fecha: Date;
+    /** PENDIENTE, ENTREGADO, NO_ENTREGADO o RECHAZADO */
     estado: string;
+    /** Por qué no se entregó */
+    motivo?: string | null;
+    intentos?: number;
     ruta: string;
     entregado: boolean;
 

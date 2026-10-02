@@ -1,0 +1,251 @@
+// Ficha de cotización: resumen fijo a la derecha y bloques propios.
+// Las tarjetas, campos y botón de marca vienen de ../../comercial.scss
+
+.cot-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+    align-items: start;
+
+    @media (min-width: 992px) {
+        grid-template-columns: minmax(0, 1fr) 20rem;
+    }
+
+    @media (min-width: 1400px) {
+        grid-template-columns: minmax(0, 1fr) 22rem;
+    }
+}
+
+.cot-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+}
+
+// ---------- Lo que pidió (web) ----------
+.cot-facts {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+
+    @media (min-width: 640px) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.cot-fact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.7rem 0.85rem;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--surface-ground) 70%, var(--surface-card));
+    min-width: 0;
+}
+
+.cot-fact__label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-color-secondary);
+
+    i {
+        font-size: 0.75rem;
+        margin-right: 0.2rem;
+    }
+}
+
+.cot-fact__value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-color);
+    overflow-wrap: anywhere;
+}
+
+.cot-fact__arrow {
+    font-size: 0.75rem;
+    margin: 0 0.25rem;
+    color: var(--panel-accent);
+}
+
+.cot-quote {
+    display: flex;
+    gap: 0.6rem;
+    margin: 0.75rem 0 0;
+    padding: 0.75rem 0.9rem;
+    border-left: 3px solid var(--panel-accent);
+    border-radius: 0 10px 10px 0;
+    background: var(--panel-accent-soft);
+    font-size: 0.9rem;
+    color: var(--text-color);
+
+    i {
+        margin-top: 0.15rem;
+        color: var(--panel-accent);
+    }
+}
+
+// ---------- Resumen fijo ----------
+.cot-side {
+    min-width: 0;
+
+    @media (min-width: 992px) {
+        position: sticky;
+        top: 6rem;
+    }
+}
+
+.cot-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.1rem 1.1rem 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--panel-accent) 25%, var(--surface-border));
+    border-top: 3px solid var(--panel-accent);
+    border-radius: 14px;
+    background: var(--surface-card);
+    box-shadow: 0 10px 24px -18px color-mix(in srgb, var(--panel-accent) 80%, transparent);
+}
+
+.cot-summary__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.cot-summary__eyebrow {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-color-secondary);
+}
+
+.cot-summary__code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.cot-summary__amount {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.85rem;
+    border-radius: 12px;
+    background: var(--panel-accent-soft);
+
+    ::ng-deep .cot-summary__amount-input {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--panel-accent);
+        background: var(--surface-card);
+    }
+}
+
+.cot-summary__iva {
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+}
+
+.cot-summary__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+    min-width: 0;
+}
+
+.cot-summary__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px dashed color-mix(in srgb, var(--surface-border) 90%, transparent);
+}
+
+.cot-summary__pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.cot-summary__footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    border-top: 1px solid color-mix(in srgb, var(--surface-border) 70%, transparent);
+    padding-top: 0.4rem;
+}
+
+.cot-quote__text {
+    white-space: pre-line;
+}
+
+// Etiquetas del panel de resumen con el mismo estilo
+.cot-summary .cm-field > label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+// ---------- Mapa con los puntos que marcó el solicitante ----------
+.cot-map {
+    margin-top: 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--surface-border) 85%, transparent);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.cot-map__canvas {
+    height: 220px;
+    z-index: 0;
+}
+
+.cot-map__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    padding: 0.6rem 0.85rem;
+    font-size: 0.85rem;
+    background: color-mix(in srgb, var(--surface-ground) 55%, var(--surface-card));
+
+    a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        color: var(--panel-accent);
+        text-decoration: none;
+        font-weight: 600;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+.cot-pin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 800;
+}
+
+.cot-pin--a {
+    background: #2178bd;
+}
+
+.cot-pin--b {
+    background: #059669;
+}

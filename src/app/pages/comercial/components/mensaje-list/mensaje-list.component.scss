@@ -1,0 +1,151 @@
+// Bandeja de mensajes de la página web (usa también ../../comercial.scss)
+
+.cm-inbox {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.cm-msg {
+    display: flex;
+    gap: 0.9rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid color-mix(in srgb, var(--surface-border) 85%, transparent);
+    border-left: 4px solid color-mix(in srgb, var(--surface-border) 85%, transparent);
+    border-radius: 14px;
+    background: var(--surface-card);
+    transition: box-shadow 0.15s ease;
+
+    &:hover {
+        box-shadow: 0 8px 20px -16px color-mix(in srgb, var(--panel-accent) 70%, transparent);
+    }
+}
+
+.cm-msg--pendiente {
+    border-left-color: var(--panel-accent);
+    background: color-mix(in srgb, var(--panel-accent) 3%, var(--surface-card));
+}
+
+.cm-msg__avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: var(--panel-accent-soft);
+    color: var(--panel-accent);
+    font-weight: 800;
+    font-size: 0.95rem;
+}
+
+.cm-msg:not(.cm-msg--pendiente) .cm-msg__avatar {
+    background: color-mix(in srgb, var(--surface-ground) 70%, var(--surface-card));
+    color: var(--text-color-secondary);
+}
+
+.cm-msg__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.cm-msg__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.cm-msg__name {
+    font-size: 1rem;
+    color: var(--text-color);
+}
+
+.cm-msg__date {
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+    white-space: nowrap;
+}
+
+.cm-msg__contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1rem;
+    font-size: 0.85rem;
+
+    a {
+        color: var(--text-color-secondary);
+        text-decoration: none;
+        overflow-wrap: anywhere;
+
+        &:hover {
+            color: var(--panel-accent);
+        }
+    }
+
+    .pi {
+        font-size: 0.8rem;
+        margin-right: 0.15rem;
+    }
+}
+
+.cm-msg__text {
+    margin: 0.25rem 0 0;
+    padding: 0.7rem 0.85rem;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--surface-ground) 60%, var(--surface-card));
+    color: var(--text-color);
+    font-size: 0.92rem;
+    line-height: 1.5;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+.cm-msg__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+}
+
+@media (max-width: 575px) {
+    :host ::ng-deep .cm-toolbar--nowrap .p-togglebutton {
+        white-space: nowrap;
+        padding-inline: 0.6rem;
+    }
+
+    .cm-msg {
+        padding: 0.85rem;
+        gap: 0.7rem;
+    }
+
+    .cm-msg__avatar {
+        width: 2.25rem;
+        height: 2.25rem;
+        font-size: 0.8rem;
+    }
+}
+
+.cm-msg__codigo {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.cm-motivo-filtro {
+    min-width: 13rem;
+}
+
+@media (max-width: 575px) {
+    .cm-toolbar--nowrap {
+        flex-wrap: wrap;
+    }
+
+    .cm-motivo-filtro {
+        width: 100%;
+    }
+}

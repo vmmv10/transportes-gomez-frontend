@@ -31,6 +31,8 @@ export class OrdenServicio {
     /** Proveedor de la mercadería (quién la vendió al cliente) */
     proveedor: Proveedor | undefined;
     contrato: Contrato | undefined;
+    /** Código público para seguir el envío en la página web */
+    codigoSeguimiento?: string;
 
     constructor() {
         this.id = 0;

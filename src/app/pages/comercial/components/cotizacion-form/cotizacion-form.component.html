@@ -1,0 +1,302 @@
+<p-toast />
+<div class="page-breadcrumb-bar flex flex-column">
+    <p-breadcrumb class="app-breadcrumb max-w-full" [model]="breadcrumb" />
+</div>
+<div class="card flex flex-column gap-3">
+    <div class="page-header">
+        <div class="page-panel-title-group">
+            <span class="page-panel-title-chip"><i class="pi pi-calculator"></i></span>
+            <div class="page-panel-title-text">
+                <h2 class="page-header__title">{{ esNueva ? 'Nueva cotización' : 'Cotización ' + cotizacion.codigo }}</h2>
+                <span class="page-panel-subtitle" *ngIf="!esNueva">
+                    {{ cotizacion.canal === 'WEB' ? 'Solicitada en la página web' : 'Ingresada por el equipo' }} el {{ cotizacion.fechaCreacion | date: 'dd/MM/yyyy HH:mm' }}
+                    <ng-container *ngIf="cotizacion.usuarioNombre"> · atiende {{ cotizacion.usuarioNombre }}</ng-container>
+                </span>
+                <span class="page-panel-subtitle" *ngIf="esNueva">Cotización pedida por teléfono, WhatsApp o en persona</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="cot-layout">
+        <!-- ============ Columna principal ============ -->
+        <div class="cot-main">
+            <!-- Solicitante -->
+            <section class="cm-section">
+                <header class="cm-section__head">
+                    <span class="cm-section__icon"><i class="pi pi-user"></i></span>
+                    <div>
+                        <h3 class="cm-section__title">Solicitante</h3>
+                        <span class="cm-section__hint">Quién pide la cotización y a quién se le responde</span>
+                    </div>
+                </header>
+                <div class="cm-fields">
+                    <div class="cm-field">
+                        <label>Nombre <span class="cm-req">*</span></label>
+                        <p-iconfield>
+                            <p-inputicon class="pi pi-user" />
+                            <input pInputText class="w-full" [(ngModel)]="cotizacion.nombre" [class.ng-invalid]="intentoGuardar && !cotizacion.nombre" [class.ng-dirty]="intentoGuardar" />
+                        </p-iconfield>
+                    </div>
+                    <div class="cm-field">
+                        <label>Empresa</label>
+                        <p-iconfield>
+                            <p-inputicon class="pi pi-building" />
+                            <input pInputText class="w-full" [(ngModel)]="cotizacion.empresa" />
+                        </p-iconfield>
+                    </div>
+                    <div class="cm-field">
+                        <label>Correo <span class="cm-req">*</span></label>
+                        <p-iconfield>
+                            <p-inputicon class="pi pi-envelope" />
+                            <input pInputText class="w-full" type="email" [(ngModel)]="cotizacion.email" [class.ng-invalid]="intentoGuardar && !cotizacion.email" [class.ng-dirty]="intentoGuardar" />
+                        </p-iconfield>
+                    </div>
+                    <div class="cm-field">
+                        <label>Teléfono</label>
+                        <p-iconfield>
+                            <p-inputicon class="pi pi-phone" />
+                            <input pInputText class="w-full" [(ngModel)]="cotizacion.telefono" />
+                        </p-iconfield>
+                    </div>
+                    <div class="cm-field cm-field--full">
+                        <label>Cliente</label>
+                        <p-select
+                            [options]="clientes"
+                            [(ngModel)]="cotizacion.clienteId"
+                            optionLabel="nombre"
+                            optionValue="id"
+                            placeholder="No es cliente (usa tarifas generales)"
+                            [showClear]="true"
+                            [filter]="true"
+                            filterBy="nombre"
+                            appendTo="body"
+                            class="w-full"
+                        />
+                        <small class="cm-help">Si es cliente, se usan sus tarifas pactadas al calcular.</small>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Lo que pidió -->
+            <section class="cm-section">
+                <header class="cm-section__head">
+                    <span class="cm-section__icon"><i class="pi pi-box"></i></span>
+                    <div>
+                        <h3 class="cm-section__title">Lo que pidió</h3>
+                        <span class="cm-section__hint">{{ cotizacion.canal === 'WEB' ? 'Tal como lo escribió en la página web' : 'Datos de la carga y el trayecto' }}</span>
+                    </div>
+                </header>
+                <ng-container *ngIf="cotizacion.canal === 'WEB'; else internaTpl">
+                    <div class="cot-facts">
+                        <div class="cot-fact">
+                            <span class="cot-fact__label"><i class="pi pi-briefcase"></i> Servicio</span>
+                            <span class="cot-fact__value">{{ cotizacion.servicioTexto || '—' }}</span>
+                        </div>
+                        <div class="cot-fact">
+                            <span class="cot-fact__label"><i class="pi pi-map-marker"></i> Trayecto</span>
+                            <span class="cot-fact__value">
+                                {{ lugar(cotizacion.origen, cotizacion.comunaOrigenNombre) }} <i class="pi pi-arrow-right cot-fact__arrow"></i>
+                                {{ lugar(cotizacion.destino, cotizacion.comunaDestinoNombre) }}
+                            </span>
+                        </div>
+                        <div class="cot-fact">
+                            <span class="cot-fact__label"><i class="pi pi-inbox"></i> Carga</span>
+                            <span class="cot-fact__value">{{ cotizacion.tipoCarga || '—' }}</span>
+                        </div>
+                        <div class="cot-fact">
+                            <span class="cot-fact__label"><i class="pi pi-gauge"></i> Peso aprox.</span>
+                            <span class="cot-fact__value">{{ cotizacion.pesoKg ? (cotizacion.pesoKg | number) + ' kg' : '—' }}</span>
+                        </div>
+                    </div>
+                    <div class="cot-map" *ngIf="tienePuntos">
+                        <div #mapaTrayecto class="cot-map__canvas"></div>
+                        <div class="cot-map__links">
+                            <a *ngIf="enlaceMapa('origen') as u" [href]="u" target="_blank" rel="noopener"><span class="cot-pin cot-pin--a">A</span> Origen en Google Maps</a>
+                            <a *ngIf="enlaceMapa('destino') as u" [href]="u" target="_blank" rel="noopener"><span class="cot-pin cot-pin--b">B</span> Destino en Google Maps</a>
+                            <a *ngIf="enlaceMapa('trayecto') as u" [href]="u" target="_blank" rel="noopener"><i class="pi pi-directions"></i> Cómo llegar</a>
+                        </div>
+                    </div>
+                    <blockquote class="cot-quote" *ngIf="cotizacion.mensaje">
+                        <i class="pi pi-comment"></i>
+                        <span class="cot-quote__text">{{ cotizacion.mensaje }}</span>
+                    </blockquote>
+                </ng-container>
+                <ng-template #internaTpl>
+                    <div class="cm-fields">
+                        <div class="cm-field">
+                            <label>Origen</label>
+                            <input pInputText class="w-full" [(ngModel)]="cotizacion.origen" placeholder="Dirección o lugar de retiro" />
+                        </div>
+                        <div class="cm-field">
+                            <label>Destino</label>
+                            <input pInputText class="w-full" [(ngModel)]="cotizacion.destino" placeholder="Dirección o lugar de entrega" />
+                        </div>
+                        <div class="cm-field cm-field--full">
+                            <label>Carga</label>
+                            <input pInputText class="w-full" [(ngModel)]="cotizacion.tipoCarga" placeholder="Ej: 20 cajas de útiles escolares" />
+                        </div>
+                        <div class="cm-field cm-field--full">
+                            <label>Detalle</label>
+                            <textarea pTextarea rows="2" class="w-full" [(ngModel)]="cotizacion.mensaje" [autoResize]="true"></textarea>
+                        </div>
+                    </div>
+                </ng-template>
+            </section>
+
+            <!-- Cálculo -->
+            <section class="cm-section">
+                <header class="cm-section__head">
+                    <span class="cm-section__icon"><i class="pi pi-bolt"></i></span>
+                    <div>
+                        <h3 class="cm-section__title">Cálculo con tarifas</h3>
+                        <span class="cm-section__hint">Elige servicio, comunas y cantidad para proponer el monto</span>
+                    </div>
+                </header>
+                <div class="cm-fields cm-fields--3">
+                    <div class="cm-field">
+                        <label>Servicio</label>
+                        <p-select [options]="servicios" [(ngModel)]="cotizacion.servicioTipoId" optionLabel="nombre" optionValue="id" placeholder="Elige el servicio" [showClear]="true" appendTo="body" class="w-full" />
+                    </div>
+                    <div class="cm-field">
+                        <label>Comuna de origen</label>
+                        <p-select [options]="comunas" [(ngModel)]="cotizacion.comunaOrigenId" optionLabel="nombre" optionValue="id" placeholder="Cualquiera" [filter]="true" filterBy="nombre" [showClear]="true" appendTo="body" class="w-full" />
+                    </div>
+                    <div class="cm-field">
+                        <label>Comuna de destino</label>
+                        <p-select [options]="comunas" [(ngModel)]="cotizacion.comunaDestinoId" optionLabel="nombre" optionValue="id" placeholder="Cualquiera" [filter]="true" filterBy="nombre" [showClear]="true" appendTo="body" class="w-full" />
+                    </div>
+                    <div class="cm-field">
+                        <label>Cantidad</label>
+                        <p-inputnumber [(ngModel)]="cotizacion.cantidad" [min]="0" [maxFractionDigits]="2" locale="es-CL" [fluid]="true" />
+                    </div>
+                    <div class="cm-field">
+                        <label>Unidad</label>
+                        <p-select [options]="unidades" [(ngModel)]="cotizacion.unidadMedidaId" optionLabel="nombre" optionValue="id" placeholder="Kg, m³, bulto, viaje..." [filter]="true" filterBy="nombre" [showClear]="true" appendTo="body" class="w-full" />
+                    </div>
+                    <div class="cm-field cm-field--end">
+                        <p-button label="Calcular con tarifas" icon="pi pi-bolt" severity="info" [outlined]="true" [fluid]="true" (onClick)="calcular()" [disabled]="cerrada" />
+                    </div>
+                </div>
+                <div class="cm-note" *ngIf="detalleSugerido"><i class="pi pi-info-circle"></i> {{ detalleSugerido }}</div>
+            </section>
+
+            <!-- Notas internas -->
+            <section class="cm-section">
+                <header class="cm-section__head">
+                    <span class="cm-section__icon"><i class="pi pi-lock"></i></span>
+                    <div>
+                        <h3 class="cm-section__title">Notas internas</h3>
+                        <span class="cm-section__hint">Solo las ve el equipo, no van en el correo al cliente</span>
+                    </div>
+                </header>
+                <textarea pTextarea rows="3" class="w-full" [(ngModel)]="cotizacion.observaciones" [autoResize]="true" placeholder="Ej: cliente pide retiro temprano, confirmar barcaza"></textarea>
+            </section>
+        </div>
+
+        <!-- ============ Resumen fijo ============ -->
+        <aside class="cot-side">
+            <div class="cot-summary">
+                <div class="cot-summary__top">
+                    <div>
+                        <span class="cot-summary__eyebrow">{{ esNueva ? 'Nueva' : 'Cotización' }}</span>
+                        <div class="cot-summary__code">{{ cotizacion.codigo || 'Sin guardar' }}</div>
+                    </div>
+                    <p-tag *ngIf="!esNueva" [value]="estado.label" [severity]="estado.severidad" />
+                </div>
+
+                <div class="cot-summary__amount">
+                    <label class="cot-summary__eyebrow">Monto del servicio</label>
+                    <p-inputnumber
+                        [(ngModel)]="cotizacion.monto"
+                        mode="currency"
+                        currency="CLP"
+                        locale="es-CL"
+                        [minFractionDigits]="0"
+                        [min]="0"
+                        [fluid]="true"
+                        placeholder="$ 0"
+                        inputStyleClass="cot-summary__amount-input"
+                    />
+                    <span class="cot-summary__iva">Neto, más IVA</span>
+                </div>
+
+                <div class="cm-field">
+                    <label class="cot-summary__eyebrow">Válida hasta</label>
+                    <p-datepicker [(ngModel)]="validaHasta" dateFormat="dd/mm/yy" [showIcon]="true" [showClear]="true" [fluid]="true" appendTo="body" placeholder="15 días al enviar" />
+                </div>
+
+                <div class="cot-summary__meta" *ngIf="cotizacion.email">
+                    <i class="pi pi-envelope"></i>
+                    <span class="text-overflow-ellipsis overflow-hidden white-space-nowrap">{{ cotizacion.email }}</span>
+                </div>
+
+                <div class="cot-summary__actions">
+                    <ng-container *ngIf="!esNueva">
+                        <p-button
+                            *ngIf="correoHabilitado && !['RECHAZADA', 'DESCARTADA'].includes(cotizacion.estado)"
+                            [label]="cotizacion.estado === 'ENVIADA' ? 'Reenviar por correo' : 'Enviar por correo'"
+                            icon="pi pi-send"
+                            [fluid]="true"
+                            styleClass="cm-btn-marca"
+                            (onClick)="abrirCorreo()"
+                        />
+                        <a pButton [href]="mailto" icon="pi pi-external-link" [label]="correoHabilitado ? 'Abrir en mi correo' : 'Responder por correo'" severity="secondary" [outlined]="true" class="w-full"></a>
+                        <p-button
+                            *ngIf="!cerrada && cotizacion.estado !== 'ENVIADA'"
+                            label="Marcar enviada"
+                            icon="pi pi-check"
+                            severity="secondary"
+                            [outlined]="true"
+                            [fluid]="true"
+                            (onClick)="cambiarEstado('ENVIADA', 'Se marcará como enviada al solicitante. ¿Continuar?')"
+                        />
+                        <div class="cot-summary__pair" *ngIf="!cerrada">
+                            <p-button label="Aceptada" icon="pi pi-check-circle" severity="success" [outlined]="true" [fluid]="true" (onClick)="cambiarEstado('ACEPTADA', 'El solicitante aceptó la cotización. ¿Continuar?')" />
+                            <p-button label="Rechazada" icon="pi pi-times-circle" severity="danger" [outlined]="true" [fluid]="true" (onClick)="cambiarEstado('RECHAZADA', 'El solicitante no aceptó. ¿Continuar?')" />
+                        </div>
+                        <p-button *ngIf="cerrada" label="Reabrir" icon="pi pi-replay" severity="secondary" [outlined]="true" [fluid]="true" (onClick)="cambiarEstado('EN_REVISION', 'Volverá a quedar en revisión. ¿Continuar?')" />
+                    </ng-container>
+                    <p-button label="Guardar" icon="pi pi-save" severity="success" [fluid]="true" (onClick)="guardar()" />
+                </div>
+
+                <div class="cot-summary__footer">
+                    <p-button label="Volver" icon="pi pi-arrow-left" severity="secondary" [text]="true" size="small" [routerLink]="['/comercial/cotizaciones']" />
+                    <p-button
+                        *ngIf="!esNueva && !cerrada"
+                        label="Descartar"
+                        icon="pi pi-ban"
+                        severity="secondary"
+                        [text]="true"
+                        size="small"
+                        pTooltip="Spam o duplicada"
+                        (onClick)="cambiarEstado('DESCARTADA', 'Se descartará (spam o duplicada). ¿Continuar?')"
+                    />
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+<p-confirmdialog #cCotizacion key="cCotizacion">
+    <ng-template #footer>
+        <p-button label="Cancelar" variant="text" icon="pi pi-times" class="w-12" [fluid]="true" severity="secondary" (click)="cCotizacion.onReject()" />
+        <p-button label="Confirmar" icon="pi pi-check" class="w-12" [fluid]="true" (click)="cCotizacion.onAccept()" />
+    </ng-template>
+</p-confirmdialog>
+<p-dialog header="Enviar cotización por correo" [modal]="true" [(visible)]="dialogoCorreo" [style]="{ width: '34rem' }" [breakpoints]="{ '640px': '95vw' }">
+    <div class="flex flex-column gap-3">
+        <div class="text-sm">
+            Se enviará a <b>{{ cotizacion.email }}</b> la cotización <b>{{ cotizacion.codigo }}</b> por
+            <b>{{ cotizacion.monto | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}</b> neto, con el detalle del servicio y la vigencia
+            {{ validaHasta ? '(hasta ' + (validaHasta | date: 'dd/MM/yyyy') + ')' : '(15 días desde hoy)' }}. Quedará como enviada.
+        </div>
+        <div class="flex flex-column gap-1">
+            <label class="text-sm">Mensaje para el cliente</label>
+            <textarea pTextarea rows="4" [(ngModel)]="mensajeCorreo" [autoResize]="true" maxlength="2000"></textarea>
+        </div>
+    </div>
+    <ng-template #footer>
+        <p-button label="Cancelar" icon="pi pi-times" severity="secondary" [text]="true" (onClick)="dialogoCorreo = false" />
+        <p-button label="Enviar" icon="pi pi-send" [loading]="enviandoCorreo" (onClick)="enviarCorreo()" />
+    </ng-template>
+</p-dialog>
+<app-modal-loading [visible]="loading" />

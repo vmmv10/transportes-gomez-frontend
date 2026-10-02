@@ -29,6 +29,8 @@ import { Observable } from 'rxjs';
 import { RolService } from '../../../uikit/services/rol.service';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectBooleanComponent } from '../../../uikit/components/select-boolean/select-boolean.component';
+import { mensajeError } from '../../../uikit/utils/error-mensaje';
+import { VehiculoSelectComponent } from '../../../vehiculos/components/vehiculo-select/vehiculo-select.component';
 
 @Component({
     standalone: true,
@@ -56,6 +58,7 @@ import { SelectBooleanComponent } from '../../../uikit/components/select-boolean
         UsuariosSelectComponent,
         InputNumberModule,
         SelectBooleanComponent,
+        VehiculoSelectComponent,
         PanelModule
     ],
     templateUrl: './rutas.component.html',
@@ -72,6 +75,8 @@ export class RutasComponent {
     esConductor: boolean = false;
     ruta: Ruta = new Ruta();
     displayAsignarKilometros: boolean = false;
+    /** Datos del diálogo de kilómetros (copia, para no cambiar la fila si se cancela) */
+    km: { id: number; kilometros: number | null; kmSalida: number | null; kmLlegada: number | null } = { id: 0, kilometros: null, kmSalida: null, kmLlegada: null };
     filtrosVisibles: boolean = false;
     /** Fechas del filtro como texto yyyy-MM-dd (input type="date"). */
     desde: string | undefined;
@@ -81,6 +86,8 @@ export class RutasComponent {
         { etiqueta: 'Número', propiedad: 'id', tipo: 'texto' },
         { etiqueta: 'Fecha', propiedad: 'fecha', tipo: 'fecha' },
         { etiqueta: 'Chofer', propiedad: 'chofer.nombre', tipo: 'objeto' },
+        { etiqueta: 'Vehículo', propiedad: 'vehiculoTexto', tipo: 'texto' },
+        { etiqueta: 'Costo', propiedad: 'costoTexto', tipo: 'texto' },
         { etiqueta: 'Estado', propiedad: 'estado', tipo: 'text' }
     ];
     acciones: any[] = [];
@@ -98,7 +105,8 @@ export class RutasComponent {
         private router: Router,
         private route: ActivatedRoute
     ) {
-        this.esAdmin$ = this.rolService.tieneRol('Administrador');
+        // Crear y editar rutas: Administrador y Operaciones
+        this.esAdmin$ = this.rolService.tieneAlgunRol(['Administrador', 'Operaciones']);
         this.breadcrumb = [
             { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
             { label: 'Rutas', routerLink: '/rutas' }
@@ -149,7 +157,7 @@ export class RutasComponent {
     /** Cantidad de filtros aplicados (se muestra como badge en el botón). */
     get filtrosActivos(): number {
         const f = this.filtro;
-        return [f.id, f.chofer, f.estado, this.desde, this.hasta].filter((v) => v !== undefined && v !== null && v !== '').length;
+        return [f.id, f.chofer, f.vehiculo, f.estado, this.desde, this.hasta].filter((v) => v !== undefined && v !== null && v !== '').length;
     }
 
     buscar() {
@@ -160,6 +168,7 @@ export class RutasComponent {
     limpiarFiltros() {
         this.filtro.id = null;
         this.filtro.chofer = undefined;
+        this.filtro.vehiculo = undefined;
         this.filtro.estado = undefined;
         this.desde = undefined;
         this.hasta = undefined;
@@ -185,6 +194,7 @@ export class RutasComponent {
         this.filtro.id = numero('numero') ?? null;
         const chofer = numero('chofer');
         this.filtro.chofer = chofer !== undefined ? ({ id: chofer } as unknown as Usuario) : undefined;
+        this.filtro.vehiculo = numero('vehiculo');
         const estado = p.get('estado');
         this.filtro.estado = estado === 'finalizada' ? true : estado === 'pendiente' ? false : undefined;
         this.desde = fecha('desde');
@@ -200,6 +210,7 @@ export class RutasComponent {
             queryParams: {
                 numero: f.id ?? null,
                 chofer: f.chofer?.id ?? null,
+                vehiculo: f.vehiculo ?? null,
                 estado: f.estado === true ? 'finalizada' : f.estado === false ? 'pendiente' : null,
                 desde: this.desde || null,
                 hasta: this.hasta || null,
@@ -217,6 +228,11 @@ export class RutasComponent {
         this.actualizarQueryParams();
         this.rutasService.getAll(this.filtro).subscribe({
             next: (data) => {
+                // Textos para la vista móvil
+                data?.content?.forEach((r: any) => {
+                    r.vehiculoTexto = r.vehiculo?.descripcion ?? 'Sin vehículo';
+                    r.costoTexto = r.costoTotal ? '$ ' + Number(r.costoTotal).toLocaleString('es-CL') : '—';
+                });
                 this.data = data;
                 this.loading = false;
             },
@@ -273,29 +289,40 @@ export class RutasComponent {
 
     openModalAsignarKilometros(item: Ruta) {
         this.ruta = item;
+        this.km = { id: item.id, kilometros: item.kilometros || null, kmSalida: item.kmSalida ?? null, kmLlegada: item.kmLlegada ?? null };
         this.displayAsignarKilometros = true;
     }
 
     closeModalAsignarKilometros() {
         this.displayAsignarKilometros = false;
-        this.ruta.kilometros = 0;
+    }
+
+    /** Con odómetro de salida y llegada, los kilómetros se calculan. */
+    get kmCalculados(): number | null {
+        const { kmSalida, kmLlegada } = this.km;
+        return kmSalida != null && kmLlegada != null ? kmLlegada - kmSalida : null;
     }
 
     asignarKilometros() {
-        if (this.ruta.kilometros <= 0) {
-            this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Debe ingresar un valor de kilómetros mayor a 0' });
+        const calculados = this.kmCalculados;
+        if (calculados !== null && calculados < 0) {
+            this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'El kilometraje de llegada no puede ser menor que el de salida' });
+            return;
+        }
+        if (calculados === null && !(this.km.kilometros && this.km.kilometros > 0)) {
+            this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Ingresa el odómetro de salida y llegada, o los kilómetros recorridos' });
             return;
         }
         this.loading = true;
-        this.rutasService.asignarKilometros(this.ruta).subscribe({
+        this.rutasService.asignarKilometros({ id: this.km.id, kilometros: this.km.kilometros ?? 0, kmSalida: this.km.kmSalida, kmLlegada: this.km.kmLlegada }).subscribe({
             next: () => {
                 this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Kilómetros asignados correctamente' });
                 this.closeModalAsignarKilometros();
                 this.getData();
             },
             error: (error) => {
-                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al asignar kilómetros' });
-                console.error('Error assigning kilometers:', error);
+                this.loading = false;
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: mensajeError(error, 'Error al asignar kilómetros') });
             },
             complete: () => {
                 this.loading = false;

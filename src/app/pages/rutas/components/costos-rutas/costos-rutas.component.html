@@ -1,0 +1,121 @@
+<p-toast />
+<div class="page-breadcrumb-bar flex flex-column">
+    <p-breadcrumb class="app-breadcrumb max-w-full" [model]="breadcrumb" />
+</div>
+<div class="card flex flex-column gap-3 md:gap-4">
+    <div class="page-header">
+        <div class="page-panel-title-group">
+            <span class="page-panel-title-chip"><i class="pi pi-wallet"></i></span>
+            <div class="page-panel-title-text">
+                <h2 class="page-header__title">Costos de ruta</h2>
+                <span class="page-panel-subtitle">
+                    Costo real de cada ruta, incluidas las islas
+                    <span class="page-panel-count">{{ rutas.length }} rutas</span>
+                </span>
+            </div>
+        </div>
+        <div class="page-header__actions">
+            <p-button label="Exportar" icon="pi pi-file-excel" severity="success" [outlined]="true" [disabled]="!rutas.length" (onClick)="exportar()" />
+        </div>
+    </div>
+
+    <div class="flex flex-column md:flex-row gap-2 md:align-items-center">
+        <p-datepicker [(ngModel)]="filtro.desde" dateFormat="dd/mm/yy" [showIcon]="true" placeholder="Desde" class="w-12" [fluid]="true" pTooltip="Desde" tooltipPosition="top" />
+        <p-datepicker [(ngModel)]="filtro.hasta" dateFormat="dd/mm/yy" [showIcon]="true" placeholder="Hasta" class="w-12" [fluid]="true" pTooltip="Hasta" tooltipPosition="top" />
+        <app-vehiculo-select class="w-12" [(vehiculoId)]="filtro.vehiculo" placeholder="Todos los vehículos" />
+        <app-usuarios-select class="w-12" [rol]="'repartidor'" [(usuario)]="chofer" [showClear]="true" [showFilter]="true" />
+        <div class="flex align-items-center gap-2 white-space-nowrap">
+            <p-checkbox inputId="conCostos" [binary]="true" [(ngModel)]="filtro.conCostos" />
+            <label for="conCostos">Solo con costos</label>
+        </div>
+        <p-button label="Buscar" icon="pi pi-search" severity="info" [outlined]="true" class="md:w-3 w-12" [fluid]="true" (onClick)="buscar()" />
+        <p-button label="Limpiar" icon="pi pi-filter-slash" severity="secondary" [outlined]="true" class="md:w-3 w-12" [fluid]="true" (onClick)="limpiar()" />
+    </div>
+
+    <div class="grid">
+        <div class="col-12 md:col-6 lg:col-3">
+            <div class="surface-ground border-round p-3 flex flex-column gap-1">
+                <span class="text-color-secondary">Costo total</span>
+                <span class="text-2xl font-bold">$ {{ total | number: '1.0-0' }}</span>
+                <small class="text-color-secondary">{{ rutasConCosto }} de {{ rutas.length }} rutas con costos</small>
+            </div>
+        </div>
+        <div class="col-12 md:col-6 lg:col-3">
+            <div class="surface-ground border-round p-3 flex flex-column gap-1">
+                <span class="text-color-secondary">Costo por km</span>
+                <span class="text-2xl font-bold">{{ costoPorKm ? '$ ' + (costoPorKm | number: '1.0-0') : '—' }}</span>
+                <small class="text-color-secondary">{{ kilometros | number: '1.0-0' }} km recorridos</small>
+            </div>
+        </div>
+        <div class="col-12 md:col-6 lg:col-3">
+            <div class="surface-ground border-round p-3 flex flex-column gap-1">
+                <span class="text-color-secondary">Costo por entrega</span>
+                <span class="text-2xl font-bold">{{ costoPorEntrega ? '$ ' + (costoPorEntrega | number: '1.0-0') : '—' }}</span>
+                <small class="text-color-secondary">{{ entregas | number: '1.0-0' }} entregas</small>
+            </div>
+        </div>
+        <div class="col-12 md:col-6 lg:col-3">
+            <div class="surface-ground border-round p-3 flex flex-column gap-1">
+                <span class="text-color-secondary">Islas (lancha y barcazas)</span>
+                <span class="text-2xl font-bold">$ {{ islas | number: '1.0-0' }}</span>
+                <small class="text-color-secondary">Arriendo de lanchas y barcazas</small>
+            </div>
+        </div>
+    </div>
+    <small class="text-color-secondary" *ngIf="rutasSinVehiculo > 0"
+        ><i class="pi pi-info-circle"></i> {{ rutasSinVehiculo }} {{ rutasSinVehiculo === 1 ? 'ruta no tiene' : 'rutas no tienen' }} vehículo asignado. El costo por km solo considera las rutas con kilómetros y costos.</small
+    >
+
+    <p-table [value]="rutas" [loading]="loading" [scrollable]="true" [tableStyle]="{ 'min-width': '70rem' }" [paginator]="rutas.length > 20" [rows]="20" sortMode="single">
+        <ng-template #header>
+            <tr>
+                <th pSortableColumn="rutaId">Ruta <p-sortIcon field="rutaId" /></th>
+                <th pSortableColumn="fecha">Fecha <p-sortIcon field="fecha" /></th>
+                <th>Chofer</th>
+                <th pSortableColumn="vehiculo">Vehículo <p-sortIcon field="vehiculo" /></th>
+                <th class="text-right" pSortableColumn="kilometros">Km <p-sortIcon field="kilometros" /></th>
+                <th class="text-right">Entregas</th>
+                <th class="text-right" *ngFor="let c of columnas">{{ c.titulo }}</th>
+                <th class="text-right" pSortableColumn="total">Total <p-sortIcon field="total" /></th>
+                <th class="text-right" pSortableColumn="costoPorKm">$/km <p-sortIcon field="costoPorKm" /></th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-r>
+            <tr>
+                <td>
+                    <a class="page-cell-code" [routerLink]="['/rutas/formulario/' + r.rutaId]" pTooltip="Ver ruta y costos">{{ r.rutaId }}</a>
+                </td>
+                <td class="white-space-nowrap">{{ fechaTexto(r.fecha) }}</td>
+                <td>{{ r.chofer }}</td>
+                <td [class.page-cell-empty]="!r.vehiculoId">{{ r.vehiculo }}</td>
+                <td class="text-right" [class.page-cell-empty]="!r.kilometros">{{ r.kilometros ?? '—' }}</td>
+                <td class="text-right">{{ r.entregas }}</td>
+                <td class="text-right white-space-nowrap" *ngFor="let c of columnas; let i = index" [class.page-cell-empty]="!monto(r, i)">{{ monto(r, i) ? '$ ' + (monto(r, i) | number: '1.0-0') : '—' }}</td>
+                <td class="text-right white-space-nowrap font-semibold" [class.page-cell-empty]="!r.total">{{ r.total ? '$ ' + (r.total | number: '1.0-0') : '—' }}</td>
+                <td class="text-right white-space-nowrap" [class.page-cell-empty]="!r.costoPorKm">{{ r.costoPorKm ? '$ ' + (r.costoPorKm | number: '1.0-0') : '—' }}</td>
+            </tr>
+        </ng-template>
+        <ng-template #footer>
+            <tr *ngIf="rutas.length">
+                <td colspan="4" class="text-right">Total del período</td>
+                <td class="text-right">{{ kilometros | number: '1.0-0' }}</td>
+                <td class="text-right">{{ entregas | number: '1.0-0' }}</td>
+                <td class="text-right white-space-nowrap" *ngFor="let t of totalesColumna">$ {{ t | number: '1.0-0' }}</td>
+                <td class="text-right white-space-nowrap font-bold">$ {{ total | number: '1.0-0' }}</td>
+                <td class="text-right white-space-nowrap">{{ costoPorKm ? '$ ' + (costoPorKm | number: '1.0-0') : '—' }}</td>
+            </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td [attr.colspan]="8 + columnas.length">
+                    <div class="page-empty">
+                        <i class="pi pi-wallet"></i>
+                        <strong>No hay rutas en el período</strong>
+                        <span>Prueba con otras fechas.</span>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<app-modal-loading [visible]="loading" />

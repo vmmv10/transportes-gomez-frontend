@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -15,7 +15,7 @@ import { ProveedoresService } from '../../services/proveedores.service';
     styleUrl: './proveedor-select.component.scss',
     providers: [MessageService]
 })
-export class ProveedorSelectComponent {
+export class ProveedorSelectComponent implements OnChanges {
     @Input() proveedor: Proveedor | undefined;
     @Output() proveedorChange = new EventEmitter<Proveedor>();
     @Input() showClear: boolean = false;
@@ -41,11 +41,25 @@ export class ProveedorSelectComponent {
             this.loading = true;
             const proveedores = await this.proveedorServices.getProveedoresList().toPromise();
             this.proveedores = proveedores || [];
+            this.incluirSeleccionado();
         } catch (error) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener proveedores' });
             console.error('Error fetching proveedores:', error);
         } finally {
             this.loading = false;
+        }
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['proveedor'] && !this.loading) {
+            this.incluirSeleccionado();
+        }
+    }
+
+    /** Un proveedor inactivo ya asignado (ej. en una orden antigua) igual debe verse. */
+    private incluirSeleccionado() {
+        if (this.proveedor?.id && !this.proveedores.some((p) => p.id === this.proveedor!.id)) {
+            this.proveedores = [this.proveedor, ...this.proveedores];
         }
     }
 

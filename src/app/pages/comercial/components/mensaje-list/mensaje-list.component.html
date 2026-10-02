@@ -1,0 +1,86 @@
+<p-toast />
+<div class="page-breadcrumb-bar flex flex-column">
+    <p-breadcrumb class="app-breadcrumb max-w-full" [model]="breadcrumb" />
+</div>
+<div class="card flex flex-column gap-3">
+    <div class="page-header">
+        <div class="page-panel-title-group">
+            <span class="page-panel-title-chip"><i class="pi pi-envelope"></i></span>
+            <div class="page-panel-title-text">
+                <h2 class="page-header__title">Mensajes web</h2>
+                <span class="page-panel-subtitle">
+                    Formulario de contacto de la página web
+                    <span class="page-panel-count" *ngIf="data">{{ data.totalElements }} {{ data.totalElements === 1 ? 'mensaje' : 'mensajes' }}</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="cm-toolbar cm-toolbar--nowrap">
+        <p-selectbutton [options]="opciones" [(ngModel)]="atendido" (ngModelChange)="filtrar()" optionLabel="label" optionValue="value" [allowEmpty]="false" />
+        <p-select [options]="motivos" [(ngModel)]="motivo" (ngModelChange)="filtrar()" optionLabel="label" optionValue="value" placeholder="Todos los motivos" [showClear]="true" class="cm-motivo-filtro" />
+        <span class="flex-1"></span>
+        <p-button icon="pi pi-refresh" [rounded]="true" [text]="true" severity="secondary" pTooltip="Actualizar" (onClick)="getData()" [loading]="loading" />
+    </div>
+
+    <div class="cm-inbox">
+        <ng-container *ngIf="loading && !data">
+            <div class="cm-msg" *ngFor="let i of [1, 2, 3]">
+                <p-skeleton shape="circle" size="2.75rem" />
+                <div class="flex-1 flex flex-column gap-2">
+                    <p-skeleton width="40%" />
+                    <p-skeleton width="25%" height="0.8rem" />
+                    <p-skeleton width="90%" height="2.5rem" />
+                </div>
+            </div>
+        </ng-container>
+
+        <article class="cm-msg" *ngFor="let m of data?.content ?? []" [class.cm-msg--pendiente]="!m.atendido">
+            <div class="cm-msg__avatar">{{ iniciales(m.nombre) }}</div>
+            <div class="cm-msg__body">
+                <div class="cm-msg__head">
+                    <strong class="cm-msg__name">{{ m.nombre }}</strong>
+                    <p-tag [value]="motivoDe(m.motivo).label" [icon]="motivoDe(m.motivo).icono" [severity]="motivoDe(m.motivo).severidad" />
+                    <p-tag *ngIf="m.atendido" value="Atendido" severity="secondary" />
+                    <span class="flex-1"></span>
+                    <span class="cm-msg__date" [pTooltip]="(m.fechaCreacion | date: 'dd/MM/yyyy HH:mm') ?? ''">{{ hace(m.fechaCreacion) }}</span>
+                </div>
+                <div class="cm-msg__contact">
+                    <a [href]="'mailto:' + m.email"><i class="pi pi-envelope"></i> {{ m.email }}</a>
+                    <a *ngIf="m.telefono" [href]="'tel:' + m.telefono"><i class="pi pi-phone"></i> {{ m.telefono }}</a>
+                    <span *ngIf="m.codigoSeguimiento" class="cm-msg__codigo" pTooltip="Código de seguimiento que indicó"><i class="pi pi-hashtag"></i> {{ m.codigoSeguimiento }}</span>
+                </div>
+                <p class="cm-msg__text">{{ m.mensaje }}</p>
+                <div class="cm-msg__actions">
+                    <a pButton [href]="mailto(m)" icon="pi pi-reply" label="Responder" size="small" class="cm-btn-marca"></a>
+                    <a *ngIf="whatsapp(m) as wa" pButton [href]="wa" target="_blank" rel="noopener" icon="pi pi-whatsapp" label="WhatsApp" size="small" severity="success" [outlined]="true"></a>
+                    <p-button
+                        [label]="m.atendido ? 'Marcar por atender' : 'Marcar atendido'"
+                        [icon]="m.atendido ? 'pi pi-undo' : 'pi pi-check'"
+                        size="small"
+                        severity="secondary"
+                        [outlined]="!m.atendido"
+                        [text]="m.atendido"
+                        (onClick)="marcar(m)"
+                    />
+                </div>
+            </div>
+        </article>
+
+        <div class="page-empty" *ngIf="!loading && data && data.content.length === 0">
+            <i class="pi pi-inbox"></i>
+            <strong>{{ atendido === false ? 'No hay mensajes por atender' : 'No hay mensajes' }}</strong>
+            <span *ngIf="atendido === false">Todo al día. Los nuevos mensajes de la página web aparecerán aquí.</span>
+        </div>
+    </div>
+
+    <p-paginator
+        *ngIf="data && data.totalElements > size"
+        styleClass="page-paginator"
+        (onPageChange)="pageChange($event)"
+        [first]="page * size"
+        [rows]="size"
+        [totalRecords]="data.totalElements"
+        [rowsPerPageOptions]="[20, 50]"
+    />
+</div>

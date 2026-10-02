@@ -114,7 +114,8 @@ export class EntregasTableComponent {
     ) {}
 
     ngOnInit() {
-        this.esAdmin$ = this.rolService.tieneRol('Administrador');
+        // Marcar entregas: Administrador y Operaciones
+        this.esAdmin$ = this.rolService.tieneAlgunRol(['Administrador', 'Operaciones']);
         this.getData();
     }
 

@@ -18,11 +18,33 @@ import { ProveedoresService } from '../../services/proveedores.service';
 import { Page } from '../../../uikit/models/page.model';
 import { Proveedor } from '../../models/proveedor.model';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogModule } from 'primeng/dialog';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { ProveedorSelectComponent } from '../proveedor-select/proveedor-select.component';
+import { mensajeError } from '../../../uikit/utils/error-mensaje';
 
 @Component({
     standalone: true,
     selector: 'app-proveedor-list',
-    imports: [BreadcrumbModule, CommonModule, TableMobileComponent, PaginatorModule, TableModule, TagModule, ButtonModule, FormsModule, InputTextModule, RouterModule, ToastModule, TooltipModule, ModalLoadingComponent, ConfirmDialogModule],
+    imports: [
+        BreadcrumbModule,
+        CommonModule,
+        TableMobileComponent,
+        PaginatorModule,
+        TableModule,
+        TagModule,
+        ButtonModule,
+        FormsModule,
+        InputTextModule,
+        RouterModule,
+        ToastModule,
+        TooltipModule,
+        ModalLoadingComponent,
+        ConfirmDialogModule,
+        DialogModule,
+        SelectButtonModule,
+        ProveedorSelectComponent
+    ],
     templateUrl: './proveedor-list.component.html',
     styleUrl: './proveedor-list.component.scss',
     providers: [MessageService, ConfirmationService]
@@ -53,6 +75,28 @@ export class ProveedorListComponent {
             mostrar: true
         },
         {
+            tooltip: 'Unir con otro',
+            icono: 'pi pi-link',
+            color: 'info',
+            tipo: 'accion',
+            accion: 'unir',
+            rutaConId: true,
+            label: 'Unir',
+            outlined: true,
+            mostrar: true
+        },
+        {
+            tooltip: 'Activar',
+            icono: 'pi pi-replay',
+            color: 'info',
+            tipo: 'accion',
+            accion: 'activar',
+            rutaConId: true,
+            label: 'Activar',
+            outlined: true,
+            mostrar: false
+        },
+        {
             tooltip: 'Eliminar',
             icono: 'pi pi-trash',
             color: 'danger',
@@ -64,6 +108,16 @@ export class ProveedorListComponent {
             mostrar: true
         }
     ];
+
+    estados = [
+        { label: 'Activos', value: true },
+        { label: 'Inactivos', value: false }
+    ];
+
+    // ---- Unir proveedores duplicados ----
+    dialogoUnir: boolean = false;
+    proveedorOrigen: Proveedor | undefined;
+    proveedorDestino: Proveedor | undefined;
 
     constructor(
         private messageService: MessageService,
@@ -81,7 +135,6 @@ export class ProveedorListComponent {
     }
 
     getData() {
-        this.filtro.activo = true;
         this.loading = true;
         this.proveedorServices.getAll(this.filtro).subscribe({
             next: (data) => {
@@ -123,10 +176,71 @@ export class ProveedorListComponent {
         });
     }
 
+    abrirUnir(proveedor: Proveedor) {
+        this.proveedorOrigen = proveedor;
+        this.proveedorDestino = undefined;
+        this.dialogoUnir = true;
+    }
+
+    unir() {
+        const origen = this.proveedorOrigen;
+        const destino = this.proveedorDestino;
+        if (!origen || !destino) {
+            this.messageService.add({ severity: 'warn', summary: 'Falta el proveedor', detail: 'Elige con qué proveedor se une.' });
+            return;
+        }
+        if (origen.id === destino.id) {
+            this.messageService.add({ severity: 'warn', summary: 'Mismo proveedor', detail: 'Elige un proveedor distinto.' });
+            return;
+        }
+        this.loading = true;
+        this.proveedorServices.fusionar(origen.id, destino.id).subscribe({
+            next: () => {
+                this.dialogoUnir = false;
+                this.messageService.add({ severity: 'success', summary: 'Proveedores unidos', detail: `${origen.nombre} quedó unido a ${destino.nombre}` });
+                this.getData();
+            },
+            error: (error) => {
+                this.loading = false;
+                this.messageService.add({ severity: 'error', summary: 'No se pudo unir', detail: mensajeError(error, 'Error al unir los proveedores') });
+            }
+        });
+    }
+
+    buscar() {
+        this.filtro.page = 0;
+        // En móvil: "Activar" solo en la vista de inactivos, "Eliminar" solo en la de activos
+        this.acciones.forEach((a) => {
+            if (a.accion === 'activar') a.mostrar = this.filtro.activo === false;
+            if (a.accion === 'eliminar') a.mostrar = this.filtro.activo !== false;
+        });
+        this.getData();
+    }
+
+    activar(proveedor: Proveedor) {
+        this.loading = true;
+        this.proveedorServices.activarProveedor(proveedor.id).subscribe({
+            next: () => {
+                this.messageService.add({ severity: 'success', summary: 'Listo', detail: `${proveedor.nombre} activado` });
+                this.getData();
+            },
+            error: (error) => {
+                this.loading = false;
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: mensajeError(error, 'No se pudo activar el proveedor') });
+            }
+        });
+    }
+
     resolverAccion(event: { tipo: string; item: any }) {
         switch (event.tipo) {
             case 'eliminar':
                 this.confirmarDesactivacion(event.item);
+                break;
+            case 'activar':
+                this.activar(event.item);
+                break;
+            case 'unir':
+                this.abrirUnir(event.item);
                 break;
         }
     }

@@ -11,11 +11,14 @@ import { ModalLoadingComponent } from '../../../uikit/components/modal-loading/m
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { AccordionModule } from 'primeng/accordion';
+import { FormsModule } from '@angular/forms';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { mensajeError } from '../../../uikit/utils/error-mensaje';
 
 @Component({
     standalone: true,
     selector: 'app-rutas-actual',
-    imports: [CommonModule, ButtonModule, EntregasButtonRecepcionComponent, TableModule, ModalLoadingComponent, ConfirmDialogModule, ToastModule, AccordionModule],
+    imports: [CommonModule, FormsModule, InputNumberModule, ButtonModule, EntregasButtonRecepcionComponent, TableModule, ModalLoadingComponent, ConfirmDialogModule, ToastModule, AccordionModule],
     templateUrl: './rutas-actual.component.html',
     styleUrl: './rutas-actual.component.scss',
     providers: [ConfirmationService, MessageService]
@@ -24,6 +27,7 @@ export class RutasActualComponent {
     ruta: Ruta | undefined;
     entrega: Entrega | undefined;
     loading: boolean = false;
+    kmSalida: number | null = null;
 
     constructor(
         private rutasService: RutasService,
@@ -65,24 +69,38 @@ export class RutasActualComponent {
         this.cargarRuta();
     }
 
+    /** La ruta no ha comenzado: hay que registrar el odómetro de salida antes de entregar. */
+    get sinComenzar(): boolean {
+        return !!this.ruta && !this.ruta.enTransito && !this.ruta.inicio && this.ruta.estado !== 'FINALIZADA';
+    }
+
+    /** Comenzó sin odómetro (ej. antes de que fuera obligatorio). */
+    get faltaKmSalida(): boolean {
+        return !!this.ruta && !this.sinComenzar && this.ruta.estado !== 'FINALIZADA' && this.ruta.kmSalida == null;
+    }
+
     comenzarRuta() {
-        this.confirmationService.confirm({
-            header: 'Confirmar Inicio de Ruta',
-            key: 'cInicioRuta',
-            accept: () => {
-                if (this.ruta) {
-                    this.loading = true;
-                    this.rutasService.comenzarRuta(this.ruta.id).subscribe({
-                        next: (data) => {
-                            this.ruta = data;
-                            this.loading = false;
-                        },
-                        error: (error) => {
-                            console.error('Error al comenzar la ruta:', error);
-                            this.loading = false;
-                        }
-                    });
-                }
+        if (!this.ruta) {
+            return;
+        }
+        if (this.kmSalida == null || this.kmSalida < 0) {
+            this.messageService.add({ severity: 'warn', summary: 'Falta el kilometraje', detail: 'Ingresa el odómetro de salida del vehículo.' });
+            return;
+        }
+        this.loading = true;
+        const ruta = this.ruta;
+        const peticion = this.sinComenzar
+            ? this.rutasService.comenzarRuta(ruta.id, this.kmSalida)
+            : this.rutasService.asignarKilometros({ id: ruta.id, kmSalida: this.kmSalida, kmLlegada: ruta.kmLlegada ?? null, kilometros: ruta.kilometros });
+        peticion.subscribe({
+            next: () => {
+                this.messageService.add({ severity: 'success', summary: 'Listo', detail: this.sinComenzar ? 'Ruta comenzada' : 'Kilometraje de salida registrado' });
+                this.kmSalida = null;
+                this.cargarRuta();
+            },
+            error: (error) => {
+                this.loading = false;
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: mensajeError(error, 'No se pudo comenzar la ruta') });
             }
         });
     }
